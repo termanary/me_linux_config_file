@@ -84,8 +84,9 @@ set softtabstop=4
 set smarttab
 set autoindent
 set smartindent
-set smartcase
+set ignorecase
 set incsearch
+set smartcase
 set hlsearch
 set scrolloff=5
 colorscheme zellner
@@ -123,6 +124,12 @@ nnoremap <Leader>4 $
 nnoremap <Leader>o O
 nnoremap <Leader>p P
 nnoremap <Leader>g G
+nnoremap <Leader>w <C-w>
+nnoremap <Leader>h <ESC>:noh <CR>
+nnoremap <Leader>c @c
+nnoremap <Leader>d @d
+let @c = "gI//j"
+let @d = "02xj"
 nnoremap ZZ <Esc>:xa <CR>
 nnoremap ZQ <Esc>:qa! <CR>
 nnoremap m `
@@ -132,11 +139,11 @@ nnoremap - <Esc>:
 nnoremap \ <Esc>:!
 
 nnoremap <Space> <Nop>
-nnoremap <F6> <ESC>:set noinsertmode <CR>
-nnoremap <F7> <ESC>:set insertmode <CR>
+"nnoremap <F6> <ESC>:set noinsertmode <CR>
+"nnoremap <F7> <ESC>:set insertmode <CR>
 nnoremap <F8> <ESC>:w <CR>:!gcc -Wall -g -o link main.c <CR>
 nnoremap <F9> <ESC>:w <CR>:!g++ -Wall -g -o link main.cpp <CR>
 nnoremap <F10> <ESC>:!./link <input.txt <CR>
-nnoremap <F11> <ESC>:!gdb -tui --command=~/.gdb link <CR>
-nnoremap <F12> <ESC>:colorscheme desert <CR>
+nnoremap <F11> <ESC>:!gdb -tui link <CR>
+"nnoremap <F12> <ESC>:colorscheme desert <CR>
 
