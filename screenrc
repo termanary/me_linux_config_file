@@ -20,11 +20,6 @@
 # SCREEN SETTINGS
 # ------------------------------------------------------------------------------
 
-#which is added by me
-#Mon Mar 19 17:28:58 CST 2018
-escape ^ ^ 
-#escape  ^[o^[o
-
 #startup_message off
 #nethack on
 
@@ -33,7 +28,7 @@ deflogin on
 #autodetach off
 
 # turn visual bell on
-vbell off #on is modify by me
+vbell on 
 vbell_msg "   Wuff  ----  Wuff!!  "
 
 # define a bigger scrollback, default is 100 lines
