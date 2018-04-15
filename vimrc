@@ -76,6 +76,7 @@ endif
 
 set number
 set relativenumber 
+set numberwidth=6
 set showcmd
 set tabstop=4
 set expandtab
@@ -88,9 +89,11 @@ set ignorecase
 set incsearch
 set smartcase
 set hlsearch
+"set shellcmdflag=-ci
 set scrolloff=5
 colorscheme zellner
 let mapleader = "\<Space>"
+"set revins
 "set autowriteall
 "set cindent
 "set cursorline
@@ -99,19 +102,17 @@ let mapleader = "\<Space>"
 
 "inoremap-------------------------------------------------------------------------------------------
 
-inoremap ' ''<ESC>i
-inoremap " ""<ESC>i
-inoremap [ []<ESC>i
-inoremap ( ()<ESC>i
-inoremap { {<CR>;<CR>}<ESC>kS
-inoremap } {}<ESC>i
+inoremap ' ''<left>
+inoremap " ""<left>
+inoremap [ []<left>
+inoremap ( ()<left>
+inoremap { {<CR>}<ESC>ko
+inoremap } {}<left>
 inoremap . <ESC>
 inoremap ] .
 
-"the next key-bind is like emacs in insert mode "
-
-inoremap <C-e> <end>
 inoremap <C-f> <right>
+inoremap <C-e> <end>
 
 "noremap--------------------------------------------------------------------------------------------
 
@@ -124,14 +125,13 @@ nnoremap <Leader>4 $
 nnoremap <Leader>o O
 nnoremap <Leader>p P
 nnoremap <Leader>g G
+nnoremap <Leader>t :!date <CR>
 nnoremap <Leader>w <C-w>
 nnoremap <Leader>h <ESC>:noh <CR>
 nnoremap <Leader>c @c
-nnoremap <Leader>d @d
 let @c = "gI//j"
+nnoremap <Leader>d @d
 let @d = "02xj"
-nnoremap ZZ <Esc>:xa <CR>
-nnoremap ZQ <Esc>:qa! <CR>
 nnoremap m `
 nnoremap ' m
 nnoremap ` '
@@ -139,11 +139,29 @@ nnoremap - <Esc>:
 nnoremap \ <Esc>:!
 
 nnoremap <Space> <Nop>
-"nnoremap <F6> <ESC>:set noinsertmode <CR>
-"nnoremap <F7> <ESC>:set insertmode <CR>
+nnoremap <F7> <ESC>:set insertmode! <CR>
+"filetype ?"
 nnoremap <F8> <ESC>:w <CR>:!gcc -Wall -g -o link main.c <CR>
 nnoremap <F9> <ESC>:w <CR>:!g++ -Wall -g -o link main.cpp <CR>
 nnoremap <F10> <ESC>:!./link <input.txt <CR>
 nnoremap <F11> <ESC>:!gdb -tui link <CR>
-"nnoremap <F12> <ESC>:colorscheme desert <CR>
 
+autocmd OptionSet insertmode : call _ecc()
+
+"the command 'echom 'is really a useful command"
+"just a example "
+"ab me my evil
+
+function _ecc()
+inoremap <C-n> <down>
+inoremap <C-p> <up>
+inoremap <C-f> <right>
+inoremap <C-b> <left>
+inoremap <C-e> <end>
+inoremap <C-a> <home>
+inoremap <C-d> <del>
+"inoremap <C-u> <ESC>:h
+"inoremap <C-w> <ESC>cb
+inoremap <A-f> <ESC>wi
+inoremap <A-b> <ESC>bi
+endfunction
