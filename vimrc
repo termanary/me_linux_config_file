@@ -60,19 +60,19 @@ if filereadable("/etc/vim/vimrc.local")
 endif
 
 
-"---------------------------------------------------------------------------------------------------
-"---------------------------------------------------------------------------------------------------
-"---------------------------------------------------------------------------------------------------
-"---------------------------------------------------------------------------------------------------
-"---------------------------------------------------------------------------------------------------
-"---------------------------------------------------------------------------------------------------
-"---------------------------------------------------------------------------------------------------
-"---------------------------------------------------------------------------------------------------
-"---------------------------------------------------------------------------------------------------
+"-------------------------------------------------------------------------
+"-------------------------------------------------------------------------
+"-------------------------------------------------------------------------
+"-------------------------------------------------------------------------
+"-------------------------------------------------------------------------
+"-------------------------------------------------------------------------
+"-------------------------------------------------------------------------
+"-------------------------------------------------------------------------
+"-------------------------------------------------------------------------
 
 "thenext indicate is what define by me3 
 
-"set -----------------------------------------------------------------------------------------------
+"set ---------------------------------------------------------------------
 
 set number
 set relativenumber 
@@ -89,6 +89,8 @@ set ignorecase
 set incsearch
 set smartcase
 set hlsearch
+set wildmenu
+set laststatus=2
 "set shellcmdflag=-ci
 set scrolloff=5
 colorscheme zellner
@@ -100,57 +102,61 @@ let mapleader = "\<Space>"
 "set mouse=a
 "set lines=33 columns=95
 
-"inoremap-------------------------------------------------------------------------------------------
+"ab-----------------------------------------------------------------------
+
+cab h vertical leftabove help
+
+"inoremap-----------------------------------------------------------------
 
 inoremap ' ''<left>
 inoremap " ""<left>
 inoremap [ []<left>
 inoremap ( ()<left>
-inoremap { {<CR>}<ESC>ko
+inoremap { {<CR>}<up><CR>
 inoremap } {}<left>
-inoremap . <ESC>
-inoremap ] .
+inoremap <C-l> <ESC>
+""inoremap . <ESC>
+""inoremap ] .
 
 inoremap <C-f> <right>
 inoremap <C-e> <end>
 
-"noremap--------------------------------------------------------------------------------------------
+"onoremap-----------------------------------------------------------------
 
-"w b e
-"t f
-"0 ^
-"<Space> is the <Leader>
-nnoremap <Leader>6 ^
-nnoremap <Leader>4 $
-nnoremap <Leader>o O
-nnoremap <Leader>p P
-nnoremap <Leader>g G
-nnoremap <Leader>t :!date <CR>
-nnoremap <Leader>w <C-w>
-nnoremap <Leader>h <ESC>:noh <CR>
-nnoremap <Leader>c @c
-let @c = "gI//j"
-nnoremap <Leader>d @d
-let @d = "02xj"
-nnoremap m `
-nnoremap ' m
-nnoremap ` '
-nnoremap - <Esc>:
-nnoremap \ <Esc>:!
+"nnoremap------------------------------------------------------------------
 
-nnoremap <Space> <Nop>
-nnoremap <F7> <ESC>:set insertmode! <CR>
+"noremap------------------------------------------------------------------
+
+noremap 0 ^
+noremap ^ 0
+noremap m `
+noremap ' m
+noremap ` '
+noremap - :
+noremap \ :!
+
+noremap <F7> <ESC>:set insertmode! <CR>
 "filetype ?"
-nnoremap <F8> <ESC>:w <CR>:!gcc -Wall -g -o link main.c <CR>
-nnoremap <F9> <ESC>:w <CR>:!g++ -Wall -g -o link main.cpp <CR>
-nnoremap <F10> <ESC>:!./link <input.txt <CR>
-nnoremap <F11> <ESC>:!gdb -tui link <CR>
+noremap <F8> <ESC>:w <CR>:!gcc -Wall -g -o link main.c <CR>
+noremap <F9> <ESC>:w <CR>:!g++ -Wall -g -o link main.cpp <CR>
+noremap <F10> <ESC>:!./link <input.txt <CR>
+noremap <F11> <ESC>:!gdb -tui link <CR>
 
-autocmd OptionSet insertmode : call _ecc()
+"<Space> is the <Leader>
+noremap <Space> <Nop>
+noremap <Leader>4 $
+noremap <Leader>o O
+noremap <Leader>p P
+noremap <Leader>g G
+noremap <Leader>t :!date <CR>
+noremap <Leader>w <C-w>
+noremap <Leader>h <ESC>:noh <CR>
+noremap <Leader>c @c
+let @c = "gI//j"
+noremap <Leader>d @d
+let @d = "02xj"
 
-"the command 'echom 'is really a useful command"
-"just a example "
-"ab me my evil
+"function-autocmd---------------------------------------------------------
 
 function _ecc()
 inoremap <C-n> <down>
@@ -165,3 +171,6 @@ inoremap <C-d> <del>
 inoremap <A-f> <ESC>wi
 inoremap <A-b> <ESC>bi
 endfunction
+
+autocmd OptionSet insertmode : call _ecc()
+
