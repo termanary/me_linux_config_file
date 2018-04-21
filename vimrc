@@ -91,10 +91,13 @@ set smartcase
 set hlsearch
 set wildmenu
 set laststatus=2
-"set shellcmdflag=-ci
+set modeline
+set history=200
 set scrolloff=5
+filetype indent on
 colorscheme zellner
 let mapleader = "\<Space>"
+"set shellcmdflag=-ci
 "set revins
 "set autowriteall
 "set cindent
@@ -137,8 +140,9 @@ noremap \ :!
 
 noremap <F7> <ESC>:set insertmode! <CR>
 "filetype ?"
-noremap <F8> <ESC>:w <CR>:!gcc -Wall -g -o link main.c <CR>
-noremap <F9> <ESC>:w <CR>:!g++ -Wall -g -o link main.cpp <CR>
+"noremap <F8> <ESC>:w <CR>:!gcc -Wall -g -o link main.c <CR>
+"noremap <F9> <ESC>:w <CR>:!g++ -Wall -g -o link main.cpp <CR>
+noremap <F9> :call _compile_c() <CR>
 noremap <F10> <ESC>:!./link <input.txt <CR>
 noremap <F11> <ESC>:!gdb -tui link <CR>
 
@@ -152,9 +156,9 @@ noremap <Leader>t :!date <CR>
 noremap <Leader>w <C-w>
 noremap <Leader>h <ESC>:noh <CR>
 noremap <Leader>c @c
-let @c = "gI//j"
+"let @c = "gI//j"
 noremap <Leader>d @d
-let @d = "02xj"
+"let @d = "02xj"
 
 "function-autocmd---------------------------------------------------------
 
@@ -172,5 +176,18 @@ inoremap <A-f> <ESC>wi
 inoremap <A-b> <ESC>bi
 endfunction
 
-autocmd OptionSet insertmode : call _ecc()
+"set filetype=?
+function _compile_c()
+    if &filetype == 'c'
+        w | !gcc -Wall -g -o link main.c 
+    elseif &filetype == 'cpp'
+        w | !g++ -Wall -g -o link main.cpp 
+    endif
+endfunction
+
+autocmd OptionSet insertmode  call _ecc()
+autocmd BufReadPost,WinEnter *.c,*.cpp  let @c="gI//j" | let @d = "02xj" 
+autocmd BufReadPost,WinEnter *.sh  let @c="gI#j" | let @d = "01xj"
+autocmd BufReadPost,WinEnter *vimrc  let @c="gI\"\<BS>j" | let @d = "01xj"
+autocmd CursorHoldI * stopinsert
 
