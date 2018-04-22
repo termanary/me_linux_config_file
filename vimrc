@@ -178,10 +178,14 @@ endfunction
 
 "set filetype=?
 function _compile_c()
+    write
+"    !read _the_output_
     if &filetype == 'c'
-        w | !gcc -Wall -g -o link main.c 
+        !gcc -Wall -g -o %:h/link %
+"        help filename-modifiers
+"!cmd % --could handle currently file by shell command
     elseif &filetype == 'cpp'
-        w | !g++ -Wall -g -o link main.cpp 
+        !g++ -Wall -g -o %:h/link %
     endif
 endfunction
 
