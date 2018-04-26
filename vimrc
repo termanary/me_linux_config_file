@@ -96,7 +96,10 @@ set history=200
 set scrolloff=5
 filetype indent on
 colorscheme zellner
+highlight cursorline cterm=NONE ctermbg=blue
+highlight cursorcolumn cterm=NONE ctermbg=blue
 let mapleader = "\<Space>"
+"set autochdir
 "set shellcmdflag=-ci
 "set revins
 "set autowriteall
@@ -139,10 +142,8 @@ noremap - :
 noremap \ :!
 
 noremap <F7> <ESC>:set insertmode! <CR>
-"filetype ?"
-"noremap <F8> <ESC>:w <CR>:!gcc -Wall -g -o link main.c <CR>
-"noremap <F9> <ESC>:w <CR>:!g++ -Wall -g -o link main.cpp <CR>
-noremap <F9> :call _compile_c() <CR>
+"FileType ?"
+noremap <F9> :call _compile_() <CR>
 noremap <F10> <ESC>:!./link <input.txt <CR>
 noremap <F11> <ESC>:!gdb -tui link <CR>
 
@@ -155,10 +156,10 @@ noremap <Leader>g G
 noremap <Leader>t :!date <CR>
 noremap <Leader>w <C-w>
 noremap <Leader>h <ESC>:noh <CR>
+"sleep
+noremap <Leader>e :set cursorline! cursorcolumn! <CR> :sleep 1500m <CR> :set cursorline! cursorcolumn! <CR>
 noremap <Leader>c @c
-"let @c = "gI//j"
 noremap <Leader>d @d
-"let @d = "02xj"
 
 "function-autocmd---------------------------------------------------------
 
@@ -177,21 +178,25 @@ inoremap <A-b> <ESC>bi
 endfunction
 
 "set filetype=?
-function _compile_c()
+function _compile_()
     write
-"    !read _the_output_
-    if &filetype == 'c'
-        !gcc -Wall -g -o %:h/link %
 "        help filename-modifiers
 "!cmd % --could handle currently file by shell command
+    if &filetype == 'c'
+        !gcc -Wall -g -o %:h/link %
     elseif &filetype == 'cpp'
         !g++ -Wall -g -o %:h/link %
+    elseif &filetype == 'python' || &filetype == 'sh'
+        ! %:p
+    else
+        echom 'This is not a c/cpp/python/sh file!'
     endif
 endfunction
 
+"updatetime->CursorHoldI
+autocmd CursorHoldI * stopinsert
 autocmd OptionSet insertmode  call _ecc()
 autocmd BufReadPost,WinEnter *.c,*.cpp  let @c="gI//j" | let @d = "02xj" 
-autocmd BufReadPost,WinEnter *.sh  let @c="gI#j" | let @d = "01xj"
+autocmd BufReadPost,WinEnter *.sh,*py  let @c="gI#j" | let @d = "01xj"
 autocmd BufReadPost,WinEnter *vimrc  let @c="gI\"\<BS>j" | let @d = "01xj"
-autocmd CursorHoldI * stopinsert
 
