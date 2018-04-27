@@ -163,7 +163,7 @@ noremap <Leader>d @d
 
 "function-autocmd---------------------------------------------------------
 
-function _ecc()
+function _my_own_key_map_insertmode_()
 inoremap <C-n> <down>
 inoremap <C-p> <up>
 inoremap <C-f> <right>
@@ -183,9 +183,9 @@ function _compile_()
 "        help filename-modifiers
 "!cmd % --could handle currently file by shell command
     if &filetype == 'c'
-        !gcc -Wall -g -o %:h/link %
+        !gcc -Wall -g -o %:h/%:r %
     elseif &filetype == 'cpp'
-        !g++ -Wall -g -o %:h/link %
+        !g++ -Wall -g -o %:h/%:r %
     elseif &filetype == 'python' || &filetype == 'sh'
         ! %:p
     else
@@ -193,10 +193,15 @@ function _compile_()
     endif
 endfunction
 
+augroup _my_own_define_
+"    autocmd!  -->clear the autocmd had been defined before 
+"the current augroup before the current command 
+    autocmd!
 "updatetime->CursorHoldI
 autocmd CursorHoldI * stopinsert
-autocmd OptionSet insertmode  call _ecc()
+autocmd OptionSet insertmode  call _my_own_key_map_insertmode_()
 autocmd BufReadPost,WinEnter *.c,*.cpp  let @c="gI//j" | let @d = "02xj" 
 autocmd BufReadPost,WinEnter *.sh,*py  let @c="gI#j" | let @d = "01xj"
 autocmd BufReadPost,WinEnter *vimrc  let @c="gI\"\<BS>j" | let @d = "01xj"
+augroup END
 
