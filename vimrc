@@ -95,11 +95,11 @@ let mapleader = "\<Space>"
 "set mouse=a
 "set lines=33 columns=95
 
-"ab-----------------------------------------------------------------------
+"ab-------------------------------------------------------------------
 
 cab h vertical leftabove help
 
-"inoremap-----------------------------------------------------------------
+"inoremap-------------------------------------------------------------
 
 inoremap ' ''<left>
 inoremap " ""<left>
@@ -112,7 +112,7 @@ inoremap <C-l> <ESC>
 inoremap <C-f> <right>
 inoremap <C-e> <end>
 
-"noremap------------------------------------------------------------------
+"noremap--------------------------------------------------------------
 
 noremap 0 ^
 noremap ^ 0
@@ -123,8 +123,8 @@ noremap - :
 noremap \ :!
 
 "noremap <F7> <ESC>:set insertmode! <CR>
-noremap <F9> :call _compile_() <CR>
-noremap <F10> :call _test_input_to_run() <CR>
+noremap <F9> :call _COMPILE_() <CR>
+noremap <F10> :call _TEST_INPUT_TO_RUN() <CR>
 noremap <F11> <ESC>:!gdb -tui %:h/_%:r <CR>
 
 "<Space> is the <Leader>
@@ -138,7 +138,8 @@ noremap <Leader>t :!date <CR>
 noremap <Leader>w <C-w>
 noremap <Leader>h <ESC>:noh <CR>
 "sleep
-noremap <Leader>e :set cursorline! cursorcolumn! <CR> :sleep 1500m <CR> :set cursorline! cursorcolumn! <CR>
+noremap <Leader>e :set cursorline! cursorcolumn! <CR> :sleep 1500m
+            \ <CR> :set cursorline! cursorcolumn! <CR>
 noremap <Leader>c @c
 noremap <Leader>d @d
 
@@ -149,7 +150,14 @@ noremap <Leader>d @d
 "an error and the function will not be substitute ,but  
 "the "function! x" not
 
-function _compile_()
+if exists("_function_exists")
+delfunction _MY_OWN_KEY_MAP_INSERTMODE_
+delfunction _FILETYPE_SET_REGISTER_
+delfunction _TEST_INPUT_TO_RUN
+"delfunction _COMPILE_
+endif
+
+function _COMPILE_()
     "    if you want to get all the variable 
     "        see options.txt
     if &mod == 1
@@ -164,22 +172,26 @@ function _compile_()
         !g++ -Wall -g -o %:h/_%:t:r %:p
     else
         let _the_first_line_string=getline(1)
-        if _the_first_line_string[1] == "!" && _the_first_line_string[0] == "#" 
+        if _the_first_line_string[1] == "!" && 
+                    \_the_first_line_string[0] == "#" 
             ! %:p
         else 
             if &filetype == 'matlab'
                 cd ~/matlab/
-                !/media/syx/MATLAB/Matlab_2018a/bin/matlab -nodesktop -nosplash -r %:t:r quit
+"                line continuation charactor : '\'
+                !/media/syx/MATLAB/Matlab_2018a/bin/matlab -nodesktop
+                            \ -nosplash -r %:t:r quit
             elseif &filetype == 'python' 
                 !python %:p
             elseif &filetype == 'sh'
                 !bash %:p
+            elseif &filetype == 'vim'
+                source %:p
+            else
+                echomsg "This is not a c/cpp/python/sh/matlab/vim 
+                            \file!"
             endif
         endif
-    elseif &filetype == 'vim'
-        source %:p
-    else
-        echomsg 'This is not a c/cpp/python/sh/matlab/vim file!'
     endif
 endfunction
 
@@ -193,7 +205,7 @@ endfunction
 "the global-variable would not cover the function-local
 "varialbles
 
-function! _test_input_to_run()
+function _TEST_INPUT_TO_RUN()
 if exists("g:_the_input_file_")
     let _the_input_file_=g:_the_input_file_
 else
@@ -210,7 +222,7 @@ else
 endif
 endfunction
 
-function _filetype_set_register_()
+function _FILETYPE_SET_REGISTER_()
     if &filetype == 'c' || &filetype == 'cpp'
         let @c="gI//j0" | let @d = "02xj0" 
     elseif &filetype == 'python' || &filetype == 'sh'
@@ -222,7 +234,7 @@ function _filetype_set_register_()
     endif
 endfunction
 
-function _my_own_key_map_insertmode_()
+function _MY_OWN_KEY_MAP_INSERTMODE_()
 inoremap <C-n> <down>
 inoremap <C-p> <up>
 inoremap <C-f> <right>
@@ -236,19 +248,20 @@ inoremap <A-f> <ESC>wi
 inoremap <A-b> <ESC>bi
 endfunction
 
-"autocmd----------------------------------------------------------------------
+let _function_exists=0
+"autocmd--------------------------------------------------------------
 
-augroup _my_own_define_
+augroup _MY_OWN_DEFINE_
 "    autocmd!  -->clear the autocmd had been defined before 
 "the current augroup before the current command 
     autocmd!
-"autocmd OptionSet insertmode  call _my_own_key_map_insertmode_()
+"autocmd OptionSet insertmode  call _MY_OWN_KEY_MAP_INSERTMODE_()
 "updatetime->CursorHoldI
 autocmd CursorHoldI * stopinsert
-autocmd BufReadPost,WinEnter * call _filetype_set_register_()
+autocmd BufReadPost,WinEnter * call _FILETYPE_SET_REGISTER_()
 augroup end
 
-"readfile----------------------------------------------------------------------
+"readfile-------------------------------------------------------------
 
 "for the temanary command define by the users
 "if you want to know all the function already 
