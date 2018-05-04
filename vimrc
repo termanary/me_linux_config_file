@@ -1,4 +1,4 @@
-" All system-wide defaults are set in $VIMRUNTIME/debian.vim and sourced by
+"All system-wide defaults are set in $VIMRUNTIME/debian.vim and sourced by
 " the call to :runtime you can find below.  If you wish to change any of those
 " settings, you should do it in this file (/etc/vim/vimrc), since debian.vim
 " will be overwritten everytime an upgrade of the vim packages is performed.
@@ -59,19 +59,6 @@ if filereadable("/etc/vim/vimrc.local")
   source /etc/vim/vimrc.local
 endif
 
-
-"-------------------------------------------------------------------------
-"-------------------------------------------------------------------------
-"-------------------------------------------------------------------------
-"-------------------------------------------------------------------------
-"-------------------------------------------------------------------------
-"-------------------------------------------------------------------------
-"-------------------------------------------------------------------------
-"-------------------------------------------------------------------------
-"-------------------------------------------------------------------------
-
-"thenext indicate is what define by me3 
-
 "set ---------------------------------------------------------------------
 
 set number
@@ -100,7 +87,7 @@ highlight cursorline cterm=NONE ctermbg=blue
 highlight cursorcolumn cterm=NONE ctermbg=blue
 let mapleader = "\<Space>"
 "set autochdir
-"set shellcmdflag=-ci
+"set shellcmdflag=-ic
 "set revins
 "set autowriteall
 "set cindent
@@ -121,15 +108,9 @@ inoremap ( ()<left>
 inoremap { {<CR>}<up><CR>
 inoremap } {}<left>
 inoremap <C-l> <ESC>
-""inoremap . <ESC>
-""inoremap ] .
 
 inoremap <C-f> <right>
 inoremap <C-e> <end>
-
-"onoremap-----------------------------------------------------------------
-
-"nnoremap------------------------------------------------------------------
 
 "noremap------------------------------------------------------------------
 
@@ -141,11 +122,10 @@ noremap ` '
 noremap - :
 noremap \ :!
 
-noremap <F7> <ESC>:set insertmode! <CR>
-"FileType ?"
+"noremap <F7> <ESC>:set insertmode! <CR>
 noremap <F9> :call _compile_() <CR>
-noremap <F10> <ESC>:!./link <input.txt <CR>
-noremap <F11> <ESC>:!gdb -tui link <CR>
+noremap <F10> :call _test_input_to_run() <CR>
+noremap <F11> <ESC>:!gdb -tui %:h/_%:r <CR>
 
 "<Space> is the <Leader>
 noremap <Space> <Nop>
@@ -153,6 +133,7 @@ noremap <Leader>4 $
 noremap <Leader>o O
 noremap <Leader>p P
 noremap <Leader>g G
+noremap <Leader>f F
 noremap <Leader>t :!date <CR>
 noremap <Leader>w <C-w>
 noremap <Leader>h <ESC>:noh <CR>
@@ -161,7 +142,85 @@ noremap <Leader>e :set cursorline! cursorcolumn! <CR> :sleep 1500m <CR> :set cur
 noremap <Leader>c @c
 noremap <Leader>d @d
 
-"function-autocmd---------------------------------------------------------
+"function----------------------------------------------------------
+
+"the difference between "function x" and "function! x"
+"when the vim-file is sourced ,"function x" will become 
+"an error and the function will not be substitute ,but  
+"the "function! x" not
+
+function _compile_()
+    "    if you want to get all the variable 
+    "        see options.txt
+    if &mod == 1
+        write
+    endif
+    "set filetype=?
+    "        help filename-modifiers
+    "!cmd % --could handle currently file by shell command
+    if &filetype == 'c'
+        !gcc -Wall -g -o %:h/_%:t:r %:p
+    elseif &filetype == 'cpp'
+        !g++ -Wall -g -o %:h/_%:t:r %:p
+    else
+        let _the_first_line_string=getline(1)
+        if _the_first_line_string[1] == "!" && _the_first_line_string[0] == "#" 
+            ! %:p
+        else 
+            if &filetype == 'matlab'
+                cd ~/matlab/
+                !/media/syx/MATLAB/Matlab_2018a/bin/matlab -nodesktop -nosplash -r %:t:r quit
+            elseif &filetype == 'python' 
+                !python %:p
+            elseif &filetype == 'sh'
+                !bash %:p
+            endif
+        endif
+    elseif &filetype == 'vim'
+        source %:p
+    else
+        echomsg 'This is not a c/cpp/python/sh/matlab/vim file!'
+    endif
+endfunction
+
+"help internal-variables to see l:
+"if the variables definded out of a function,
+"it's global ,if it is inside a function,
+"it is function-local . outside the function
+"could not use the variables in a function,
+"in a function ,if you want to use the global
+"varialbles ,you must add "g:" before a variables,
+"the global-variable would not cover the function-local
+"varialbles
+
+function! _test_input_to_run()
+if exists("g:_the_input_file_")
+    let _the_input_file_=g:_the_input_file_
+else
+    let _the_input_file_="input.txt"
+endif
+"    findfile(),finddir()
+if findfile(_the_input_file_) == _the_input_file_
+"    help :!
+    execute "! %:h/_%:t:r < " . _the_input_file_ . " "
+elseif findfile(_the_input_file_) == ""
+    ! %:h/_%:t:r
+else 
+    echomsg 'ERROR!'
+endif
+endfunction
+
+function _filetype_set_register_()
+    if &filetype == 'c' || &filetype == 'cpp'
+        let @c="gI//j0" | let @d = "02xj0" 
+    elseif &filetype == 'python' || &filetype == 'sh'
+        let @c="gI#j0" | let @d = "0xj0"
+    elseif &filetype == 'vim'
+        let @c="gI\"\<BS>j0" | let @d = "0xj0"
+    elseif &filetype == 'matlab'
+        let @c="gI%j0" | let @d = "0xj0"
+    endif
+endfunction
 
 function _my_own_key_map_insertmode_()
 inoremap <C-n> <down>
@@ -177,31 +236,24 @@ inoremap <A-f> <ESC>wi
 inoremap <A-b> <ESC>bi
 endfunction
 
-"set filetype=?
-function _compile_()
-    write
-"        help filename-modifiers
-"!cmd % --could handle currently file by shell command
-    if &filetype == 'c'
-        !gcc -Wall -g -o %:h/%:r %
-    elseif &filetype == 'cpp'
-        !g++ -Wall -g -o %:h/%:r %
-    elseif &filetype == 'python' || &filetype == 'sh'
-        ! %:p
-    else
-        echom 'This is not a c/cpp/python/sh file!'
-    endif
-endfunction
+"autocmd----------------------------------------------------------------------
 
 augroup _my_own_define_
 "    autocmd!  -->clear the autocmd had been defined before 
 "the current augroup before the current command 
     autocmd!
+"autocmd OptionSet insertmode  call _my_own_key_map_insertmode_()
 "updatetime->CursorHoldI
 autocmd CursorHoldI * stopinsert
-autocmd OptionSet insertmode  call _my_own_key_map_insertmode_()
-autocmd BufReadPost,WinEnter *.c,*.cpp  let @c="gI//j" | let @d = "02xj" 
-autocmd BufReadPost,WinEnter *.sh,*py  let @c="gI#j" | let @d = "01xj"
-autocmd BufReadPost,WinEnter *vimrc  let @c="gI\"\<BS>j" | let @d = "01xj"
-augroup END
+autocmd BufReadPost,WinEnter * call _filetype_set_register_()
+augroup end
+
+"readfile----------------------------------------------------------------------
+
+"for the temanary command define by the users
+"if you want to know all the function already 
+"    difined by vim ,see usr_41.txt
+if filereadable("$HOME/vimrc.tmp")
+  source $HOME/vimrc.tmp
+endif
 
