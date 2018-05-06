@@ -1,4 +1,6 @@
 # KEYBOARD CONFIGURATION FILE
+#this file just work for the complete console 
+#not virtual console or X-server
 
 #this file is in /etc/default/keyboard
 #just to swap the key esc and caps_lock
