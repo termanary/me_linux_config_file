@@ -6,6 +6,7 @@ alias lh='ls -lh --color=auto '
 
 alias c='cd '
 
+alias info='info --vi-keys'
 alias df='df -h '
 alias du='du -h '
 alias free='free -h '
@@ -18,10 +19,12 @@ LANG=en_US.UTF-8
 LANGUAGE=en_US.UTF-8
 LC_ALL=en_US.UTF-8
 
-alias v='vim ' 
+alias v='vim -O' 
 alias e='emacs '
 alias scilab='scilab-cli'
 alias gdb='gdb -tui --command=~/.gdb '
 alias s='screen '
+
+alias le='/usr/share/vim/vim74/macros/less.sh'
 
 #end

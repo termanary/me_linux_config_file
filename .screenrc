@@ -20,8 +20,18 @@
 # SCREEN SETTINGS
 # ------------------------------------------------------------------------------
 
+
+#hardstatus string "%{= G}%-Lw%{= .Y}%50> %n*%f %t%{= G}%+Lw%< %{= G}%-=%D %c:%s %m/%d/%Y"
+#this piece of code is copy by internet
+
+#caption always "%w %Y/%m/%d %D %c:%s %u"
+caption always "%{gk}%-= %Y/%m/%d %D %c:%s %u"
+#this piece of code is write by me
+
 #which is added by me
-#Mon Mar 19 17:28:58 CST 2018
+#hardstatus string "%w %Y/%m/%d %D %c:%s %u"
+#caption always "%{= .Y}%50> %n*%f %t%{= G}%+Lw%< %-= %c:%s %m/%d/%Y"
+#caption always "%{= G}%-Lw%{= .Y}%50> %n*%f %t%{= G}%+Lw%< %{= G}%-=%D %c:%s %m/%d/%Y"
 escape ^ ^ 
 #escape  ^[o^[o
 
