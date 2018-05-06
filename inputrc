@@ -5,6 +5,7 @@
 set colored-stats on
 "\eo": menu-complete 
 "\ei": menu-complete-backward 
+#set convert-meta on
 
 #set show-mode-in-prompt on
 
