@@ -85,7 +85,6 @@ filetype indent on
 colorscheme zellner
 highlight cursorline cterm=NONE ctermbg=blue
 highlight cursorcolumn cterm=NONE ctermbg=blue
-let mapleader = "\<Space>"
 "set autochdir
 "set shellcmdflag=-ic
 "set revins
@@ -125,9 +124,9 @@ noremap \ :!
 "noremap <F7> <ESC>:set insertmode! <CR>
 noremap <F9> :call _COMPILE_() <CR>
 noremap <F10> :call _TEST_INPUT_TO_RUN() <CR>
-noremap <F11> <ESC>:!gdb -tui %:h/_%:r <CR>
+"noremap <F11> <ESC>:!gdb -tui %:h/_%:r <CR>
 
-"<Space> is the <Leader>
+let mapleader = "\<Space>"
 noremap <Space> <Nop>
 noremap <Leader>4 $
 noremap <Leader>o O
@@ -136,13 +135,16 @@ noremap <Leader>g G
 noremap <Leader>f F
 noremap <Leader>t :!date <CR>
 noremap <Leader>w <C-w>
-noremap <Leader>h <ESC>:noh <CR>
+noremap <Leader>h <ESC>:nohlsearch <CR>
+noremap <Leader>u g~aw
 "sleep
 noremap <Leader>e :set cursorline! cursorcolumn! <CR> :sleep 1500m
             \ <CR> :set cursorline! cursorcolumn! <CR>
-noremap <Leader>c @c
-noremap <Leader>d @d
-
+"noremap <Leader>c @c
+"noremap <Leader>d @d
+noremap <LEADER>c :call _QUICK_COMMENT(1) <CR>
+noremap <LEADER>d :call _QUICK_COMMENT(0) <CR>
+ 
 "function----------------------------------------------------------
 
 "the difference between "function x" and "function! x"
@@ -154,6 +156,7 @@ if exists("_function_exists")
 delfunction _MY_OWN_KEY_MAP_INSERTMODE_
 delfunction _FILETYPE_SET_REGISTER_
 delfunction _TEST_INPUT_TO_RUN
+delfunction _QUICK_COMMENT
 "delfunction _COMPILE_
 endif
 
@@ -170,28 +173,28 @@ function _COMPILE_()
         !gcc -Wall -g -o %:h/_%:t:r %:p
     elseif &filetype == 'cpp'
         !g++ -Wall -g -o %:h/_%:t:r %:p
-    else
+    elseif &filetype == 'python' 
+        ! %:p
+    elseif &filetype == 'sh'
+        ! %:p
+    elseif &filetype == 'vim'
+        source %:p
+    elseif &filetype == 'gdb'
+        echomsg 'This is a gdb file'
+    elseif &filetype == 'matlab'
         let _the_first_line_string=getline(1)
         if _the_first_line_string[1] == "!" && 
                     \_the_first_line_string[0] == "#" 
             ! %:p
         else 
-            if &filetype == 'matlab'
-                cd ~/matlab/
-"                line continuation charactor : '\'
-                !/media/syx/MATLAB/Matlab_2018a/bin/matlab -nodesktop
-                            \ -nosplash -r %:t:r quit
-            elseif &filetype == 'python' 
-                !python %:p
-            elseif &filetype == 'sh'
-                !bash %:p
-            elseif &filetype == 'vim'
-                source %:p
-            else
-                echomsg "This is not a c/cpp/python/sh/matlab/vim 
-                            \file!"
-            endif
+            cd ~/matlab/
+            "                line continuation charactor : '\'
+            !/media/MATLAB/Matlab_2018a/bin/matlab -nodesktop
+                        \ -nosplash -r %:t:r quit
         endif
+    else
+        echomsg "This is not a c/cpp/python/sh/matlab/vim/gdb
+                    \ file!"
     endif
 endfunction
 
@@ -225,12 +228,42 @@ endfunction
 function _FILETYPE_SET_REGISTER_()
     if &filetype == 'c' || &filetype == 'cpp'
         let @c="gI//j0" | let @d = "02xj0" 
-    elseif &filetype == 'python' || &filetype == 'sh'
+    elseif &filetype == 'python' || &filetype == 'sh' || 
+                \ &filetype == 'gdb'
         let @c="gI#j0" | let @d = "0xj0"
-    elseif &filetype == 'vim'
-        let @c="gI\"\<BS>j0" | let @d = "0xj0"
     elseif &filetype == 'matlab'
         let @c="gI%j0" | let @d = "0xj0"
+    elseif &filetype == 'vim'
+        let @c="gI\"\<BS>j0" | let @d = "0xj0"
+    endif
+endfunction
+
+function _QUICK_COMMENT(_the_functions_arguments_ )
+    if a:_the_functions_arguments_ == 1
+        if &filetype == 'c' || &filetype == 'cpp'
+            execute "normal! gI//j^"
+        elseif &filetype == 'python' || &filetype == 'sh' || 
+                    \ &filetype == 'gdb'
+            execute "normal! gI#j^"
+        elseif &filetype == 'matlab'
+            execute "normal! gI%j^"
+        elseif &filetype == 'vim'
+            execute "normal! gI\"j^"
+        else 
+            echomsg "Don't know the filetype!"
+        endif
+    elseif a:_the_functions_arguments_ == 0
+        if &filetype == 'c' || &filetype == 'cpp'
+            execute "normal! 02xj^"
+        elseif &filetype == 'python' || &filetype == 'sh' || 
+                    \ &filetype == 'gdb' ||  &filetype == 'vim'
+                    \ ||  &filetype == 'matlab'
+            execute "normal! 0xj^"
+        else 
+            echomsg "Don't know the filetype!"
+        endif
+    else 
+        echomsg "The function argument is wrong!"
     endif
 endfunction
 
@@ -256,9 +289,9 @@ augroup _MY_OWN_DEFINE_
 "the current augroup before the current command 
     autocmd!
 "autocmd OptionSet insertmode  call _MY_OWN_KEY_MAP_INSERTMODE_()
+"autocmd BufReadPost,WinEnter * call _FILETYPE_SET_REGISTER_()
 "updatetime->CursorHoldI
 autocmd CursorHoldI * stopinsert
-autocmd BufReadPost,WinEnter * call _FILETYPE_SET_REGISTER_()
 augroup end
 
 "readfile-------------------------------------------------------------
@@ -268,5 +301,6 @@ augroup end
 "    difined by vim ,see usr_41.txt
 if filereadable("$HOME/vimrc.tmp")
   source $HOME/vimrc.tmp
+  echomsg 'source!'
 endif
 
