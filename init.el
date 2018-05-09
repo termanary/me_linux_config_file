@@ -1,3 +1,4 @@
+;;~/.emacs/init.el
 ;ban backup
 (setq-default make-backup-files nil)
 (setq make-backup-files nil)
