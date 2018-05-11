@@ -77,10 +77,13 @@ set incsearch
 set smartcase
 set hlsearch
 set wildmenu
-set laststatus=2
+set laststatus=1
 set modeline
 set history=200
 set scrolloff=5
+set mouse-=a
+set cpoptions-=c
+"set cpoptions+=q
 filetype indent on
 colorscheme zellner
 highlight cursorline cterm=NONE ctermbg=blue
@@ -91,7 +94,6 @@ highlight cursorcolumn cterm=NONE ctermbg=blue
 "set autowriteall
 "set cindent
 "set cursorline
-"set mouse=a
 "set lines=33 columns=95
 
 "ab-------------------------------------------------------------------
@@ -112,6 +114,11 @@ inoremap <C-f> <right>
 inoremap <C-e> <end>
 
 "noremap--------------------------------------------------------------
+
+"help getcharsearch()  <expr> map-argument
+"map could have argument
+noremap <expr> ; getcharsearch().forward ? ';' : ','
+noremap <expr> , getcharsearch().forward ? ',' : ';'
 
 noremap 0 ^
 noremap ^ 0
@@ -137,14 +144,16 @@ noremap <Leader>t :!date <CR>
 noremap <Leader>w <C-w>
 noremap <Leader>h <ESC>:nohlsearch <CR>
 noremap <Leader>u g~aw
+noremap <Leader>/ /\<\><left><left>
 "sleep
 noremap <Leader>e :set cursorline! cursorcolumn! <CR> :sleep 1500m
             \ <CR> :set cursorline! cursorcolumn! <CR>
-"noremap <Leader>c @c
-"noremap <Leader>d @d
-noremap <LEADER>c :call _QUICK_COMMENT(1) <CR>
-noremap <LEADER>d :call _QUICK_COMMENT(0) <CR>
+"noremap <LEADER>c :call _QUICK_COMMENT(1) <CR>
+"noremap <LEADER>d :call _QUICK_COMMENT(0) <CR>
+noremap <Leader>c @c
+noremap <Leader>d @d
  
+
 "function----------------------------------------------------------
 
 "the difference between "function x" and "function! x"
@@ -182,15 +191,15 @@ function _COMPILE_()
     elseif &filetype == 'gdb'
         echomsg 'This is a gdb file'
     elseif &filetype == 'matlab'
-        let _the_first_line_string=getline(1)
-        if _the_first_line_string[1] == "!" && 
-                    \_the_first_line_string[0] == "#" 
-            ! %:p
-        else 
-            cd ~/matlab/
+"        let _the_first_line_string=getline(1)
+"        if _the_first_line_string[1] == "!" && 
+"                    \_the_first_line_string[0] == "#" 
+"            ! %:p
+"        else 
+"            cd ~/matlab/
             "                line continuation charactor : '\'
             !/media/MATLAB/Matlab_2018a/bin/matlab -nodesktop
-                        \ -nosplash -r %:t:r quit
+                        \ -nosplash -r %:t:r 
         endif
     else
         echomsg "This is not a c/cpp/python/sh/matlab/vim/gdb
@@ -227,14 +236,14 @@ endfunction
 
 function _FILETYPE_SET_REGISTER_()
     if &filetype == 'c' || &filetype == 'cpp'
-        let @c="gI//j0" | let @d = "02xj0" 
+        let @c="gI//j0" | let @d = "^2xj0" 
     elseif &filetype == 'python' || &filetype == 'sh' || 
                 \ &filetype == 'gdb'
-        let @c="gI#j0" | let @d = "0xj0"
+        let @c="gI#j0" | let @d = "^xj0"
     elseif &filetype == 'matlab'
-        let @c="gI%j0" | let @d = "0xj0"
+        let @c="gI%j0" | let @d = "^xj0"
     elseif &filetype == 'vim'
-        let @c="gI\"\<BS>j0" | let @d = "0xj0"
+        let @c="gI\"\<BS>j0" | let @d = "^xj0"
     endif
 endfunction
 
@@ -281,6 +290,9 @@ inoremap <A-f> <ESC>wi
 inoremap <A-b> <ESC>bi
 endfunction
 
+function _test_search()
+endfunction
+
 let _function_exists=0
 "autocmd--------------------------------------------------------------
 
@@ -289,8 +301,8 @@ augroup _MY_OWN_DEFINE_
 "the current augroup before the current command 
     autocmd!
 "autocmd OptionSet insertmode  call _MY_OWN_KEY_MAP_INSERTMODE_()
-"autocmd BufReadPost,WinEnter * call _FILETYPE_SET_REGISTER_()
 "updatetime->CursorHoldI
+autocmd BufReadPost,WinEnter * call _FILETYPE_SET_REGISTER_()
 autocmd CursorHoldI * stopinsert
 augroup end
 
