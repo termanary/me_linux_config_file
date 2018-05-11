@@ -20,20 +20,26 @@
 # SCREEN SETTINGS
 # ------------------------------------------------------------------------------
 
+#which is added by me
 
-#hardstatus string "%{= G}%-Lw%{= .Y}%50> %n*%f %t%{= G}%+Lw%< %{= G}%-=%D %c:%s %m/%d/%Y"
 #this piece of code is copy by internet
+#hardstatus string "%{= G}%-Lw%{= .Y}%50> %n*%f %t%{= G}%+Lw%< %{= G}%-=%D %c:%s %m/%d/%Y"
 
+#this piece of code is write by me
 #caption always "%w %Y/%m/%d %D %c:%s %u"
 caption always "%{gk}%-= %Y/%m/%d %D %c:%s %u"
-#this piece of code is write by me
 
-#which is added by me
 #hardstatus string "%w %Y/%m/%d %D %c:%s %u"
 #caption always "%{= .Y}%50> %n*%f %t%{= G}%+Lw%< %-= %c:%s %m/%d/%Y"
 #caption always "%{= G}%-Lw%{= .Y}%50> %n*%f %t%{= G}%+Lw%< %{= G}%-=%D %c:%s %m/%d/%Y"
+
 escape ^ ^ 
 #escape  ^[o^[o
+
+# define a bigger scrollback, default is 100 lines
+defscrollback 8192
+
+#end defined by me
 
 #startup_message off
 #nethack on
@@ -46,8 +52,6 @@ deflogin on
 vbell off #on is modify by me
 vbell_msg "   Wuff  ----  Wuff!!  "
 
-# define a bigger scrollback, default is 100 lines
-defscrollback 1024
 
 # ------------------------------------------------------------------------------
 # SCREEN KEYBINDINGS
