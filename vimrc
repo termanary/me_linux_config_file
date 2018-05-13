@@ -244,6 +244,8 @@ function _FILETYPE_SET_REGISTER_()
         let @c="gI%j0" | let @d = "^xj0"
     elseif &filetype == 'vim'
         let @c="gI\"\<BS>j0" | let @d = "^xj0"
+    else 
+        let @c="gI#j0" | let @d = "^xj0"
     endif
 endfunction
 
