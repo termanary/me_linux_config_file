@@ -1,3 +1,4 @@
+" this file is in /usr/share/vim/vim80/syntax/c.vim
 " Vim syntax file
 " Language:	C
 " Maintainer:	Bram Moolenaar <Bram@vim.org>
