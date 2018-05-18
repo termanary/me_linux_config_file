@@ -84,6 +84,7 @@ set scrolloff=5
 set mouse-=a
 set cpoptions-=c
 "set cpoptions+=q
+set clipboard+=unnamed
 filetype indent on
 colorscheme zellner
 highlight cursorline cterm=NONE ctermbg=blue
@@ -99,6 +100,7 @@ highlight cursorcolumn cterm=NONE ctermbg=blue
 "ab-------------------------------------------------------------------
 
 cab h vertical leftabove help
+cab em echomsg
 
 "inoremap-------------------------------------------------------------
 
@@ -108,7 +110,6 @@ inoremap [ []<left>
 inoremap ( ()<left>
 inoremap { {<CR>}<up><CR>
 inoremap } {}<left>
-inoremap <C-l> <ESC>
 
 inoremap <C-f> <right>
 inoremap <C-e> <end>
@@ -148,10 +149,17 @@ noremap <Leader>/ /\<\><left><left>
 "sleep
 noremap <Leader>e :set cursorline! cursorcolumn! <CR> :sleep 1500m
             \ <CR> :set cursorline! cursorcolumn! <CR>
-"noremap <LEADER>c :call _QUICK_COMMENT(1) <CR>
-"noremap <LEADER>d :call _QUICK_COMMENT(0) <CR>
 noremap <Leader>c @c
 noremap <Leader>d @d
+noremap <leader>a :AsyncRun 
+noremap <leader>s :AsyncStop 
+noremap <leader>v :vs /etc/vim/vimrc <CR>
+"buffer
+noremap <Leader>bn :n <CR>
+noremap <Leader>bp :N <CR>
+"quickfix
+noremap <Leader>qo :copen <CR>
+noremap <Leader>qc :cclose <CR>
  
 
 "function----------------------------------------------------------
@@ -162,10 +170,8 @@ noremap <Leader>d @d
 "the "function! x" not
 
 if exists("_function_exists")
-delfunction _MY_OWN_KEY_MAP_INSERTMODE_
 delfunction _FILETYPE_SET_REGISTER_
 delfunction _TEST_INPUT_TO_RUN
-delfunction _QUICK_COMMENT
 "delfunction _COMPILE_
 endif
 
@@ -179,9 +185,11 @@ function _COMPILE_()
     "        help filename-modifiers
     "!cmd % --could handle currently file by shell command
     if &filetype == 'c'
-        !gcc -Wall -g -o %:h/_%:t:r %:p
+        !gcc -Wall -g -o %:h/_%:t:r %:p 
+"        execute "!gcc -Wall -g -o %:h/_%:t:r %:p 
+"        \ 2>&1\| tee /tmp/%:t:r.error " 
     elseif &filetype == 'cpp'
-        !g++ -Wall -g -o %:h/_%:t:r %:p
+        !g++ -Wall -g -o %:h/_%:t:r %:p 
     elseif &filetype == 'python' 
         ! %:p
     elseif &filetype == 'sh'
@@ -189,18 +197,19 @@ function _COMPILE_()
     elseif &filetype == 'vim'
         source %:p
     elseif &filetype == 'gdb'
+"        echoerr
         echomsg 'This is a gdb file'
     elseif &filetype == 'matlab'
+        cd %:h
+        copen
+        execute "normal!w"
+"        register '%' and '#'
+        AsyncRun /media/MATLAB/Matlab_2018a/bin/matlab -nodesktop
+                        \ -nosplash -r %:t:r
 "        let _the_first_line_string=getline(1)
-"        if _the_first_line_string[1] == "!" && 
+"        _the_first_line_string[1] == "!" && 
 "                    \_the_first_line_string[0] == "#" 
-"            ! %:p
-"        else 
-"            cd ~/matlab/
-            "                line continuation charactor : '\'
-            !/media/MATLAB/Matlab_2018a/bin/matlab -nodesktop
-                        \ -nosplash -r %:t:r 
-        endif
+"                            line continuation charactor : '\'
     else
         echomsg "This is not a c/cpp/python/sh/matlab/vim/gdb
                     \ file!"
@@ -235,64 +244,25 @@ endif
 endfunction
 
 function _FILETYPE_SET_REGISTER_()
-    if &filetype == 'c' || &filetype == 'cpp'
+    if     &filetype == 'c' 
         let @c="gI//j0" | let @d = "^2xj0" 
-    elseif &filetype == 'python' || &filetype == 'sh' || 
-                \ &filetype == 'gdb'
-        let @c="gI#j0" | let @d = "^xj0"
+    elseif &filetype == 'cpp'
+        let @c="gI//j0" | let @d = "^2xj0" 
     elseif &filetype == 'matlab'
-        let @c="gI%j0" | let @d = "^xj0"
+        let @c="gI%j0"  | let @d = "^xj0"
+    elseif &filetype == 'python' 
+        let @c="gI#j0"  | let @d = "^xj0"
+    elseif &filetype == 'sh' 
+        let @c="gI#j0"  | let @d = "^xj0"
+    elseif &filetype == 'gdb'
+        let @c="gI#j0"  | let @d = "^xj0"
+    elseif &filetype == 'conf' 
+        let @c="gI#j0"  | let @d = "^xj0"
     elseif &filetype == 'vim'
         let @c="gI\"\<BS>j0" | let @d = "^xj0"
-    else 
-        let @c="gI#j0" | let @d = "^xj0"
+    else
+        let @c="gI#j0"  | let @d = "^xj0"
     endif
-endfunction
-
-function _QUICK_COMMENT(_the_functions_arguments_ )
-    if a:_the_functions_arguments_ == 1
-        if &filetype == 'c' || &filetype == 'cpp'
-            execute "normal! gI//j^"
-        elseif &filetype == 'python' || &filetype == 'sh' || 
-                    \ &filetype == 'gdb'
-            execute "normal! gI#j^"
-        elseif &filetype == 'matlab'
-            execute "normal! gI%j^"
-        elseif &filetype == 'vim'
-            execute "normal! gI\"j^"
-        else 
-            echomsg "Don't know the filetype!"
-        endif
-    elseif a:_the_functions_arguments_ == 0
-        if &filetype == 'c' || &filetype == 'cpp'
-            execute "normal! 02xj^"
-        elseif &filetype == 'python' || &filetype == 'sh' || 
-                    \ &filetype == 'gdb' ||  &filetype == 'vim'
-                    \ ||  &filetype == 'matlab'
-            execute "normal! 0xj^"
-        else 
-            echomsg "Don't know the filetype!"
-        endif
-    else 
-        echomsg "The function argument is wrong!"
-    endif
-endfunction
-
-function _MY_OWN_KEY_MAP_INSERTMODE_()
-inoremap <C-n> <down>
-inoremap <C-p> <up>
-inoremap <C-f> <right>
-inoremap <C-b> <left>
-inoremap <C-e> <end>
-inoremap <C-a> <home>
-inoremap <C-d> <del>
-"inoremap <C-u> <ESC>:h
-"inoremap <C-w> <ESC>cb
-inoremap <A-f> <ESC>wi
-inoremap <A-b> <ESC>bi
-endfunction
-
-function _test_search()
 endfunction
 
 let _function_exists=0
