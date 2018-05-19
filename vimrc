@@ -87,8 +87,10 @@ set cpoptions-=c
 set clipboard+=unnamed
 filetype indent on
 colorscheme zellner
-highlight cursorline cterm=NONE ctermbg=blue
-highlight cursorcolumn cterm=NONE ctermbg=blue
+"if do not know how to change it 
+"    see highlight for exmaple
+highlight cursorline cterm=NONE ctermbg=4
+highlight cursorcolumn cterm=NONE ctermbg=4
 "set autochdir
 "set shellcmdflag=-ic
 "set revins
