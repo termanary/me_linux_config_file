@@ -83,14 +83,16 @@ set history=200
 set scrolloff=5
 set mouse-=a
 set cpoptions-=c
+set backspace=""
+set nrformats="bin,octal,hex,alpha"
 "set cpoptions+=q
 set clipboard+=unnamed
 filetype indent on
 colorscheme zellner
 "if do not know how to change it 
 "    see highlight for exmaple
-highlight cursorline cterm=NONE ctermbg=4
-highlight cursorcolumn cterm=NONE ctermbg=4
+highlight cursorline cterm=NONE ctermbg=blue
+highlight cursorcolumn cterm=NONE ctermbg=blue
 "set autochdir
 "set shellcmdflag=-ic
 "set revins
@@ -136,6 +138,7 @@ noremap <F9> :call _COMPILE_() <CR>
 noremap <F10> :call _TEST_INPUT_TO_RUN() <CR>
 "noremap <F11> <ESC>:!gdb -tui %:h/_%:r <CR>
 
+"help key-codes
 let mapleader = "\<Space>"
 noremap <Space> <Nop>
 noremap <Leader>4 $
@@ -177,7 +180,7 @@ delfunction _TEST_INPUT_TO_RUN
 "delfunction _COMPILE_
 endif
 
-function _COMPILE_()
+function! _COMPILE_()
     "    if you want to get all the variable 
     "        see options.txt
     if &mod == 1
@@ -204,7 +207,7 @@ function _COMPILE_()
     elseif &filetype == 'matlab'
         cd %:h
         copen
-        execute "normal!w"
+        execute "normal!p"
 "        register '%' and '#'
         AsyncRun /media/MATLAB/Matlab_2018a/bin/matlab -nodesktop
                         \ -nosplash -r %:t:r
@@ -261,7 +264,7 @@ function _FILETYPE_SET_REGISTER_()
     elseif &filetype == 'conf' 
         let @c="gI#j0"  | let @d = "^xj0"
     elseif &filetype == 'vim'
-        let @c="gI\"\<BS>j0" | let @d = "^xj0"
+        let @c="gI\"xj0" | let @d = "^xj0"
     else
         let @c="gI#j0"  | let @d = "^xj0"
     endif
@@ -285,8 +288,15 @@ augroup end
 "for the temanary command define by the users
 "if you want to know all the function already 
 "    difined by vim ,see usr_41.txt
-if filereadable("$HOME/vimrc.tmp")
-  source $HOME/vimrc.tmp
-  echomsg 'source!'
-endif
+""echom filereadable("~/vimrc.tmp")
+""echom filereadable("/etc/vim/vimrc")
+""if filereadable("$HOME/vimrc.tmp") == v:true
+""  source $HOME/vimrc.tmp
+""  echomsg 'source!'
+""endif
 
+"source /usr/share/vim/vim80/ftplugin.vim 
+"source /usr/share/vim/vim80/defaults.vim 
+source $HOME/defaults.vim
+source $HOME/ftplugin.vim
+"source $HOME/vimrc.tmp
