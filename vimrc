@@ -152,7 +152,7 @@ noremap <Leader>h <ESC>:nohlsearch <CR>
 noremap <Leader>u g~aw
 noremap <Leader>/ /\<\><left><left>
 "sleep
-noremap <Leader>e :set cursorline! cursorcolumn! <CR> :sleep 1500m
+noremap <Leader>e :set cursorline! cursorcolumn! <CR> :sleep 400m
             \ <CR> :set cursorline! cursorcolumn! <CR>
 noremap <Leader>c @c
 noremap <Leader>d @d
@@ -175,9 +175,9 @@ noremap <Leader>qc :cclose <CR>
 "the "function! x" not
 
 if exists("_function_exists")
-delfunction _FILETYPE_SET_REGISTER_
-delfunction _TEST_INPUT_TO_RUN
-"delfunction _COMPILE_
+    delfunction _FILETYPE_SET_REGISTER_
+    delfunction _TEST_INPUT_TO_RUN
+    "delfunction _COMPILE_
 endif
 
 function! _COMPILE_()
@@ -191,8 +191,8 @@ function! _COMPILE_()
     "!cmd % --could handle currently file by shell command
     if &filetype == 'c'
         !gcc -Wall -g -o %:h/_%:t:r %:p 
-"        execute "!gcc -Wall -g -o %:h/_%:t:r %:p 
-"        \ 2>&1\| tee /tmp/%:t:r.error " 
+        "        execute "!gcc -Wall -g -o %:h/_%:t:r %:p 
+        "        \ 2>&1\| tee /tmp/%:t:r.error " 
     elseif &filetype == 'cpp'
         !g++ -Wall -g -o %:h/_%:t:r %:p 
     elseif &filetype == 'python' 
@@ -202,19 +202,13 @@ function! _COMPILE_()
     elseif &filetype == 'vim'
         source %:p
     elseif &filetype == 'gdb'
-"        echoerr
+        "        echoerr
         echomsg 'This is a gdb file'
+    elseif &filetype == 'conf'
+        "        echoerr
+        echomsg 'This is a conf file'
     elseif &filetype == 'matlab'
-        cd %:h
-        copen
-        execute "normal!p"
-"        register '%' and '#'
-        AsyncRun /media/MATLAB/Matlab_2018a/bin/matlab -nodesktop
-                        \ -nosplash -r %:t:r
-"        let _the_first_line_string=getline(1)
-"        _the_first_line_string[1] == "!" && 
-"                    \_the_first_line_string[0] == "#" 
-"                            line continuation charactor : '\'
+        !octave %:p
     else
         echomsg "This is not a c/cpp/python/sh/matlab/vim/gdb
                     \ file!"
@@ -232,20 +226,33 @@ endfunction
 "varialbles
 
 function _TEST_INPUT_TO_RUN()
-if exists("g:_the_input_file_")
-    let _the_input_file_=g:_the_input_file_
-else
-    let _the_input_file_="input.txt"
-endif
-"    findfile(),finddir()
-if findfile(_the_input_file_) == _the_input_file_
-"    help :!
-    execute "! %:h/_%:t:r < " . _the_input_file_ . " "
-elseif findfile(_the_input_file_) == ""
-    ! %:h/_%:t:r
-else 
-    echomsg 'ERROR!'
-endif
+    "    findfile(),finddir()
+    if &filetype == 'matlab'
+        cd %:h
+        copen
+        execute "normal!p"
+        "        register '%' and '#'
+        AsyncRun /media/MATLAB/Matlab_2018a/bin/matlab -nodesktop
+                    \ -nosplash -nojvm -r %:t:r
+        "        let _the_first_line_string=getline(1)
+        "        _the_first_line_string[1] == "!" && 
+        "                    \_the_first_line_string[0] == "#" 
+        "                            line continuation charactor : '\'
+    elseif &filetype == 'c' || &filetype == 'cpp'
+        if exists("g:_the_input_file_")
+            let _the_input_file_=g:_the_input_file_
+        else
+            let _the_input_file_="input.txt"
+        endif
+        if findfile(_the_input_file_) == _the_input_file_
+            "    help :!
+            execute "! %:h/_%:t:r < " . _the_input_file_ . " "
+        elseif findfile(_the_input_file_) == ""
+            ! %:h/_%:t:r
+        else 
+            echomsg 'ERROR!'
+        endif
+    endif
 endfunction
 
 function _FILETYPE_SET_REGISTER_()
@@ -274,13 +281,13 @@ let _function_exists=0
 "autocmd--------------------------------------------------------------
 
 augroup _MY_OWN_DEFINE_
-"    autocmd!  -->clear the autocmd had been defined before 
-"the current augroup before the current command 
+    "    autocmd!  -->clear the autocmd had been defined before 
+    "the current augroup before the current command 
     autocmd!
-"autocmd OptionSet insertmode  call _MY_OWN_KEY_MAP_INSERTMODE_()
-"updatetime->CursorHoldI
-autocmd BufReadPost,WinEnter * call _FILETYPE_SET_REGISTER_()
-autocmd CursorHoldI * stopinsert
+    "autocmd OptionSet insertmode  call _MY_OWN_KEY_MAP_INSERTMODE_()
+    "updatetime->CursorHoldI
+    autocmd BufReadPost,WinEnter * call _FILETYPE_SET_REGISTER_()
+    autocmd CursorHoldI * stopinsert
 augroup end
 
 "readfile-------------------------------------------------------------
