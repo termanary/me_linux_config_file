@@ -62,7 +62,7 @@ endif
 "set ---------------------------------------------------------------------
 
 set number
-set relativenumber 
+set relativenumber
 set numberwidth=6
 set showcmd
 set tabstop=4
@@ -89,7 +89,7 @@ set nrformats="bin,octal,hex,alpha"
 set clipboard+=unnamed
 filetype indent on
 colorscheme zellner
-"if do not know how to change it 
+"if do not know how to change it
 "    see highlight for exmaple
 highlight cursorline cterm=NONE ctermbg=blue
 highlight cursorcolumn cterm=NONE ctermbg=blue
@@ -134,6 +134,7 @@ noremap - :
 noremap \ :!
 
 "noremap <F7> <ESC>:set insertmode! <CR>
+noremap <F8> :source $HOME/vimrc.tmp <CR>
 noremap <F9> :call _COMPILE_() <CR>
 noremap <F10> :call _TEST_INPUT_TO_RUN() <CR>
 "noremap <F11> <ESC>:!gdb -tui %:h/_%:r <CR>
@@ -156,22 +157,26 @@ noremap <Leader>e :set cursorline! cursorcolumn! <CR> :sleep 400m
             \ <CR> :set cursorline! cursorcolumn! <CR>
 noremap <Leader>c @c
 noremap <Leader>d @d
-noremap <leader>a :AsyncRun 
-noremap <leader>s :AsyncStop 
-noremap <leader>v :vs /etc/vim/vimrc <CR>
+"vimrc
+noremap <leader>ve :vs /etc/vim/vimrc <CR>
+noremap <leader>vt :vs $HOME/vimrc.tmp <CR>
+noremap <leader>vh :vs $HOME/.vim/vimrc <CR>
+noremap <leader>vc :vs %:h/vimrc.tmp <CR>
 "buffer
 noremap <Leader>bn :n <CR>
 noremap <Leader>bp :N <CR>
 "quickfix
 noremap <Leader>qo :copen <CR>
 noremap <Leader>qc :cclose <CR>
- 
+"noremap <leader>a :AsyncRun 
+"noremap <leader>s :AsyncStop 
+
 
 "function----------------------------------------------------------
 
 "the difference between "function x" and "function! x"
-"when the vim-file is sourced ,"function x" will become 
-"an error and the function will not be substitute ,but  
+"when the vim-file is sourced ,"function x" will become
+"an error and the function will not be substitute ,but
 "the "function! x" not
 
 if exists("_function_exists")
@@ -180,8 +185,8 @@ if exists("_function_exists")
     "delfunction _COMPILE_
 endif
 
-function! _COMPILE_()
-    "    if you want to get all the variable 
+function _COMPILE_()
+    "    if you want to get all the variable
     "        see options.txt
     if &mod == 1
         write
@@ -190,12 +195,10 @@ function! _COMPILE_()
     "        help filename-modifiers
     "!cmd % --could handle currently file by shell command
     if &filetype == 'c'
-        !gcc -Wall -g -o %:h/_%:t:r %:p 
-        "        execute "!gcc -Wall -g -o %:h/_%:t:r %:p 
-        "        \ 2>&1\| tee /tmp/%:t:r.error " 
+        !gcc -Wall -g -o %:h/_%:t:r %:p
     elseif &filetype == 'cpp'
-        !g++ -Wall -g -o %:h/_%:t:r %:p 
-    elseif &filetype == 'python' 
+        !g++ -Wall -g -o %:h/_%:t:r %:p
+    elseif &filetype == 'python'
         ! %:p
     elseif &filetype == 'sh'
         ! %:p
@@ -205,12 +208,11 @@ function! _COMPILE_()
         "        echoerr
         echomsg 'This is a gdb file'
     elseif &filetype == 'conf'
-        "        echoerr
         echomsg 'This is a conf file'
     elseif &filetype == 'matlab'
         !octave %:p
     else
-        echomsg "This is not a c/cpp/python/sh/matlab/vim/gdb
+        echomsg "This is not a c/cpp/python/sh/matlab/vim/gdb/conf
                     \ file!"
     endif
 endfunction
@@ -228,12 +230,15 @@ endfunction
 function _TEST_INPUT_TO_RUN()
     "    findfile(),finddir()
     if &filetype == 'matlab'
+        if &mod == 1
+            write
+        endif
         cd %:h
         copen
         execute "normal!p"
         "        register '%' and '#'
         AsyncRun /media/MATLAB/Matlab_2018a/bin/matlab -nodesktop
-                    \ -nosplash -nojvm -r %:t:r
+                    \ -nosplash -r %:t:r
         "        let _the_first_line_string=getline(1)
         "        _the_first_line_string[1] == "!" && 
         "                    \_the_first_line_string[0] == "#" 
@@ -244,34 +249,46 @@ function _TEST_INPUT_TO_RUN()
         else
             let _the_input_file_="input.txt"
         endif
+"        let _the_input_file_dir=expand("%:h")
+"        _the_input_file_dir+=_the_input_file_
+"        cd %:h
+"        if findfile(_the_input_file_dir) == _the_input_file_dir
         if findfile(_the_input_file_) == _the_input_file_
             "    help :!
-            execute "! %:h/_%:t:r < " . _the_input_file_ . " "
+"            execute "!%:h/_%:t:r < " . _the_input_file_ . " " 
+            execute "!%:h/_%:t:r < %:h/" . _the_input_file_ . " 2>&1\| tee /tmp/tmpoutput.%:t:r " 
         elseif findfile(_the_input_file_) == ""
             ! %:h/_%:t:r
-        else 
+        else
             echomsg 'ERROR!'
         endif
+    else
+        echomsg "could not be run!"
     endif
 endfunction
 
 function _FILETYPE_SET_REGISTER_()
-    if     &filetype == 'c' 
-        let @c="gI//j0" | let @d = "^2xj0" 
+    if     &filetype == 'c'
+        let @c="gI//j0" | let @d = "^2xj0"
     elseif &filetype == 'cpp'
-        let @c="gI//j0" | let @d = "^2xj0" 
+        let @c="gI//j0" | let @d = "^2xj0"
     elseif &filetype == 'matlab'
         let @c="gI%j0"  | let @d = "^xj0"
-    elseif &filetype == 'python' 
+    elseif &filetype == 'python'
         let @c="gI#j0"  | let @d = "^xj0"
-    elseif &filetype == 'sh' 
+    elseif &filetype == 'sh'
         let @c="gI#j0"  | let @d = "^xj0"
     elseif &filetype == 'gdb'
         let @c="gI#j0"  | let @d = "^xj0"
-    elseif &filetype == 'conf' 
+    elseif &filetype == 'conf'
         let @c="gI#j0"  | let @d = "^xj0"
     elseif &filetype == 'vim'
         let @c="gI\"xj0" | let @d = "^xj0"
+        highlight MY_OWN_DEFINE_SPACE_EOL ctermbg=red
+        match MY_OWN_DEFINE_SPACE_EOL /\s\+$/
+    elseif &filetype == 'make'
+        set list listchars=tab:>-,trail:@
+    elseif &filetype == 'latex'
     else
         let @c="gI#j0"  | let @d = "^xj0"
     endif
@@ -281,19 +298,19 @@ let _function_exists=0
 "autocmd--------------------------------------------------------------
 
 augroup _MY_OWN_DEFINE_
-    "    autocmd!  -->clear the autocmd had been defined before 
-    "the current augroup before the current command 
+    "    autocmd!  -->clear the autocmd had been defined before
+    "the current augroup before the current command
     autocmd!
     "autocmd OptionSet insertmode  call _MY_OWN_KEY_MAP_INSERTMODE_()
     "updatetime->CursorHoldI
-    autocmd BufReadPost,WinEnter * call _FILETYPE_SET_REGISTER_()
+    autocmd BufEnter * call _FILETYPE_SET_REGISTER_()
     autocmd CursorHoldI * stopinsert
 augroup end
 
 "readfile-------------------------------------------------------------
 
 "for the temanary command define by the users
-"if you want to know all the function already 
+"if you want to know all the function already
 "    difined by vim ,see usr_41.txt
 ""echom filereadable("~/vimrc.tmp")
 ""echom filereadable("/etc/vim/vimrc")
@@ -302,8 +319,8 @@ augroup end
 ""  echomsg 'source!'
 ""endif
 
-"source /usr/share/vim/vim80/ftplugin.vim 
-"source /usr/share/vim/vim80/defaults.vim 
+"source /usr/share/vim/vim80/ftplugin.vim
+"source /usr/share/vim/vim80/defaults.vim
 source $HOME/defaults.vim
 source $HOME/ftplugin.vim
-"source $HOME/vimrc.tmp
+
