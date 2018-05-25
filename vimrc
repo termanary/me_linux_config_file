@@ -324,12 +324,10 @@ augroup end
 "for the temanary command define by the users
 "if you want to know all the function already
 "    difined by vim ,see usr_41.txt
-""echom filereadable("~/vimrc.tmp")
-""echom filereadable("/etc/vim/vimrc")
-""if filereadable("$HOME/vimrc.tmp") == v:true
-""  source $HOME/vimrc.tmp
-""  echomsg 'source!'
-""endif
+"    the next code could run successfully
+"if filereadable($HOME . "/.vim/vimrc")
+"    source $HOME/.vim/vimrc
+"endif
 
 "source /usr/share/vim/vim80/ftplugin.vim
 "source /usr/share/vim/vim80/defaults.vim
