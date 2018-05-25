@@ -237,8 +237,7 @@ function _TEST_INPUT_TO_RUN()
         copen
         execute "normal!p"
         "        register '%' and '#'
-        AsyncRun /media/MATLAB/Matlab_2018a/bin/matlab -nodesktop
-                    \ -nosplash -r %:t:r
+        AsyncRun matlab -nodesktop -nosplash -r %:t:r
         "        let _the_first_line_string=getline(1)
         "        _the_first_line_string[1] == "!" && 
         "                    \_the_first_line_string[0] == "#" 
@@ -249,14 +248,27 @@ function _TEST_INPUT_TO_RUN()
         else
             let _the_input_file_="input.txt"
         endif
-"        let _the_input_file_dir=expand("%:h")
-"        _the_input_file_dir+=_the_input_file_
-"        cd %:h
-"        if findfile(_the_input_file_dir) == _the_input_file_dir
-        if findfile(_the_input_file_) == _the_input_file_
+"        when you want to give a string variable to another ,
+"        you need to use "let"
+"        >>let just_for_test="input.txt"
+"        >>let just_for_test_dir=expand("%:h")
+"        when you want to merge two string variable together ,
+"        use operator "."
+"        >>let just_for_test_file = just_for_test_dir . "/" . just_for_test
+"
+"        the next two line just for testing
+"        echomsg findfile(_the_input_file_,expand("%:h"))
+"        echomsg expand("%:h") . "/" . _the_input_file_
+        if expand("%:h") != "."
+            let _result_=expand("%:h") . "/" . _the_input_file_
+        else
+            let _result_=_the_input_file_
+        endif
+        if findfile(_the_input_file_,expand("%:h"))
+                    \ == _result_
             "    help :!
-"            execute "!%:h/_%:t:r < " . _the_input_file_ . " " 
-            execute "!%:h/_%:t:r < %:h/" . _the_input_file_ . " 2>&1\| tee /tmp/tmpoutput.%:t:r " 
+            execute "!%:h/_%:t:r < %:h/" . _the_input_file_ .
+                        \ " 2>&1\| tee /tmp/tmpoutput.%:t:r "
         elseif findfile(_the_input_file_) == ""
             ! %:h/_%:t:r
         else
