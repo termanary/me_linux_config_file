@@ -22,7 +22,7 @@ alias rm='rm -v '
 alias cp='cp -iv '
 alias mv='mv -iv '
 
-alias v='vim -O' 
+alias v='$HOME/.vim/vim.sh' 
 alias e='emacs -nw'
 alias s='screen '
 alias gdb='gdb -tui '
