@@ -4,12 +4,14 @@
 13.229.188.59 github.com
 13.250.177.223 github.com
 
+#for improve the speed of 'git clone'
 61.131.208.211 github.global-ssl.fastly.Net
 123.129.254.12 github.global-ssl.fastly.Net
 123.129.254.13 github.global-ssl.fastly.Net
 123.129.254.14 github.global-ssl.fastly.Net
 123.129.254.15 github.global-ssl.fastly.Net
 
+#for improve the speed of visiting the github 
 151.101.13.194 assets-cdn.github.com
 151.101.188.133  assets-cdn.github.com
 151.101.0.133  assets-cdn.github.com
