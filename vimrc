@@ -64,20 +64,29 @@ endif
 set number
 set relativenumber
 set numberwidth=6
-set showcmd
+
 set tabstop=4
 set expandtab
 set shiftwidth=4
 set softtabstop=4
 set smarttab
+
 set autoindent
 set smartindent
+
 set ignorecase
 set incsearch
 set smartcase
 set hlsearch
+
+set updatetime&
+set notimeout
+set ttimeout
+
+set showcmd
 set wildmenu
 set laststatus=1
+"set statusline+=%{strftime(\"%T\")}
 set modeline
 set history=200
 set scrolloff=5
@@ -104,6 +113,9 @@ highlight cursorcolumn cterm=NONE ctermbg=blue
 "ab-------------------------------------------------------------------
 
 cab h vertical leftabove help
+cab t vertical rightbelow terminal ++rows=48 ++cols=70
+cab matlab vertical rightbelow terminal ++rows=48 ++cols=70 matlab
+                    \ -nodesktop -nosplash
 cab em echomsg
 
 "inoremap-------------------------------------------------------------
@@ -138,6 +150,7 @@ noremap <F8> :source $HOME/vimrc.tmp <CR>
 noremap <F9> :call _COMPILE_() <CR>
 noremap <F10> :call _TEST_INPUT_TO_RUN() <CR>
 "noremap <F11> <ESC>:!gdb -tui %:h/_%:r <CR>
+"tnoremap <F11> <C-w>p
 
 "help key-codes
 let mapleader = "\<Space>"
@@ -147,30 +160,38 @@ noremap <Leader>o O
 noremap <Leader>p P
 noremap <Leader>g G
 noremap <Leader>f F
-noremap <Leader>t :!date <CR>
+noremap <Leader>t T
+"noremap <Leader>t :!date <CR>
 noremap <Leader>w <C-w>
-noremap <Leader>h <ESC>:nohlsearch <CR>
+
+noremap <Leader>h :nohlsearch <CR>
 noremap <Leader>u g~aw
-noremap <Leader>/ /\<\><left><left>
+"noremap <leader>m :vertical rightbelow terminal matlab <CR><C-w>p
+"noremap <Leader>r :w <CR><C-w>lte<CR><C-w>p
 "sleep
-noremap <Leader>e :set cursorline! cursorcolumn! <CR> :sleep 400m
-            \ <CR> :set cursorline! cursorcolumn! <CR>
+noremap <Leader>e :setlocal cursorline! cursorcolumn! <CR> :sleep 400m
+            \ <CR> :setlocal cursorline! cursorcolumn! <CR>
+
 noremap <Leader>c @c
 noremap <Leader>d @d
+
 "vimrc
 noremap <leader>ve :vs /etc/vim/vimrc <CR>
 noremap <leader>vt :vs $HOME/vimrc.tmp <CR>
 noremap <leader>vh :vs $HOME/.vim/vimrc <CR>
 noremap <leader>vc :vs %:h/vimrc.tmp <CR>
+
 "buffer
 noremap <Leader>bn :n <CR>
 noremap <Leader>bp :N <CR>
+
 "quickfix
 noremap <Leader>qo :copen <CR>
 noremap <Leader>qc :cclose <CR>
 "noremap <leader>a :AsyncRun 
 "noremap <leader>s :AsyncStop 
 
+tnoremap <C-W>n <C-W>N
 
 "function----------------------------------------------------------
 
@@ -233,15 +254,10 @@ function _TEST_INPUT_TO_RUN()
         if &mod == 1
             write
         endif
-        cd %:h
-        copen
-        execute "normal!p"
-        "        register '%' and '#'
-        AsyncRun matlab -nodesktop -nosplash -r %:t:r
-        "        let _the_first_line_string=getline(1)
-        "        _the_first_line_string[1] == "!" && 
-        "                    \_the_first_line_string[0] == "#" 
-        "                            line continuation charactor : '\'
+"        register '%' and '#'
+"        copen
+"        AsyncRun matlab -nodesktop -nosplash -r %:t:r
+"                            line continuation charactor : '\'
     elseif &filetype == 'c' || &filetype == 'cpp'
         if exists("g:_the_input_file_")
             let _the_input_file_=g:_the_input_file_
@@ -250,15 +266,8 @@ function _TEST_INPUT_TO_RUN()
         endif
 "        when you want to give a string variable to another ,
 "        you need to use "let"
-"        >>let just_for_test="input.txt"
-"        >>let just_for_test_dir=expand("%:h")
 "        when you want to merge two string variable together ,
 "        use operator "."
-"        >>let just_for_test_file = just_for_test_dir . "/" . just_for_test
-"
-"        the next two line just for testing
-"        echomsg findfile(_the_input_file_,expand("%:h"))
-"        echomsg expand("%:h") . "/" . _the_input_file_
         if expand("%:h") != "."
             let _result_=expand("%:h") . "/" . _the_input_file_
         else
@@ -267,8 +276,8 @@ function _TEST_INPUT_TO_RUN()
         if findfile(_the_input_file_,expand("%:h"))
                     \ == _result_
             "    help :!
-            execute "!%:h/_%:t:r < %:h/" . _the_input_file_ .
-                        \ " 2>&1\| tee /tmp/tmpoutput.%:t:r "
+            execute "! %:h/_%:t:r < %:h/" . _the_input_file_
+"                        \ . " 2>&1\| tee /tmp/tmpoutput.%:t:r "
         elseif findfile(_the_input_file_) == ""
             ! %:h/_%:t:r
         else
@@ -296,6 +305,7 @@ function _FILETYPE_SET_REGISTER_()
         let @c="gI#j0"  | let @d = "^xj0"
     elseif &filetype == 'vim'
         let @c="gI\"xj0" | let @d = "^xj0"
+"        help cterm-colors
         highlight MY_OWN_DEFINE_SPACE_EOL ctermbg=red
         match MY_OWN_DEFINE_SPACE_EOL /\s\+$/
     elseif &filetype == 'make'
@@ -317,20 +327,23 @@ augroup _MY_OWN_DEFINE_
     "updatetime->CursorHoldI
     autocmd BufEnter * call _FILETYPE_SET_REGISTER_()
     autocmd CursorHoldI * stopinsert
+"    autocmd CursorHold * redraw
 augroup end
 
-"readfile-------------------------------------------------------------
+"source_file----------------------------------------------------------
 
 "for the temanary command define by the users
 "if you want to know all the function already
 "    difined by vim ,see usr_41.txt
 "    the next code could run successfully
-"if filereadable($HOME . "/.vim/vimrc")
-"    source $HOME/.vim/vimrc
-"endif
 
-"source /usr/share/vim/vim80/ftplugin.vim
-"source /usr/share/vim/vim80/defaults.vim
-source $HOME/defaults.vim
-source $HOME/ftplugin.vim
+if filereadable($HOME . "/defaults.vim")
+    "source /usr/share/vim/vim80/defaults.vim
+    source $HOME/defaults.vim
+endif
+
+if filereadable($HOME . "/ftplugin.vim")
+    "source /usr/share/vim/vim80/ftplugin.vim
+    source $HOME/ftplugin.vim
+endif
 
