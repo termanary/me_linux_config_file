@@ -1,6 +1,9 @@
 " Vim script to work like "less"
 " Maintainer:	Bram Moolenaar <Bram@vim.org>
 " Last Change:	2017 Mar 31
+"alias le='/usr/share/vim/vim80/macros/less.sh'
+"must same with directory with the less.sh
+"alias le='~/less.sh'
 
 " Avoid loading this file twice, allow the user to define his own script.
 if exists("loaded_less")
@@ -62,12 +65,6 @@ else
   noremap <SID>L Lg0:redraw<CR>:file<CR>
   au VimEnter * normal! Lg0
 endif
-
-" When reading from stdin don't consider the file modified.
-au VimEnter * set nomod
-
-" Can't modify the text
-set noma
 
 " Give help
 noremap h :call <SID>Help()<CR>
@@ -218,67 +215,11 @@ noremap q :q<CR>
 " Switch to editing (switch off less mode)
 map v :silent call <SID>End()<CR>
 fun! s:End()
-  set ma
   if exists('s:lz')
     let &lz = s:lz
   endif
-  unmap h
-  unmap H
-  unmap <Space>
-  unmap <C-V>
-  unmap f
-  unmap <C-F>
-  unmap z
-  unmap <Esc><Space>
-  unmap F
-  unmap d
-  unmap <C-D>
-  unmap <CR>
-  unmap <C-N>
-  unmap e
-  unmap <C-E>
-  unmap j
-  unmap <C-J>
-  unmap b
-  unmap <C-B>
-  unmap w
-  unmap <Esc>v
-  unmap u
-  unmap <C-U>
-  unmap k
-  unmap y
-  unmap <C-Y>
-  unmap <C-P>
-  unmap <C-K>
-  unmap r
-  unmap <C-R>
-  unmap R
-  unmap g
-  unmap <
-  unmap <Esc><
-  unmap G
-  unmap >
-  unmap <Esc>>
-  unmap %
-  unmap p
-  unmap n
-  unmap N
-  unmap q
-  unmap v
-  unmap /
-  unmap ?
-  unmap <Up>
-  unmap <Down>
-  unmap <PageDown>
-  unmap <kPageDown>
-  unmap <PageUp>
-  unmap <kPageUp>
-  unmap <S-Down>
-  unmap <S-Up>
-  unmap <Home>
-  unmap <kHome>
-  unmap <End>
-  unmap <kEnd>
 endfun
+
+map jk :echomsg "success" <CR>
 
 " vim: sw=2
