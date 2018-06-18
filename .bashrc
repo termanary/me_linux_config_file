@@ -117,10 +117,14 @@ if ! shopt -oq posix; then
 fi
 
 #this is added by me
+
+export EDITOR=/usr/bin/vim
+
 #bind -x '"\ev":vim'
 #bind -x '"\ee":emacs'
 bind -x '"\eh":htop'
 #bind -x '"\es":screen'
-bind -x '"\et":date'
-bind -x '"\el":ls -lh'
+#bind -x '"\et":date'
+#bind -x '"\el":ls -lh'
 bind -x '"\ea":ls -A'
+
