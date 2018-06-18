@@ -1,1 +1,4 @@
-pkg load symbolic
+#pkg load symbolic
+#format short g
+#more on
+#syms x 
