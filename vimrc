@@ -73,6 +73,7 @@ set smarttab
 
 set autoindent
 set smartindent
+filetype indent on
 
 set ignorecase
 set incsearch
@@ -87,21 +88,23 @@ set showcmd
 set wildmenu
 set laststatus=1
 "set statusline+=%{strftime(\"%T\")}
+
 set modeline
 set history=200
 set scrolloff=5
 set mouse-=a
-set cpoptions-=c
 set backspace=""
-set nrformats="bin,octal,hex,alpha"
-"set cpoptions+=q
 set clipboard+=unnamed
-filetype indent on
-colorscheme zellner
-"if do not know how to change it
+
+set cpoptions-=c
+"set cpoptions+=q
+set nrformats="bin,octal,hex,alpha"
+
 "    see highlight for exmaple
 highlight cursorline cterm=NONE ctermbg=blue
 highlight cursorcolumn cterm=NONE ctermbg=blue
+colorscheme zellner
+
 "set autochdir
 "set shellcmdflag=-ic
 "set revins
@@ -117,6 +120,9 @@ cab t vertical rightbelow terminal ++rows=48 ++cols=70
 cab matlab vertical rightbelow terminal ++rows=48 ++cols=70 matlab
                     \ -nodesktop -nosplash
 cab em echomsg
+cab s .,s/<left><left>
+"cab a AsyncRun
+"cab as AsyncStop
 
 "inoremap-------------------------------------------------------------
 
@@ -145,12 +151,10 @@ noremap ` '
 noremap - :
 noremap \ :!
 
-"noremap <F7> <ESC>:set insertmode! <CR>
 noremap <F8> :source $HOME/vimrc.tmp <CR>
 noremap <F9> :call _COMPILE_() <CR>
 noremap <F10> :call _TEST_INPUT_TO_RUN() <CR>
 "noremap <F11> <ESC>:!gdb -tui %:h/_%:r <CR>
-"tnoremap <F11> <C-w>p
 
 "help key-codes
 let mapleader = "\<Space>"
@@ -163,12 +167,10 @@ noremap <Leader>f F
 noremap <Leader>t T
 "noremap <Leader>t :!date <CR>
 noremap <Leader>w <C-w>
+noremap <Leader>r <C-r>
 
 noremap <Leader>h :nohlsearch <CR>
 noremap <Leader>u g~aw
-"noremap <leader>m :vertical rightbelow terminal matlab <CR><C-w>p
-"noremap <Leader>r :w <CR><C-w>lte<CR><C-w>p
-"sleep
 noremap <Leader>e :setlocal cursorline! cursorcolumn! <CR> :sleep 400m
             \ <CR> :setlocal cursorline! cursorcolumn! <CR>
 
@@ -191,7 +193,10 @@ noremap <Leader>qc :cclose <CR>
 "noremap <leader>a :AsyncRun 
 "noremap <leader>s :AsyncStop 
 
+"tnoremap----------------------------------------------------------
+
 tnoremap <C-W>n <C-W>N
+tnoremap <ESC> <C-w>p
 
 "function----------------------------------------------------------
 
@@ -216,13 +221,61 @@ function _COMPILE_()
     "        help filename-modifiers
     "!cmd % --could handle currently file by shell command
     if &filetype == 'c'
-        !gcc -Wall -g -o %:h/_%:t:r %:p
+"        -std=c89 -std=c99 -std-gnu89 -pedantic -ansi
+"        let _gcc_compile_options="-Wunreachable-code -Winline
+"                    \ -Wstrict-prototypes -Wmissing-prototypes
+"                    \ -Wshadow -Wtraditional -Waggregate-return
+"                    \ -Wredundant-decls"
+        let _gcc_compile_options=" -Wunreachable-code -Winline
+                    \ -Wshadow -Wredundant-decls -Waggregate-return "
+        if exists("g:_the_c_compile_options")
+            if g:_the_c_compile_options == "HDOJ"
+            let _gcc_compile_options = _gcc_compile_options . " -std=c89 "
+            endif
+        endif
+        execute "!gcc -Wall -Wextra -g -W -pipe " .
+                    \ _gcc_compile_options . " -o %:h/_%:t:r %:p -lm"
     elseif &filetype == 'cpp'
-        !g++ -Wall -g -o %:h/_%:t:r %:p
+        let _gpp_compile_options=" -Wunreachable-code -Winline
+                    \ -Wshadow -Wredundant-decls -Waggregate-return "
+        if exists("g:_the_cpp_compile_options")
+            if g:_the_cpp_compile_options == "HDOJ"
+"            let _gpp_compile_options = _gpp_compile_options . " -std=c89 "
+            echomsg "HDOJ-C++"
+            endif
+        endif
+        execute "!g++ -Wall -Wextra -g -W -pipe " .
+                    \ _gpp_compile_options . " -o %:h/_%:t:r %:p -lm"
     elseif &filetype == 'python'
-        ! %:p
+        if exists("g:run_python")
+            if g:_run_python == "run"
+                ! %:p
+            else
+                !python %:p
+            endif
+        else
+            !python %:p
+        endif
     elseif &filetype == 'sh'
-        ! %:p
+        if exists("g:run_shell")
+            if g:_run_shell ==  "run"
+                ! %:p
+            else
+                !bash %:p
+            endif
+        else
+            !bash %:p
+        endif
+    elseif &filetype == 'matlab'
+        if exists("g:run_octave")
+            if g:_run_octave ==  "run"
+                ! %:p
+            else
+                !octave-cli %:p
+            endif
+        else
+            !octave-cli %:p
+        endif
     elseif &filetype == 'vim'
         source %:p
     elseif &filetype == 'gdb'
@@ -230,8 +283,6 @@ function _COMPILE_()
         echomsg 'This is a gdb file'
     elseif &filetype == 'conf'
         echomsg 'This is a conf file'
-    elseif &filetype == 'matlab'
-        !octave %:p
     else
         echomsg "This is not a c/cpp/python/sh/matlab/vim/gdb/conf
                     \ file!"
@@ -250,15 +301,9 @@ endfunction
 
 function _TEST_INPUT_TO_RUN()
     "    findfile(),finddir()
-    if &filetype == 'matlab'
-        if &mod == 1
-            write
-        endif
 "        register '%' and '#'
 "        copen
-"        AsyncRun matlab -nodesktop -nosplash -r %:t:r
-"                            line continuation charactor : '\'
-    elseif &filetype == 'c' || &filetype == 'cpp'
+    if &filetype == 'c' || &filetype == 'cpp'
         if exists("g:_the_input_file_")
             let _the_input_file_=g:_the_input_file_
         else
@@ -309,8 +354,7 @@ function _FILETYPE_SET_REGISTER_()
         highlight MY_OWN_DEFINE_SPACE_EOL ctermbg=red
         match MY_OWN_DEFINE_SPACE_EOL /\s\+$/
     elseif &filetype == 'make'
-        set list listchars=tab:>-,trail:@
-    elseif &filetype == 'latex'
+        setlocal list listchars=tab:>-,trail:@
     else
         let @c="gI#j0"  | let @d = "^xj0"
     endif
