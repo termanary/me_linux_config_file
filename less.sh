@@ -1,6 +1,8 @@
 #!/bin/sh
 # Shell script to start Vim with less.vim.
 # Read stdin if no arguments were given and stdin was redirected.
+#alias le='/usr/share/vim/vim80/macros/less.sh'
+#alias le='~/less.sh'
 
 if test -t 1; then
   if test $# = 0; then
