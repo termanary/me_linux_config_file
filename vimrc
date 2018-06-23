@@ -124,6 +124,16 @@ cab s .,s/<left><left>
 "cab a AsyncRun
 "cab as AsyncStop
 
+"cnoremap-------------------------------------------------------------
+
+cnoremap <Esc>b <S-Left>
+cnoremap <Esc>f <S-Right>
+cnoremap <C-f> <Right>
+cnoremap <C-b> <Left>
+cnoremap <C-a> <Home>
+cnoremap <C-e> <End>
+cnoremap <C-d> <Del>
+
 "inoremap-------------------------------------------------------------
 
 inoremap ' ''<left>
@@ -151,7 +161,7 @@ noremap ` '
 noremap - :
 noremap \ :!
 
-noremap <F8> :source $HOME/vimrc.tmp <CR>
+noremap <F8> :source $HOME/Etc/vimrc.tmp <CR>
 noremap <F9> :call _COMPILE_() <CR>
 noremap <F10> :call _TEST_INPUT_TO_RUN() <CR>
 "noremap <F11> <ESC>:!gdb -tui %:h/_%:r <CR>
@@ -165,9 +175,8 @@ noremap <Leader>p P
 noremap <Leader>g G
 noremap <Leader>f F
 noremap <Leader>t T
-"noremap <Leader>t :!date <CR>
 noremap <Leader>w <C-w>
-noremap <Leader>r <C-r>
+"noremap <Leader>r <C-r>
 
 noremap <Leader>h :nohlsearch <CR>
 noremap <Leader>u g~aw
@@ -178,8 +187,10 @@ noremap <Leader>c @c
 noremap <Leader>d @d
 
 "vimrc
+noremap <leader>vo :vs ~/octave/tmp/octave.m <CR>
+noremap <leader>vp :vs ~/octave/tmp/plot_octave.m <CR>
 noremap <leader>ve :vs /etc/vim/vimrc <CR>
-noremap <leader>vt :vs $HOME/vimrc.tmp <CR>
+noremap <leader>vt :vs $HOME/Etc/vimrc.tmp <CR>
 noremap <leader>vh :vs $HOME/.vim/vimrc <CR>
 noremap <leader>vc :vs %:h/vimrc.tmp <CR>
 
@@ -196,6 +207,7 @@ noremap <Leader>qc :cclose <CR>
 "tnoremap----------------------------------------------------------
 
 tnoremap <C-W>n <C-W>N
+tnoremap <C-W>N <C-W>n
 tnoremap <ESC> <C-w>p
 
 "function----------------------------------------------------------
@@ -247,7 +259,7 @@ function _COMPILE_()
         execute "!g++ -Wall -Wextra -g -W -pipe " .
                     \ _gpp_compile_options . " -o %:h/_%:t:r %:p -lm"
     elseif &filetype == 'python'
-        if exists("g:run_python")
+        if exists("g:_run_python")
             if g:_run_python == "run"
                 ! %:p
             else
@@ -257,7 +269,7 @@ function _COMPILE_()
             !python %:p
         endif
     elseif &filetype == 'sh'
-        if exists("g:run_shell")
+        if exists("g:_run_shell")
             if g:_run_shell ==  "run"
                 ! %:p
             else
@@ -267,7 +279,7 @@ function _COMPILE_()
             !bash %:p
         endif
     elseif &filetype == 'matlab'
-        if exists("g:run_octave")
+        if exists("g:_run_octave")
             if g:_run_octave ==  "run"
                 ! %:p
             else
@@ -334,12 +346,18 @@ function _TEST_INPUT_TO_RUN()
 endfunction
 
 function _FILETYPE_SET_REGISTER_()
+    if filereadable(expand("%:h") . "/vimrc.tmp")
+        source %:h/vimrc.tmp
+    endif
     if     &filetype == 'c'
         let @c="gI//j0" | let @d = "^2xj0"
     elseif &filetype == 'cpp'
         let @c="gI//j0" | let @d = "^2xj0"
     elseif &filetype == 'matlab'
         let @c="gI%j0"  | let @d = "^xj0"
+        let @o="A;j" | let @t="$xj"
+        noremap <buffer> <leader>; @o
+        noremap <buffer> <leader>, @t
     elseif &filetype == 'python'
         let @c="gI#j0"  | let @d = "^xj0"
     elseif &filetype == 'sh'
@@ -355,6 +373,12 @@ function _FILETYPE_SET_REGISTER_()
         match MY_OWN_DEFINE_SPACE_EOL /\s\+$/
     elseif &filetype == 'make'
         setlocal list listchars=tab:>-,trail:@
+    elseif &filetype == ''
+"        if expand("%:t") == 'in[0-9]' || expand("%:t:r") == 'input*'
+"                    \ || expand("%:t:r") == 'input.txt'
+            set filetype=input
+            set iskeyword+=.
+"        endif
     else
         let @c="gI#j0"  | let @d = "^xj0"
     endif
@@ -381,13 +405,15 @@ augroup end
 "    difined by vim ,see usr_41.txt
 "    the next code could run successfully
 
-if filereadable($HOME . "/defaults.vim")
+"~ could not be recognize
+"$HOME must out of ""
+if filereadable($HOME . "/Etc" . "/defaults.vim")
     "source /usr/share/vim/vim80/defaults.vim
-    source $HOME/defaults.vim
+    source $HOME/Etc/defaults.vim
 endif
 
-if filereadable($HOME . "/ftplugin.vim")
+if filereadable($HOME . "/Etc" . "/ftplugin.vim")
     "source /usr/share/vim/vim80/ftplugin.vim
-    source $HOME/ftplugin.vim
+    source $HOME/Etc/ftplugin.vim
 endif
 
