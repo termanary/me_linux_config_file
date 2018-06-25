@@ -187,11 +187,12 @@ noremap <Leader>c @c
 noremap <Leader>d @d
 
 "vimrc
+noremap <leader>vs :vs ~/Bin/shell.sh <CR>
 noremap <leader>vo :vs ~/octave/tmp/octave.m <CR>
-noremap <leader>vp :vs ~/octave/tmp/plot_octave.m <CR>
+"noremap <leader>vp :vs ~/octave/tmp/plot_octave.m <CR>
 noremap <leader>ve :vs /etc/vim/vimrc <CR>
 noremap <leader>vt :vs $HOME/Etc/vimrc.tmp <CR>
-noremap <leader>vh :vs $HOME/.vim/vimrc <CR>
+"noremap <leader>vh :vs $HOME/.vim/vimrc <CR>
 noremap <leader>vc :vs %:h/vimrc.tmp <CR>
 
 "buffer
@@ -372,6 +373,7 @@ function _FILETYPE_SET_REGISTER_()
         highlight MY_OWN_DEFINE_SPACE_EOL ctermbg=red
         match MY_OWN_DEFINE_SPACE_EOL /\s\+$/
     elseif &filetype == 'make'
+        let @c="gI#j0"  | let @d = "^xj0"
         setlocal list listchars=tab:>-,trail:@
     elseif &filetype == ''
 "        if expand("%:t") == 'in[0-9]' || expand("%:t:r") == 'input*'
