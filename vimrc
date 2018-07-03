@@ -126,8 +126,8 @@ cab s .,s/<left><left>
 
 "cnoremap-------------------------------------------------------------
 
-cnoremap <Esc>b <S-Left>
-cnoremap <Esc>f <S-Right>
+"cnoremap <Esc>b <S-Left>
+"cnoremap <Esc>f <S-Right>
 cnoremap <C-f> <Right>
 cnoremap <C-b> <Left>
 cnoremap <C-a> <Home>
@@ -188,8 +188,8 @@ noremap <Leader>d @d
 
 "vimrc
 noremap <leader>vs :vs ~/Bin/shell.sh <CR>
+noremap <leader>vg :vs ~/.gdbinit <CR>
 noremap <leader>vo :vs ~/octave/tmp/octave.m <CR>
-"noremap <leader>vp :vs ~/octave/tmp/plot_octave.m <CR>
 noremap <leader>ve :vs /etc/vim/vimrc <CR>
 noremap <leader>vt :vs $HOME/Etc/vimrc.tmp <CR>
 "noremap <leader>vh :vs $HOME/.vim/vimrc <CR>
@@ -320,7 +320,7 @@ function _TEST_INPUT_TO_RUN()
         if exists("g:_the_input_file_")
             let _the_input_file_=g:_the_input_file_
         else
-            let _the_input_file_="input.txt"
+            let _the_input_file_="input.tst"
         endif
 "        when you want to give a string variable to another ,
 "        you need to use "let"
@@ -335,9 +335,9 @@ function _TEST_INPUT_TO_RUN()
                     \ == _result_
             "    help :!
             execute "! %:h/_%:t:r < %:h/" . _the_input_file_
-"                        \ . " 2>&1\| tee /tmp/tmpoutput.%:t:r "
+"                        \ . " 2>&1 \| tee /tmp/tmpoutput.%:t:r "
         elseif findfile(_the_input_file_) == ""
-            ! %:h/_%:t:r
+            ! %:h/_%:t:r 2>&1
         else
             echomsg 'ERROR!'
         endif
@@ -377,7 +377,7 @@ function _FILETYPE_SET_REGISTER_()
         setlocal list listchars=tab:>-,trail:@
     elseif &filetype == ''
 "        if expand("%:t") == 'in[0-9]' || expand("%:t:r") == 'input*'
-"                    \ || expand("%:t:r") == 'input.txt'
+"                    \ || expand("%:t:r") == 'input.tst'
             set filetype=input
             set iskeyword+=.
 "        endif
