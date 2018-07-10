@@ -189,11 +189,18 @@ noremap <Leader>d @d
 "vimrc
 noremap <leader>vs :vs ~/Bin/shell.sh <CR>
 noremap <leader>vg :vs ~/.gdbinit <CR>
-noremap <leader>vo :vs ~/octave/tmp/octave.m <CR>
 noremap <leader>ve :vs /etc/vim/vimrc <CR>
 noremap <leader>vt :vs $HOME/Etc/vimrc.tmp <CR>
 "noremap <leader>vh :vs $HOME/.vim/vimrc <CR>
 noremap <leader>vc :vs %:h/vimrc.tmp <CR>
+
+noremap <leader>vl :vs ~/log_hdoj <CR>
+
+"octave
+noremap <leader>voo :vs ~/octave/tmp/origin.m <CR>
+noremap <leader>voi :vs ~/octave/tmp/input <CR>
+noremap <leader>vof :vs ~/octave/tmp/function_octave.m <CR>
+noremap <leader>vor :vs ~/.octaverc <CR>
 
 "buffer
 noremap <Leader>bn :n <CR>
@@ -239,6 +246,7 @@ function _COMPILE_()
 "                    \ -Wstrict-prototypes -Wmissing-prototypes
 "                    \ -Wshadow -Wtraditional -Waggregate-return
 "                    \ -Wredundant-decls"
+
         let _gcc_compile_options=" -Wunreachable-code -Winline
                     \ -Wshadow -Wredundant-decls -Waggregate-return "
         if exists("g:_the_c_compile_options")
