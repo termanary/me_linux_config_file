@@ -1,0 +1,24 @@
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# but this command need the root  athurity : blkid
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+# / was on /dev/sdb10 during installation
+UUID=10fe653d-9f03-42f1-b6af-8ec36f5a2211 /               ext4    errors=remount-ro 0       1
+# /boot/efi was on /dev/sdb1 during installation
+UUID=06F4-FC74  /boot/efi       vfat    umask=0077      0       1
+# /home was on /dev/sdb11 during installation
+UUID=4113d2a9-7853-4add-9739-1a5bcdead51a /home           ext4    defaults        0       2
+# swap was on /dev/sdb9 during installation
+UUID=4eb29bfa-b8fd-44f8-9d0a-32d661e3630b none            swap    sw              0       0
+
+#https://blog.csdn.net/wangfenghui132/article/details/78801160
+#http://www.cnblogs.com/mfrbuaa/p/4481239.html
+# this line is added by syxc
+UUID="f064339f-56da-4a64-b5d5-531bfe4925ca" /media/MATLAB/ ext4 auto,rw,exec,nouser,nosuid 0 0
+#windows OS
+UUID="B0B2F7CBB2F79456"  /media/OS/ ntfs auto,nosuid,ro,exec,nouser,uid=root,gid=root,umask=377,dmask=377,fmask=377 0 0  
+
