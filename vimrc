@@ -24,7 +24,7 @@ runtime! debian.vim
 " Vim5 and later versions support syntax highlighting. Uncommenting the next
 " line enables syntax highlighting by default.
 if has("syntax")
-  syntax on
+    syntax on
 endif
 
 " If using a dark background within the editing area and syntax highlighting
@@ -56,7 +56,7 @@ set background=dark
 
 " Source a global configuration file if available
 if filereadable("/etc/vim/vimrc.local")
-  source /etc/vim/vimrc.local
+    source /etc/vim/vimrc.local
 endif
 
 "set ---------------------------------------------------------------------
@@ -95,6 +95,7 @@ set scrolloff=5
 set mouse-=a
 set backspace=""
 set clipboard+=unnamed
+set undolevels+=1000
 
 set cpoptions-=c
 "set cpoptions+=q
@@ -118,9 +119,10 @@ colorscheme zellner
 cab h vertical leftabove help
 cab t vertical rightbelow terminal ++rows=48 ++cols=70
 cab matlab vertical rightbelow terminal ++rows=48 ++cols=70 matlab
-                    \ -nodesktop -nosplash
+            \ -nodesktop -nosplash
 cab em echomsg
 cab s .,s/<left><left>
+cab vr vertical rightbelow vsplit
 "cab a AsyncRun
 "cab as AsyncStop
 
@@ -164,7 +166,6 @@ noremap \ :!
 noremap <F8> :source $HOME/Etc/vimrc.tmp <CR>
 noremap <F9> :call _COMPILE_() <CR>
 noremap <F10> :call _TEST_INPUT_TO_RUN() <CR>
-"noremap <F11> <ESC>:!gdb -tui %:h/_%:r <CR>
 
 "help key-codes
 let mapleader = "\<Space>"
@@ -187,14 +188,19 @@ noremap <Leader>c @c
 noremap <Leader>d @d
 
 "vimrc
-noremap <leader>vs :vs ~/Bin/shell.sh <CR>
-noremap <leader>vg :vs ~/.gdbinit <CR>
 noremap <leader>ve :vs /etc/vim/vimrc <CR>
 noremap <leader>vt :vs $HOME/Etc/vimrc.tmp <CR>
 "noremap <leader>vh :vs $HOME/.vim/vimrc <CR>
 noremap <leader>vc :vs %:h/vimrc.tmp <CR>
 
+noremap <leader>vs :vs ~/octave/tmp/shell.sh <CR>
+noremap <leader>vg :vertical rightbelow vsplit ~/.gdbinit <CR>
+noremap <leader>vi :vertical rightbelow vsplit input.tst <CR>
 noremap <leader>vl :vs ~/log_hdoj <CR>
+
+noremap <leader>vh :!cp %:p ~/hdoj/all/
+noremap <leader>vk :!cp %:p ~/poj/all/
+noremap <leader>vp :!cp %:p /tmp/main.c <CR>
 
 "octave
 noremap <leader>voo :vs ~/octave/tmp/origin.m <CR>
@@ -232,28 +238,27 @@ if exists("_function_exists")
 endif
 
 function _COMPILE_()
-    "    if you want to get all the variable
-    "        see options.txt
+    "if you want to get all the variable :see options.txt
     if &mod == 1
         write
     endif
+    "help filename-modifiers
     "set filetype=?
-    "        help filename-modifiers
     "!cmd % --could handle currently file by shell command
     if &filetype == 'c'
-"        -std=c89 -std=c99 -std-gnu89 -pedantic -ansi
-"        let _gcc_compile_options="-Wunreachable-code -Winline
-"                    \ -Wstrict-prototypes -Wmissing-prototypes
-"                    \ -Wshadow -Wtraditional -Waggregate-return
-"                    \ -Wredundant-decls"
-
+        "-std=c89 -std=c99 -std-gnu89 -pedantic -ansi
+        "let _gcc_compile_options="-Wunreachable-code -Winline
+        "\ -Wstrict-prototypes -Wmissing-prototypes
+        "\ -Wshadow -Wtraditional -Waggregate-return
+        "\ -Wredundant-decls"
         let _gcc_compile_options=" -Wunreachable-code -Winline
                     \ -Wshadow -Wredundant-decls -Waggregate-return "
         if exists("g:_the_c_compile_options")
             if g:_the_c_compile_options == "HDOJ"
-            let _gcc_compile_options = _gcc_compile_options . " -std=c89 "
+                let _gcc_compile_options = _gcc_compile_options . " -std=c89 "
             endif
         endif
+        "gcc-4.8
         execute "!gcc -Wall -Wextra -g -W -pipe " .
                     \ _gcc_compile_options . " -o %:h/_%:t:r %:p -lm"
     elseif &filetype == 'cpp'
@@ -261,52 +266,34 @@ function _COMPILE_()
                     \ -Wshadow -Wredundant-decls -Waggregate-return "
         if exists("g:_the_cpp_compile_options")
             if g:_the_cpp_compile_options == "HDOJ"
-"            let _gpp_compile_options = _gpp_compile_options . " -std=c89 "
-            echomsg "HDOJ-C++"
+                "let _gpp_compile_options = _gpp_compile_options . " -std=c89 "
+                echomsg "HDOJ-C++"
             endif
         endif
         execute "!g++ -Wall -Wextra -g -W -pipe " .
                     \ _gpp_compile_options . " -o %:h/_%:t:r %:p -lm"
-    elseif &filetype == 'python'
-        if exists("g:_run_python")
-            if g:_run_python == "run"
-                ! %:p
-            else
-                !python %:p
-            endif
-        else
-            !python %:p
-        endif
     elseif &filetype == 'sh'
-        if exists("g:_run_shell")
-            if g:_run_shell ==  "run"
-                ! %:p
-            else
-                !bash %:p
-            endif
+        "help function-list
+        "help file-functions
+        if executable(expand("%:p"))
+            ! %:p
         else
             !bash %:p
         endif
     elseif &filetype == 'matlab'
-        if exists("g:_run_octave")
-            if g:_run_octave ==  "run"
-                ! %:p
-            else
-                !octave-cli %:p
-            endif
+        if executable(expand("%:p"))
+            ! %:p
         else
             !octave-cli %:p
         endif
+    elseif &filetype == 'python'
+        if executable(expand("%:p"))
+            ! %:p
+        else
+            !python %:p
+        endif
     elseif &filetype == 'vim'
         source %:p
-    elseif &filetype == 'gdb'
-        "        echoerr
-        echomsg 'This is a gdb file'
-    elseif &filetype == 'conf'
-        echomsg 'This is a conf file'
-    else
-        echomsg "This is not a c/cpp/python/sh/matlab/vim/gdb/conf
-                    \ file!"
     endif
 endfunction
 
@@ -321,19 +308,20 @@ endfunction
 "varialbles
 
 function _TEST_INPUT_TO_RUN()
-    "    findfile(),finddir()
-"        register '%' and '#'
-"        copen
+    "findfile(),finddir()
+    "register '%' and '#'
+    "copen
     if &filetype == 'c' || &filetype == 'cpp'
         if exists("g:_the_input_file_")
             let _the_input_file_=g:_the_input_file_
         else
+            "can not have ; with 'let'
             let _the_input_file_="input.tst"
         endif
-"        when you want to give a string variable to another ,
-"        you need to use "let"
-"        when you want to merge two string variable together ,
-"        use operator "."
+        "when you want to give a string variable to another ,
+        "you need to use "let"
+        "when you want to merge two string variable together ,
+        "use operator "."
         if expand("%:h") != "."
             let _result_=expand("%:h") . "/" . _the_input_file_
         else
@@ -341,16 +329,15 @@ function _TEST_INPUT_TO_RUN()
         endif
         if findfile(_the_input_file_,expand("%:h"))
                     \ == _result_
-            "    help :!
+            "help :!
             execute "! %:h/_%:t:r < %:h/" . _the_input_file_
-"                        \ . " 2>&1 \| tee /tmp/tmpoutput.%:t:r "
+            "\ . " 2>&1 \| tee /tmp/tmpoutput.%:t:r "
         elseif findfile(_the_input_file_) == ""
             ! %:h/_%:t:r 2>&1
         else
+            "echoerr
             echomsg 'ERROR!'
         endif
-    else
-        echomsg "could not be run!"
     endif
 endfunction
 
@@ -358,39 +345,34 @@ function _FILETYPE_SET_REGISTER_()
     if filereadable(expand("%:h") . "/vimrc.tmp")
         source %:h/vimrc.tmp
     endif
-    if     &filetype == 'c'
-        let @c="gI//j0" | let @d = "^2xj0"
-    elseif &filetype == 'cpp'
-        let @c="gI//j0" | let @d = "^2xj0"
+    if     &filetype == 'c' || &filetype == 'cpp'
+        let @c="8<hI//j0" | let @d = "02x==j0"
+        syn match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2
+        syn match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
+        hi cFunctions gui=NONE cterm=bold  ctermfg=yellow
     elseif &filetype == 'matlab'
-        let @c="gI%j0"  | let @d = "^xj0"
+        "highlight MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL ctermbg=red
+        "match MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL /;\+$/
+        let @c="8<hI%j0"  | let @d = "0x==j0"
         let @o="A;j" | let @t="$xj"
         noremap <buffer> <leader>; @o
         noremap <buffer> <leader>, @t
-    elseif &filetype == 'python'
-        let @c="gI#j0"  | let @d = "^xj0"
-    elseif &filetype == 'sh'
-        let @c="gI#j0"  | let @d = "^xj0"
-    elseif &filetype == 'gdb'
-        let @c="gI#j0"  | let @d = "^xj0"
-    elseif &filetype == 'conf'
-        let @c="gI#j0"  | let @d = "^xj0"
-    elseif &filetype == 'vim'
-        let @c="gI\"xj0" | let @d = "^xj0"
-"        help cterm-colors
-        highlight MY_OWN_DEFINE_SPACE_EOL ctermbg=red
-        match MY_OWN_DEFINE_SPACE_EOL /\s\+$/
-    elseif &filetype == 'make'
-        let @c="gI#j0"  | let @d = "^xj0"
-        setlocal list listchars=tab:>-,trail:@
+    elseif &filetype == 'python' || &filetype == 'sh' || &filetype == 'gdb'
+                \ || &filetype == 'conf'
+        let @c="8<hI#j0"  | let @d = "0x==j0"
     elseif &filetype == ''
-"        if expand("%:t") == 'in[0-9]' || expand("%:t:r") == 'input*'
-"                    \ || expand("%:t:r") == 'input.tst'
-            set filetype=input
-            set iskeyword+=.
-"        endif
+        if expand("%:t:r") == 'input' || expand("%:t") == 'input.tst'
+            set iskeyword+=.,-
+        endif
+    elseif &filetype == 'vim'
+        let @c="8<hI\"xj0" | let @d = "0x==j0"
+        "help cterm-colors
+        highlight VIM_MY_OWN_DEFINE_SPACE_EOL ctermbg=red
+        match VIM_MY_OWN_DEFINE_SPACE_EOL /\s\+$/
+        "elseif &filetype == 'make'
+        "setlocal list listchars=tab:>-,trail:@
     else
-        let @c="gI#j0"  | let @d = "^xj0"
+        let @c="8<hI#j0"  | let @d = "0x==j0"
     endif
 endfunction
 
@@ -398,22 +380,22 @@ let _function_exists=0
 "autocmd--------------------------------------------------------------
 
 augroup _MY_OWN_DEFINE_
-    "    autocmd!  -->clear the autocmd had been defined before
+    "autocmd!  -->clear the autocmd had been defined before
     "the current augroup before the current command
     autocmd!
     "autocmd OptionSet insertmode  call _MY_OWN_KEY_MAP_INSERTMODE_()
     "updatetime->CursorHoldI
     autocmd BufEnter * call _FILETYPE_SET_REGISTER_()
     autocmd CursorHoldI * stopinsert
-"    autocmd CursorHold * redraw
+    "autocmd CursorHold * redraw
 augroup end
 
 "source_file----------------------------------------------------------
 
 "for the temanary command define by the users
 "if you want to know all the function already
-"    difined by vim ,see usr_41.txt
-"    the next code could run successfully
+"difined by vim ,see usr_41.txt
+"the next code could run successfully
 
 "~ could not be recognize
 "$HOME must out of ""
