@@ -1,4 +1,27 @@
-#pkg load symbolic
-#format short g
-#more on
+#package load
+pkg load symbolic
 #syms x 
+
+#PS1("GNU Octave:\\w:\\#>>  ")
+PS1("GNU Octave:\\#>> ")
+
+#terminal display
+#ascii unicode flat
+sympref display flat
+
+#terminal display 
+#terminal_size
+#1 0
+#split_long_rows(0)
+
+#path 
+#cd /home/me/octave/tmp/
+addpath ~/octave/tmp/
+
+#digits display
+#format short g
+#format long g
+
+#more on
+
+
