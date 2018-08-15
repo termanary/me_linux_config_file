@@ -12,6 +12,7 @@
 XKBMODEL="pc105"
 XKBLAYOUT="us"
 XKBVARIANT=""
+XKBOPTIONS=""
 XKBOPTIONS="caps:swapescape"
 XKBOPTIONS="caps:swapescape"
 
