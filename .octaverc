@@ -6,12 +6,12 @@ pkg load symbolic
 PS1("GNU Octave:\\#>> ")
 
 #terminal display
-#ascii unicode flat
+#:ascii unicode flat
 sympref display flat
 
 #terminal display 
 #terminal_size
-#1 0
+#:1 0
 #split_long_rows(0)
 
 #path 
@@ -23,5 +23,4 @@ addpath ~/octave/tmp/
 #format long g
 
 #more on
-
 
