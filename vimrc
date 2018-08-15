@@ -63,7 +63,7 @@ endif
 
 set number
 set relativenumber
-set numberwidth=6
+set numberwidth=3
 
 set tabstop=4
 set expandtab
@@ -187,20 +187,21 @@ noremap <Leader>e :setlocal cursorline! cursorcolumn! <CR> :sleep 400m
 noremap <Leader>c @c
 noremap <Leader>d @d
 
-"vimrc
-noremap <leader>ve :vs /etc/vim/vimrc <CR>
-noremap <leader>vt :vs $HOME/Etc/vimrc.tmp <CR>
-"noremap <leader>vh :vs $HOME/.vim/vimrc <CR>
-noremap <leader>vc :vs %:h/vimrc.tmp <CR>
-
 noremap <leader>vs :vs ~/octave/tmp/shell.sh <CR>
 noremap <leader>vg :vertical rightbelow vsplit ~/.gdbinit <CR>
+noremap <leader>vm :vs main.c <CR>
 noremap <leader>vi :vertical rightbelow vsplit input.tst <CR>
 noremap <leader>vl :vs ~/log_hdoj <CR>
 
 noremap <leader>vh :!cp %:p ~/hdoj/all/
 noremap <leader>vk :!cp %:p ~/poj/all/
 noremap <leader>vp :!cp %:p /tmp/main.c <CR>
+
+"vimrc
+noremap <leader>vve :vs /etc/vim/vimrc <CR>
+noremap <leader>vvt :vs $HOME/Etc/vimrc.tmp <CR>
+"noremap <leader>vvh :vs $HOME/.vim/vimrc <CR>
+noremap <leader>vvc :vs %:h/vimrc.tmp <CR>
 
 "octave
 noremap <leader>voo :vs ~/octave/tmp/origin.m <CR>
@@ -272,6 +273,7 @@ function _COMPILE_()
         endif
         execute "!g++ -Wall -Wextra -g -W -pipe " .
                     \ _gpp_compile_options . " -o %:h/_%:t:r %:p -lm"
+"elseif &filetype == 'java'
     elseif &filetype == 'sh'
         "help function-list
         "help file-functions
@@ -338,23 +340,27 @@ function _TEST_INPUT_TO_RUN()
             "echoerr
             echomsg 'ERROR!'
         endif
+"elseif &filetype == 'java'
     endif
 endfunction
 
 function _FILETYPE_SET_REGISTER_()
-    if filereadable(expand("%:h") . "/vimrc.tmp")
-        source %:h/vimrc.tmp
-    endif
+"if filereadable(expand("%:h") . "/vimrc.tmp")
+    "source %:h/vimrc.tmp
+"endif
     if     &filetype == 'c' || &filetype == 'cpp'
         let @c="8<hI//j0" | let @d = "02x==j0"
         syn match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2
         syn match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
         hi cFunctions gui=NONE cterm=bold  ctermfg=yellow
+"elseif &filetype == 'java'
     elseif &filetype == 'matlab'
         "highlight MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL ctermbg=red
         "match MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL /;\+$/
         let @c="8<hI%j0"  | let @d = "0x==j0"
         let @o="A;j" | let @t="$xj"
+        let @m=expand("%:t:r")
+        noremap <buffer> <leader>m :w <CR><C-w>l<C-W>"m<CR><C-w>p
         noremap <buffer> <leader>; @o
         noremap <buffer> <leader>, @t
     elseif &filetype == 'python' || &filetype == 'sh' || &filetype == 'gdb'
