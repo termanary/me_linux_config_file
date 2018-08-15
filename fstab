@@ -6,19 +6,33 @@
 # that works even if disks are added and removed. See fstab(5).
 #
 # <file system> <mount point>   <type>  <options>       <dump>  <pass>
-# / was on /dev/sdb10 during installation
-UUID=10fe653d-9f03-42f1-b6af-8ec36f5a2211 /               ext4    errors=remount-ro 0       1
-# /boot/efi was on /dev/sdb1 during installation
-UUID=06F4-FC74  /boot/efi       vfat    umask=0077      0       1
-# /home was on /dev/sdb11 during installation
-UUID=4113d2a9-7853-4add-9739-1a5bcdead51a /home           ext4    defaults        0       2
-# swap was on /dev/sdb9 during installation
-UUID=4eb29bfa-b8fd-44f8-9d0a-32d661e3630b none            swap    sw              0       0
 
 #https://blog.csdn.net/wangfenghui132/article/details/78801160
 #http://www.cnblogs.com/mfrbuaa/p/4481239.html
-# this line is added by syxc
-UUID="f064339f-56da-4a64-b5d5-531bfe4925ca" /media/MATLAB/ ext4 auto,rw,exec,nouser,nosuid 0 0
-#windows OS
-UUID="B0B2F7CBB2F79456"  /media/OS/ ntfs auto,nosuid,ro,exec,nouser,uid=root,gid=root,umask=377,dmask=377,fmask=377 0 0  
 
+# / was on /dev/sda8 during installation
+UUID=5972ca25-c3b3-41af-928e-6c19eb97efe5 /               ext4    errors=remount-ro 0       1
+# /boot/efi was on /dev/sda1 during installation
+UUID=06F4-FC74  /boot/efi       vfat    umask=0077      0       1
+# /home was on /dev/sda10 during installation
+UUID=30aa651d-1043-49a6-90a6-567e35e956ff /home           ext4    defaults        0       2
+# swap was on /dev/sda9 during installation
+UUID=71a1233d-c4f3-43ff-aff3-a5500aa8576d none            swap    sw              0       0
+
+
+#MATLAB :/dev/sda4
+UUID="f064339f-56da-4a64-b5d5-531bfe4925ca" /media/MATLAB/ ext4 auto,ro,exec,nouser,nosuid 0 0
+#windows OS:/dev/sda3
+UUID="B0B2F7CBB2F79456"  /media/OS/ ntfs auto,ro,exec,nouser,nosuid,uid=root,gid=root,umask=377,dmask=377,fmask=377 0 0  
+
+#/dev/sda3: LABEL="OS" UUID="B0B2F7CBB2F79456" TYPE="ntfs" PARTLABEL="Basic data partition" PARTUUID="3b201b77-5f28-4f54-871e-6df178c4e1d0"
+#/dev/sda4: LABEL="MATLAB" UUID="f064339f-56da-4a64-b5d5-531bfe4925ca" TYPE="ext4" PARTUUID="f480876d-23d0-46bc-99a5-8bb4ce3fb5c6"
+
+#/dev/sda1: LABEL="SYSTEM" UUID="06F4-FC74" TYPE="vfat" PARTLABEL="EFI system partition" PARTUUID="1863d7b5-ba8a-4fa7-8f23-c7ee13173223"
+#/dev/sda2: PARTLABEL="Microsoft reserved partition" PARTUUID="f4a576f5-ad1c-4dcc-86f2-4f5e2f7464b4"
+#/dev/sda5: UUID="4113d2a9-7853-4add-9739-1a5bcdead51a" TYPE="ext4" PARTUUID="96d9c95c-83ae-425f-86ba-613baafb50b2"
+#/dev/sda6: UUID="A29C408C9C405CC3" TYPE="ntfs" PARTLABEL="Basic data partition" PARTUUID="0b1e5825-d37c-4d35-8588-0ec6048de76c"
+#/dev/sda7: UUID="2A60F26160F232E5" TYPE="ntfs" PARTLABEL="Basic data partition" PARTUUID="e789aac6-ca0a-4ea1-97b9-73260bfd17b8"
+#/dev/sda8: UUID="5972ca25-c3b3-41af-928e-6c19eb97efe5" TYPE="ext4" PARTUUID="ed4cea92-5416-44fa-a76b-535e872c1004"
+#/dev/sda9: UUID="71a1233d-c4f3-43ff-aff3-a5500aa8576d" TYPE="swap" PARTUUID="31c05bb0-e9b5-4e6f-ba11-544d02cb1b24"
+#/dev/sda10: UUID="30aa651d-1043-49a6-90a6-567e35e956ff" TYPE="ext4" PARTUUID="2512bb0a-ec16-404d-b390-2cc4d2d80427"
