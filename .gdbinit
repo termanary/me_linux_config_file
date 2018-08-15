@@ -6,13 +6,11 @@ i local
 end
 
 define g
-b 77
-r <input.txt
-#rec
-record
-display /c in->root->da
-display /c out->root->da
-display /c tmp->root->da
+#set $k=0
+#record
+b 35
 #r 
+r <input.tst
+display /d i
 end
 

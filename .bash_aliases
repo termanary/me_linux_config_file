@@ -1,13 +1,15 @@
+#alsamixer : the sound of system
+#acpi : the power of the system
 
-bind -x '"\ev":vim main.c'
+bind -x '"\ev":vim '
 bind -x '"\eh":htop'
-#bind -x '"\et":date'
-#bind -x '"\el":ls'
 
 #echo $PATH
-export PATH="$PATH:/media/MATLAB/Matlab_2018a/bin/"
-export PATH="$PATH:$HOME/Bin/"
 export EDITOR=/usr/bin/vim
+export PATH="$PATH:/media/MATLAB/Matlab_2018a/bin/"
+#export PATH="$PATH:$HOME/Bin/"
+
+HISTSIZE=100000
 
 LANGUAGE=en_US.UTF-8
 LANG=en_US.UTF-8
@@ -18,8 +20,6 @@ alias la='ls -A --color=auto '
 alias lh='ls -lh --color=auto '
 alias info='info --vi-keys'
 
-#alias cd='cd;ls'
-alias c='cd;ls'
 alias c.='cd ../;ls'
 alias ca='cd ~/Tmp/acm/;ls'
 alias ct='cd ~/Tmp/;ls'
@@ -39,15 +39,8 @@ alias v='$HOME/.vim/vim.sh'
 alias e='emacs -nw'
 alias s='screen '
 alias gdb='gdbtui '
-#alias le='/usr/share/vim/vim80/macros/less.sh'
-alias le='~/Bin/less.sh'
 #octave-cli octave -q
-#alias octave='octave-cli --silent'
-#alias oc='~/octave/octave/octave-4.4.0/run-octave '
+alias octave='octave-cli --silent'
 alias o='octave-cli'
-#alias scilab='scilab-cli'
 alias matlab='matlab -nosplash -nodesktop '
 
-#alsamixer : the sound of system
-#acpi : the power of the system
-#shutdown 2:00
