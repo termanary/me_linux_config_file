@@ -1,5 +1,5 @@
-#alsamixer : the sound of system
 #acpi : the power of the system
+#alsamixer : the sound of system
 
 bind -x '"\ev":vim '
 bind -x '"\eh":htop'
@@ -11,9 +11,14 @@ export PATH="$PATH:/media/MATLAB/Matlab_2018a/bin/"
 
 HISTSIZE=100000
 
-LANGUAGE=en_US.UTF-8
-LANG=en_US.UTF-8
-LC_ALL=en_US.UTF-8
+#LANGUAGE=en_US.UTF-8
+#LANG=en_US.UTF-8
+#LC_ALL=en_US.UTF-8
+
+#it's necessary 
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
 
 alias l='ls --color=auto '
 alias la='ls -A --color=auto '
@@ -40,7 +45,7 @@ alias e='emacs -nw'
 alias s='screen '
 alias gdb='gdbtui '
 #octave-cli octave -q
-alias octave='octave-cli --silent'
 alias o='octave-cli'
+alias octave='octave-cli --silent'
 alias matlab='matlab -nosplash -nodesktop '
 
