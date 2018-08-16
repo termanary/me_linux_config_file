@@ -1,4 +1,4 @@
-"All system-wide defaults are set in $VIMRUNTIME/debian.vim and sourced by
+" All system-wide defaults are set in $VIMRUNTIME/debian.vim and sourced by
 " the call to :runtime you can find below.  If you wish to change any of those
 " settings, you should do it in this file (/etc/vim/vimrc), since debian.vim
 " will be overwritten everytime an upgrade of the vim packages is performed.
@@ -59,6 +59,26 @@ if filereadable("/etc/vim/vimrc.local")
     source /etc/vim/vimrc.local
 endif
 
+"source_file----------------------------------------------------------
+
+"for the temanary command define by the users
+"if you want to know all the function already
+"difined by vim ,see usr_41.txt
+"the next code could run successfully
+
+"~ could not be recognize
+"$HOME must out of ""
+"if filereadable($HOME . "/Etc" . "/defaults.vim")
+if filereadable("/usr/share/vim/vim80/defaults.vim")
+    "source $HOME/Etc/defaults.vim
+    source /usr/share/vim/vim80/defaults.vim
+endif
+
+if filereadable("/usr/share/vim/vim80/ftplugin.vim")
+    "source $HOME/Etc/ftplugin.vim
+    source /usr/share/vim/vim80/ftplugin.vim
+endif
+
 "set ---------------------------------------------------------------------
 
 set number
@@ -89,6 +109,7 @@ set wildmenu
 set laststatus=1
 "set statusline+=%{strftime(\"%T\")}
 
+set runtimepath&
 set modeline
 set history=200
 set scrolloff=5
@@ -102,9 +123,10 @@ set cpoptions-=c
 set nrformats="bin,octal,hex,alpha"
 
 "    see highlight for exmaple
+"    the order of next 3 line could not be change
+colorscheme zellner
 highlight cursorline cterm=NONE ctermbg=blue
 highlight cursorcolumn cterm=NONE ctermbg=blue
-colorscheme zellner
 
 "set autochdir
 "set shellcmdflag=-ic
@@ -187,20 +209,20 @@ noremap <Leader>e :setlocal cursorline! cursorcolumn! <CR> :sleep 400m
 noremap <Leader>c @c
 noremap <Leader>d @d
 
+"program
 noremap <leader>vs :vs ~/octave/tmp/shell.sh <CR>
 noremap <leader>vg :vertical rightbelow vsplit ~/.gdbinit <CR>
 noremap <leader>vm :vs main.c <CR>
 noremap <leader>vi :vertical rightbelow vsplit input.tst <CR>
-noremap <leader>vl :vs ~/log_hdoj <CR>
 
+"copy to save -> OJ
 noremap <leader>vh :!cp %:p ~/hdoj/all/
 noremap <leader>vk :!cp %:p ~/poj/all/
 noremap <leader>vp :!cp %:p /tmp/main.c <CR>
 
 "vimrc
-noremap <leader>vve :vs /etc/vim/vimrc <CR>
+noremap <leader>vve :vs ~/.vim/vimrc <CR>
 noremap <leader>vvt :vs $HOME/Etc/vimrc.tmp <CR>
-"noremap <leader>vvh :vs $HOME/.vim/vimrc <CR>
 noremap <leader>vvc :vs %:h/vimrc.tmp <CR>
 
 "octave
@@ -221,9 +243,9 @@ noremap <Leader>qc :cclose <CR>
 
 "tnoremap----------------------------------------------------------
 
-tnoremap <C-W>n <C-W>N
-tnoremap <C-W>N <C-W>n
-tnoremap <ESC> <C-w>p
+"tnoremap <C-W>n <C-W>N
+"tnoremap <C-W>N <C-W>n
+"tnoremap <ESC> <C-w>p
 
 "function----------------------------------------------------------
 
@@ -395,23 +417,4 @@ augroup _MY_OWN_DEFINE_
     autocmd CursorHoldI * stopinsert
     "autocmd CursorHold * redraw
 augroup end
-
-"source_file----------------------------------------------------------
-
-"for the temanary command define by the users
-"if you want to know all the function already
-"difined by vim ,see usr_41.txt
-"the next code could run successfully
-
-"~ could not be recognize
-"$HOME must out of ""
-if filereadable($HOME . "/Etc" . "/defaults.vim")
-    "source /usr/share/vim/vim80/defaults.vim
-    source $HOME/Etc/defaults.vim
-endif
-
-if filereadable($HOME . "/Etc" . "/ftplugin.vim")
-    "source /usr/share/vim/vim80/ftplugin.vim
-    source $HOME/Etc/ftplugin.vim
-endif
 
