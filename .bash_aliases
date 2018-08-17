@@ -11,8 +11,8 @@ export PATH="$PATH:/media/MATLAB/Matlab_2018a/bin/"
 
 HISTSIZE=100000
 
-#LANGUAGE=en_US.UTF-8
-#LANG=en_US.UTF-8
+LANGUAGE=en_US.UTF-8
+LANG=en_US.UTF-8
 #LC_ALL=en_US.UTF-8
 
 #it's necessary 
