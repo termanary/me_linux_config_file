@@ -1,23 +1,18 @@
 # /etc/fstab: static file system information.
 #
 # Use 'blkid' to print the universally unique identifier for a
-# but this command need the root  athurity : blkid
 # device; this may be used with UUID= as a more robust way to name devices
 # that works even if disks are added and removed. See fstab(5).
 #
 # <file system> <mount point>   <type>  <options>       <dump>  <pass>
-
-#https://blog.csdn.net/wangfenghui132/article/details/78801160
-#http://www.cnblogs.com/mfrbuaa/p/4481239.html
-
 # / was on /dev/sda8 during installation
-UUID=4be6c227-97a0-43d4-9829-babb1e77d7cc /               ext4    errors=remount-ro 0       1
+UUID=e2d6afcc-7c82-4dba-ad2a-7d65b8f93651 /               ext4    errors=remount-ro 0       1
 # /boot/efi was on /dev/sda1 during installation
 UUID=06F4-FC74  /boot/efi       vfat    umask=0077      0       1
 # /home was on /dev/sda9 during installation
-UUID=1a753536-2484-4b79-80ec-e67d9a360e05 /home           ext4    defaults        0       2
+UUID=fe8ca89b-2dba-4ccb-9b33-9eec429b2128 /home           ext4    defaults        0       2
 # swap was on /dev/sda10 during installation
-UUID=c8835573-032c-432a-8ebc-a589e1bc349c none            swap    sw              0       0
+UUID=9b61ece7-08c0-4216-ac82-89f885675d1b none            swap    sw              0       0
 
 
 #windows OS:/dev/sda3
@@ -25,14 +20,14 @@ UUID="B0B2F7CBB2F79456"  /media/OS/ ntfs auto,ro,exec,nouser,nosuid,uid=root,gid
 #MATLAB :/dev/sda4
 UUID="f064339f-56da-4a64-b5d5-531bfe4925ca" /media/MATLAB/ ext4 auto,ro,exec,nouser,nosuid 0 0
 
-#/dev/sda1: LABEL="SYSTEM" UUID="06F4-FC74" TYPE="vfat" PARTLABEL="EFI system partition" PARTUUID="1863d7b5-ba8a-4fa7-8f23-c7ee13173223"
-#/dev/sda2: PARTLABEL="Microsoft reserved partition" PARTUUID="f4a576f5-ad1c-4dcc-86f2-4f5e2f7464b4"
 #/dev/sda3: LABEL="OS" UUID="B0B2F7CBB2F79456" TYPE="ntfs" PARTLABEL="Basic data partition" PARTUUID="3b201b77-5f28-4f54-871e-6df178c4e1d0"
 #/dev/sda4: LABEL="MATLAB" UUID="f064339f-56da-4a64-b5d5-531bfe4925ca" TYPE="ext4" PARTUUID="f480876d-23d0-46bc-99a5-8bb4ce3fb5c6"
-#/dev/sda5: UUID="30aa651d-1043-49a6-90a6-567e35e956ff" TYPE="ext4" PARTUUID="2512bb0a-ec16-404d-b390-2cc4d2d80427"
+
+#/dev/sda1: LABEL="SYSTEM" UUID="06F4-FC74" TYPE="vfat" PARTLABEL="EFI system partition" PARTUUID="1863d7b5-ba8a-4fa7-8f23-c7ee13173223"
+#/dev/sda2: PARTLABEL="Microsoft reserved partition" PARTUUID="f4a576f5-ad1c-4dcc-86f2-4f5e2f7464b4"
+#/dev/sda5: LABEL="home" UUID="1a753536-2484-4b79-80ec-e67d9a360e05" TYPE="ext4" PARTLABEL="/home" PARTUUID="15c03030-7fd1-401d-ac58-e5ee2deac9fc"
 #/dev/sda6: UUID="A29C408C9C405CC3" TYPE="ntfs" PARTLABEL="Basic data partition" PARTUUID="0b1e5825-d37c-4d35-8588-0ec6048de76c"
 #/dev/sda7: UUID="2A60F26160F232E5" TYPE="ntfs" PARTLABEL="Basic data partition" PARTUUID="e789aac6-ca0a-4ea1-97b9-73260bfd17b8"
-#/dev/sda8: LABEL="/" UUID="4be6c227-97a0-43d4-9829-babb1e77d7cc" TYPE="ext4" PARTLABEL="/" PARTUUID="1e0bfff1-6a6f-40ec-a460-ef1097118b1e"
-#/dev/sda9: LABEL="home" UUID="1a753536-2484-4b79-80ec-e67d9a360e05" TYPE="ext4" PARTLABEL="/home" PARTUUID="15c03030-7fd1-401d-ac58-e5ee2deac9fc"
-#/dev/sda10: UUID="c8835573-032c-432a-8ebc-a589e1bc349c" TYPE="swap" PARTLABEL="swap" PARTUUID="d7c12dd9-c668-47b5-96dc-9ee5a08f41bf"
-
+#/dev/sda8: UUID="e2d6afcc-7c82-4dba-ad2a-7d65b8f93651" TYPE="ext4" PARTLABEL="root" PARTUUID="e8f5e427-7ed6-4640-b709-e118deca5619"
+#/dev/sda9: UUID="fe8ca89b-2dba-4ccb-9b33-9eec429b2128" TYPE="ext4" PARTLABEL="home" PARTUUID="3e0d1aa1-904c-42e9-92b5-e2b6e075e9ba"
+#/dev/sda10: UUID="9b61ece7-08c0-4216-ac82-89f885675d1b" TYPE="swap" PARTLABEL="swap" PARTUUID="2a4e5c04-3ecd-4c76-bb64-5c039d6dd287"
