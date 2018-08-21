@@ -1,6 +1,8 @@
 #acpi : the power of the system
 #alsamixer : the sound of system
 
+#PS1='\u@\h:\w$ '
+
 bind -x '"\ev":vim '
 bind -x '"\eh":htop'
 
@@ -26,9 +28,8 @@ alias lh='ls -lh --color=auto '
 alias info='info --vi-keys'
 
 alias c.='cd ../;ls'
-alias ca='cd ~/Tmp/acm/;ls'
-alias ct='cd ~/Tmp/;ls'
-alias co='cd ~/octave/tmp/;ls'
+alias cs='cd ~/script/;ls'
+alias ca='cd ~/Acm/Tmp/;ls'
 alias ch='cd ~/hdoj/tmp/;ls'
 alias ck='cd ~/poj/tmp/;ls'
 

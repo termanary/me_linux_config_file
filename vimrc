@@ -59,7 +59,8 @@ if filereadable("/etc/vim/vimrc.local")
     source /etc/vim/vimrc.local
 endif
 
-"source_file----------------------------------------------------------
+
+"source file----------------------------------------------------------
 
 "for the temanary command define by the users
 "if you want to know all the function already
@@ -124,7 +125,8 @@ set nrformats="bin,octal,hex,alpha"
 
 "    see highlight for exmaple
 "    the order of next 3 line could not be change
-colorscheme zellner
+"colorscheme for ubuntu-18.04:zellner
+colorscheme MyColo
 highlight cursorline cterm=NONE ctermbg=blue
 highlight cursorcolumn cterm=NONE ctermbg=blue
 
@@ -136,7 +138,7 @@ highlight cursorcolumn cterm=NONE ctermbg=blue
 "set cursorline
 "set lines=33 columns=95
 
-"ab-------------------------------------------------------------------
+"cab-------------------------------------------------------------------
 
 cab h vertical leftabove help
 cab t vertical rightbelow terminal ++rows=48 ++cols=70
@@ -206,30 +208,9 @@ noremap <Leader>u g~aw
 noremap <Leader>e :setlocal cursorline! cursorcolumn! <CR> :sleep 400m
             \ <CR> :setlocal cursorline! cursorcolumn! <CR>
 
+"comment
 noremap <Leader>c @c
 noremap <Leader>d @d
-
-"program
-noremap <leader>vs :vs ~/octave/tmp/shell.sh <CR>
-noremap <leader>vg :vertical rightbelow vsplit ~/.gdbinit <CR>
-noremap <leader>vm :vs main.c <CR>
-noremap <leader>vi :vertical rightbelow vsplit input.tst <CR>
-
-"copy to save -> OJ
-noremap <leader>vh :!cp %:p ~/hdoj/all/
-noremap <leader>vk :!cp %:p ~/poj/all/
-noremap <leader>vp :!cp %:p /tmp/main.c <CR>
-
-"vimrc
-noremap <leader>vve :vs ~/.vim/vimrc <CR>
-noremap <leader>vvt :vs $HOME/Etc/vimrc.tmp <CR>
-noremap <leader>vvc :vs %:h/vimrc.tmp <CR>
-
-"octave
-noremap <leader>voo :vs ~/octave/tmp/origin.m <CR>
-noremap <leader>voi :vs ~/octave/tmp/input <CR>
-noremap <leader>vof :vs ~/octave/tmp/function_octave.m <CR>
-noremap <leader>vor :vs ~/.octaverc <CR>
 
 "buffer
 noremap <Leader>bn :n <CR>
@@ -240,6 +221,32 @@ noremap <Leader>qo :copen <CR>
 noremap <Leader>qc :cclose <CR>
 "noremap <leader>a :AsyncRun 
 "noremap <leader>s :AsyncStop 
+
+"file edit----------------------------------------------------------
+
+"OJ
+noremap <leader>vm :vs main.c <CR>
+noremap <leader>vi :vertical rightbelow vsplit input.tst <CR>
+noremap <leader>vg :vertical rightbelow vsplit ~/.gdbinit <CR>
+
+"copy to save -> OJ
+noremap <leader>vh :!cp %:p ~/hdoj/all/
+noremap <leader>vk :!cp %:p ~/poj/all/
+noremap <leader>va :!cp %:p /tmp/main.c <CR>
+
+"script
+noremap <leader>vs :vs ~/script/shell.sh <CR>
+noremap <leader>vp :vs ~/script/python.py <CR>
+
+"vimrc
+noremap <leader>ve :vs ~/.vim/vimrc <CR>
+noremap <leader>vt :vs $HOME/Etc/vimrc.tmp <CR>
+noremap <leader>vu :vs %:h/vimrc.tmp <CR>
+
+"octave
+noremap <leader>vo :vs ~/script/octave.m <CR>
+noremap <leader>vn :vs ~/script/input <CR>
+noremap <leader>vc :vs ~/.octaverc <CR>
 
 "tnoremap----------------------------------------------------------
 
@@ -310,14 +317,14 @@ function _COMPILE_()
         else
             !octave-cli %:p
         endif
+    elseif &filetype == 'vim'
+        source %:p
     elseif &filetype == 'python'
         if executable(expand("%:p"))
             ! %:p
         else
             !python %:p
         endif
-    elseif &filetype == 'vim'
-        source %:p
     endif
 endfunction
 
@@ -372,13 +379,15 @@ function _FILETYPE_SET_REGISTER_()
 "endif
     if     &filetype == 'c' || &filetype == 'cpp'
         let @c="8<hI//j0" | let @d = "02x==j0"
-        syn match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2
-        syn match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
-        hi cFunctions gui=NONE cterm=bold  ctermfg=yellow
+        syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2
+        syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
+        highlight cFunctions gui=NONE cterm=bold  ctermfg=yellow
 "elseif &filetype == 'java'
     elseif &filetype == 'matlab'
         "highlight MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL ctermbg=red
         "match MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL /;\+$/
+        highlight MATLAB_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
+        match MATLAB_MY_OWN_DEFINE_NOTE /^%%.*$/
         let @c="8<hI%j0"  | let @d = "0x==j0"
         let @o="A;j" | let @t="$xj"
         let @m=expand("%:t:r")
@@ -417,4 +426,29 @@ augroup _MY_OWN_DEFINE_
     autocmd CursorHoldI * stopinsert
     "autocmd CursorHold * redraw
 augroup end
+
+""##### auto fcitx  ###########
+"let g:input_toggle = 1
+"function! Fcitx2en()
+"let s:input_status = system("fcitx-remote")
+"if s:input_status == 2
+  "let g:input_toggle = 1
+  "let l:a = system("fcitx-remote -c")
+"endif
+"endfunction
+"
+"function! Fcitx2zh()
+"let s:input_status = system("fcitx-remote")
+"if s:input_status != 2 && g:input_toggle == 1
+  "let l:a = system("fcitx-remote -o")
+  "let g:input_toggle = 0
+"endif
+"endfunction
+"
+"set ttimeoutlen=150
+""退出插入模式
+"autocmd InsertLeave * call Fcitx2en()
+""进入插入模式
+"autocmd InsertEnter * call Fcitx2zh()
+""##### auto fcitx end ######
 
