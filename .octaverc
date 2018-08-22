@@ -1,8 +1,6 @@
 #package load
 pkg load symbolic
-#syms x 
 
-#PS1("GNU Octave:\\w:\\#>>  ")
 PS1("GNU Octave:\\#>> ")
 
 #terminal display
@@ -15,8 +13,14 @@ sympref display flat
 #split_long_rows(0)
 
 #path 
+#what dir :find *.m files
+#isdir('dir') :judge dir 
+#which function : find function file
 #cd /home/me/octave/tmp/
-addpath ~/octave/tmp/
+if exist('~/script/')==7
+#help exist
+addpath ~/script/
+endif
 
 #digits display
 #format short g
