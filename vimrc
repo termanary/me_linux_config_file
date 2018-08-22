@@ -178,6 +178,9 @@ inoremap <C-e> <end>
 "map could have argument
 noremap <expr> ; getcharsearch().forward ? ';' : ','
 noremap <expr> , getcharsearch().forward ? ',' : ';'
+"help internal-variables
+noremap <expr> n v:searchforward ? 'n' : 'N'
+noremap <expr> N v:searchforward ? 'N' : 'n'
 
 noremap 0 ^
 noremap ^ 0
@@ -444,7 +447,8 @@ augroup _MY_OWN_DEFINE_
     "updatetime->CursorHoldI
     autocmd BufEnter * call _FILETYPE_SET_REGISTER_()
     autocmd CursorHoldI * stopinsert
-"autocmd CursorHold * if 1==1 | echomsg 's' | endif
+    au BufReadPost * exe "normal! g`\""
+"au BufReadPost * if line("'\"") != 1 || line("'\"") != 1 | exe "normal! g`\"" | endif
     "autocmd CursorHold * redraw
 augroup end
 
