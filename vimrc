@@ -189,7 +189,7 @@ noremap \ :!
 
 noremap <F8> :source $HOME/Etc/vimrc.tmp <CR>
 noremap <F9> :call _COMPILE_() <CR>
-noremap <F10> :call _TEST_INPUT_TO_RUN() <CR>
+noremap <F10> :call _TEST_INPUT_TO_RUN_() <CR>
 
 "help key-codes
 let mapleader = "\<Space>"
@@ -224,10 +224,14 @@ noremap <Leader>qc :cclose <CR>
 
 "file edit----------------------------------------------------------
 
+"How to use one line for 'if' in cmdline : au , map : |
+"autocmd CursorHold * if 1==1 | echomsg '0' | endif
+"noremap <leader>a :if 1 == 1 \| echom '0' \| endif <CR>
+
 "OJ
-noremap <leader>vm :vs main.c <CR>
-noremap <leader>vi :vertical rightbelow vsplit input.tst <CR>
-noremap <leader>vg :vertical rightbelow vsplit ~/.gdbinit <CR>
+noremap <leader>vm :call _OPENFILE_("main.c","l") <CR>
+noremap <leader>vi :call _OPENFILE_("input.tst","r") <CR>
+noremap <leader>vg :call _OPENFILE_("~/.gdbinit","r") <CR>
 
 "copy to save -> OJ
 noremap <leader>vh :!cp %:p ~/hdoj/all/
@@ -235,18 +239,18 @@ noremap <leader>vk :!cp %:p ~/poj/all/
 noremap <leader>va :!cp %:p /tmp/main.c <CR>
 
 "script
-noremap <leader>vs :vs ~/script/shell.sh <CR>
-noremap <leader>vp :vs ~/script/python.py <CR>
+noremap <leader>vs :call _OPENFILE_("~/script/shell.sh","l") <CR>
+noremap <leader>vp :call _OPENFILE_("~/script/python.py","l") <CR>
 
 "vimrc
-noremap <leader>ve :vs ~/.vim/vimrc <CR>
-noremap <leader>vt :vs $HOME/Etc/vimrc.tmp <CR>
-noremap <leader>vu :vs %:h/vimrc.tmp <CR>
+noremap <leader>ve :call _OPENFILE_("~/.vim/vimrc","l") <CR>
+noremap <leader>vt :call _OPENFILE_("$HOME/Etc/vimrc.tmp","l") <CR>
+noremap <leader>vu :call _OPENFILE_("%:h/vimrc.tmp","l") <CR>
 
 "octave
-noremap <leader>vo :vs ~/script/octave.m <CR>
-noremap <leader>vn :vs ~/script/input <CR>
-noremap <leader>vc :vs ~/.octaverc <CR>
+noremap <leader>vo :call _OPENFILE_("~/script/octave.m ","l") <CR>
+noremap <leader>vn :call _OPENFILE_("~/script/input","l") <CR>
+noremap <leader>vc :call _OPENFILE_("~/.octaverc","l") <CR>
 
 "tnoremap----------------------------------------------------------
 
@@ -262,10 +266,26 @@ noremap <leader>vc :vs ~/.octaverc <CR>
 "the "function! x" not
 
 if exists("_function_exists")
-    delfunction _FILETYPE_SET_REGISTER_
-    delfunction _TEST_INPUT_TO_RUN
     "delfunction _COMPILE_
+    delfunction _TEST_INPUT_TO_RUN_
+    delfunction _FILETYPE_SET_REGISTER_
+    delfunction _OPENFILE_
 endif
+
+"help function
+function _OPENFILE_(filename,lr)
+    if @# == ''
+        execute 'edit ' . a:filename
+    else
+        if a:lr=='l'
+            execute 'vsplit ' . a:filename
+        elseif a:lr=='r'
+            execute 'vertical rightbelow vsplit ' . a:filename
+        else
+            echomsg 'ERROR'
+        endif
+    endif
+endfunction
 
 function _COMPILE_()
     "if you want to get all the variable :see options.txt
@@ -338,7 +358,7 @@ endfunction
 "the global-variable would not cover the function-local
 "varialbles
 
-function _TEST_INPUT_TO_RUN()
+function _TEST_INPUT_TO_RUN_()
     "findfile(),finddir()
     "register '%' and '#'
     "copen
@@ -424,6 +444,7 @@ augroup _MY_OWN_DEFINE_
     "updatetime->CursorHoldI
     autocmd BufEnter * call _FILETYPE_SET_REGISTER_()
     autocmd CursorHoldI * stopinsert
+"autocmd CursorHold * if 1==1 | echomsg 's' | endif
     "autocmd CursorHold * redraw
 augroup end
 
