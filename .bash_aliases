@@ -41,7 +41,7 @@ alias rm='rm -v '
 alias cp='cp -iv '
 alias mv='mv -iv '
 
-alias v='$HOME/.vim/vim.sh' 
+alias p='python3 '
 alias e='emacs -nw'
 alias s='screen '
 alias gdb='gdbtui '
@@ -49,4 +49,25 @@ alias gdb='gdbtui '
 alias o='octave-cli'
 alias octave='octave-cli --silent'
 alias matlab='matlab -nosplash -nodesktop '
+
+#a bash function
+#hw () { echo 'Hello,World!'; }
+
+#copy from stackoverflow
+#g () { emacs --eval "(insert \"autocmd\") " ; }
+gd () { emacs --eval "(gdb \"gdb -i=mi $*\")" ; }
+
+v ()
+{
+    if [ $# -gt 2 ]
+    then
+        vim $*
+    elif [ $# -le 2 ]
+    then
+        vim -O $*
+    else
+        echo 'ERROR'
+    fi
+}
+
 
