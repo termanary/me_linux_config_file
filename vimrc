@@ -94,7 +94,7 @@ set smarttab
 
 set autoindent
 set smartindent
-filetype indent on
+filetype indent plugin on
 
 set ignorecase
 set incsearch
@@ -106,10 +106,13 @@ set notimeout
 set ttimeout
 
 set showcmd
+set ruler
+"set rulerformat
 set wildmenu
 set laststatus=1
 "set statusline+=%{strftime(\"%T\")}
 
+set wildmode&
 set runtimepath&
 set modeline
 set history=200
@@ -193,6 +196,8 @@ noremap \ :!
 noremap <F8> :source $HOME/Etc/vimrc.tmp <CR>
 noremap <F9> :call _COMPILE_() <CR>
 noremap <F10> :call _TEST_INPUT_TO_RUN_() <CR>
+noremap <F11> :!emacs --eval "(gdb \"gdb -i=mi %:h/_%:t:r \")" <CR>
+"emacs --eval "(pdb \"pdb %:p \")" <CR>
 
 "help key-codes
 let mapleader = "\<Space>"
@@ -206,14 +211,15 @@ noremap <Leader>t T
 noremap <Leader>w <C-w>
 "noremap <Leader>r <C-r>
 
+noremap m/ /\v
 noremap <Leader>h :nohlsearch <CR>
 noremap <Leader>u g~aw
 noremap <Leader>e :setlocal cursorline! cursorcolumn! <CR> :sleep 400m
             \ <CR> :setlocal cursorline! cursorcolumn! <CR>
 
 "comment
-noremap <Leader>c @c
-noremap <Leader>d @d
+"noremap <Leader>c @c
+"noremap <Leader>d @d
 
 "buffer
 noremap <Leader>bn :n <CR>
@@ -232,14 +238,14 @@ noremap <Leader>qc :cclose <CR>
 "noremap <leader>a :if 1 == 1 \| echom '0' \| endif <CR>
 
 "OJ
-noremap <leader>vm :call _OPENFILE_("main.c","l") <CR>
+noremap <leader>vm :call _OPENFILE_("main.c[p]*","l") <CR>
 noremap <leader>vi :call _OPENFILE_("input.tst","r") <CR>
 noremap <leader>vg :call _OPENFILE_("~/.gdbinit","r") <CR>
 
 "copy to save -> OJ
 noremap <leader>vh :!cp %:p ~/hdoj/all/
 noremap <leader>vk :!cp %:p ~/poj/all/
-noremap <leader>va :!cp %:p /tmp/main.c <CR>
+noremap <leader>va :!cp %:p /media/Program/main.c <CR>
 
 "script
 noremap <leader>vs :call _OPENFILE_("~/script/shell.sh","l") <CR>
@@ -257,9 +263,9 @@ noremap <leader>vc :call _OPENFILE_("~/.octaverc","l") <CR>
 
 "tnoremap----------------------------------------------------------
 
-"tnoremap <C-W>n <C-W>N
-"tnoremap <C-W>N <C-W>n
-"tnoremap <ESC> <C-w>p
+tnoremap <C-W>n <C-W>N
+tnoremap <C-W>N <C-W>n
+tnoremap <ESC> <C-w>p
 
 "function----------------------------------------------------------
 
@@ -277,7 +283,7 @@ endif
 
 "help function
 function _OPENFILE_(filename,lr)
-    if @# == ''
+    if @% == ''
         execute 'edit ' . a:filename
     else
         if a:lr=='l'
@@ -401,7 +407,6 @@ function _FILETYPE_SET_REGISTER_()
     "source %:h/vimrc.tmp
 "endif
     if     &filetype == 'c' || &filetype == 'cpp'
-        let @c="8<hI//j0" | let @d = "02x==j0"
         syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2
         syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
         highlight cFunctions gui=NONE cterm=bold  ctermfg=yellow
@@ -411,28 +416,25 @@ function _FILETYPE_SET_REGISTER_()
         "match MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL /;\+$/
         highlight MATLAB_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
         match MATLAB_MY_OWN_DEFINE_NOTE /^%%.*$/
-        let @c="8<hI%j0"  | let @d = "0x==j0"
         let @o="A;j" | let @t="$xj"
         let @m=expand("%:t:r")
         noremap <buffer> <leader>m :w <CR><C-w>l<C-W>"m<CR><C-w>p
         noremap <buffer> <leader>; @o
         noremap <buffer> <leader>, @t
-    elseif &filetype == 'python' || &filetype == 'sh' || &filetype == 'gdb'
-                \ || &filetype == 'conf'
-        let @c="8<hI#j0"  | let @d = "0x==j0"
+    elseif &filetype == 'python' || &filetype == 'sh' || &filetype == 'gdb' || &filetype == 'conf'
+        highlight PYTHON_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
+        match PYTHON_MY_OWN_DEFINE_NOTE /^##.*$/
     elseif &filetype == ''
         if expand("%:t:r") == 'input' || expand("%:t") == 'input.tst'
             set iskeyword+=.,-
         endif
     elseif &filetype == 'vim'
-        let @c="8<hI\"xj0" | let @d = "0x==j0"
         "help cterm-colors
         highlight VIM_MY_OWN_DEFINE_SPACE_EOL ctermbg=red
         match VIM_MY_OWN_DEFINE_SPACE_EOL /\s\+$/
         "elseif &filetype == 'make'
         "setlocal list listchars=tab:>-,trail:@
     else
-        let @c="8<hI#j0"  | let @d = "0x==j0"
     endif
 endfunction
 
@@ -447,7 +449,7 @@ augroup _MY_OWN_DEFINE_
     "updatetime->CursorHoldI
     autocmd BufEnter * call _FILETYPE_SET_REGISTER_()
     autocmd CursorHoldI * stopinsert
-    au BufReadPost * exe "normal! g`\""
+    autocmd BufReadPost * if line("'\"") <= line("$") | exe "normal! g`\"" | endif
 "au BufReadPost * if line("'\"") != 1 || line("'\"") != 1 | exe "normal! g`\"" | endif
     "autocmd CursorHold * redraw
 augroup end
@@ -476,4 +478,52 @@ augroup end
 ""进入插入模式
 "autocmd InsertEnter * call Fcitx2zh()
 ""##### auto fcitx end ######
+
+" Status line
+" https://groups.google.com/forum/#!topic/vim_use/wPnsi-40FhE
+"set laststatus=2
+"set statusline=
+"set statusline +=%1*\ %n\ %*            "buffer number
+"set statusline +=%5*%{&ff}%*            "file format
+"set statusline +=%3*%y%*                "file type
+"set statusline +=%4*\ %<%F%*            "full path
+"set statusline +=%2*%m%*                "modified flag
+"set statusline +=%1*%=%5l%*             "current line
+"set statusline +=%2*/%L%*               "total lines
+"set statusline +=%1*%4c\ %*             "column number
+"set statusline +=%2*0x%04B\ %*          "character under cursor
+
+
+" Concat the active statusline {{{
+" ------------------------------------------=--------------------=------------
+"               Gibberish                   | What da heck?      | Example
+" ------------------------------------------+--------------------+------------
+"set statusline=                            "| Clear status line  |
+"set statusline+=\ %7*%{&paste?'=':''}%*    "| Paste symbol       | =
+"set statusline+=%4*%{&ro?'':'#'}%*         "| Modifiable symbol  | #
+"set statusline+=%6*%{TlMode()}             "| Readonly symbol    | 
+"set statusline+=%*%n                       "| Buffer number      | 3
+"set statusline+=%6*%{TlModified()}%0*      "| Write symbol       | +
+"set statusline+=\ %1*%{TlSuperName()}%*    "| Relative supername | cor/app.js
+"set statusline+=\ %<                       "| Truncate here      |
+"set statusline+=%(\ %{TlBranchName()}\ %) "| Git branch name    |  master
+"set statusline+=%4*%(%{TlWhitespace()}\ %) "| Space and indent   | trail34
+"set statusline+=%(%{TlSyntax()}\ %)%*      "| syntax error/warn  | E:1W:1
+"set statusline+=%=                         "| Align to right     |
+"set statusline+=%{TlFormat()}\ %4*%*      "| File format        | unix 
+"set statusline+=%(\ %{&fenc}\ %)           "| File encoding      | utf-8
+"set statusline+=%4*%*%(\ %{&ft}\ %)       "| File type          |  python
+"set statusline+=%3*%2*\ %l/%2c%4p%%\ %*   "| Line and column    | 69:77/ 90%
+" ------------------------------------------'--------------------'---------}}}
+
+"nerdcommenter:
+"ca mode
+"cA insert end of line
+"c$ comment to end
+"cs block
+"cm
+"c<space> toggle
+"cc line
+
+noremap <leader>d :call NERDComment("n","Toggle") <CR>
 
