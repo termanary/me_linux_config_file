@@ -23,7 +23,7 @@
 (fset 'emacs_gdb
    "g\C-m\C-[xgdb man\C-i\C-m\C-xo\C-xo\C-xo\C-x0\C-xo\C-x0\C-xo\C-x0")
 ;just for gdb-mode
-(global-set-key [f12] 'gdb)
+;(global-set-key [f12] 'gdb)
 (global-set-key [f11] 'emacs_gdb)
 (global-set-key [f8] 'gud-cont)
 (global-set-key [f7] 'gud-next)
