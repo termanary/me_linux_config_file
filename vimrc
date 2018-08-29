@@ -214,8 +214,8 @@ noremap <Leader>w <C-w>
 noremap m/ /\v
 noremap <Leader>h :nohlsearch <CR>
 noremap <Leader>u g~aw
-noremap <Leader>e :setlocal cursorline! cursorcolumn! <CR> :sleep 400m
-            \ <CR> :setlocal cursorline! cursorcolumn! <CR>
+noremap <Leader>e :setlocal cursorline! cursorcolumn!<CR>:sleep 400m
+            \<CR>:setlocal cursorline! cursorcolumn!<CR>
 
 "comment
 "noremap <Leader>c @c
@@ -238,7 +238,7 @@ noremap <Leader>qc :cclose <CR>
 "noremap <leader>a :if 1 == 1 \| echom '0' \| endif <CR>
 
 "OJ
-noremap <leader>vm :call _OPENFILE_("main.c[p]*","l") <CR>
+noremap <leader>vm :call _OPENFILE_("main.c*","l") <CR>
 noremap <leader>vi :call _OPENFILE_("input.tst","r") <CR>
 noremap <leader>vg :call _OPENFILE_("~/.gdbinit","r") <CR>
 
@@ -305,32 +305,14 @@ function _COMPILE_()
     "set filetype=?
     "!cmd % --could handle currently file by shell command
     if &filetype == 'c'
-        "-std=c89 -std=c99 -std-gnu89 -pedantic -ansi
-        "let _gcc_compile_options="-Wunreachable-code -Winline
-        "\ -Wstrict-prototypes -Wmissing-prototypes
-        "\ -Wshadow -Wtraditional -Waggregate-return
-        "\ -Wredundant-decls"
-        let _gcc_compile_options=" -Wunreachable-code -Winline
-                    \ -Wshadow -Wredundant-decls -Waggregate-return "
-        if exists("g:_the_c_compile_options")
-            if g:_the_c_compile_options == "HDOJ"
-                let _gcc_compile_options = _gcc_compile_options . " -std=c89 "
-            endif
-        endif
-        "gcc-4.8
-        execute "!gcc -Wall -Wextra -g -W -pipe " .
+        "std=c89
+        let _gcc_compile_options=" -Wfloat-equal -Wshadow "
+        execute "!gcc -Wall -Wextra -Wfatal-errors -g3 -pipe " .
                     \ _gcc_compile_options . " -o %:h/_%:t:r %:p -lm"
     elseif &filetype == 'cpp'
-        let _gpp_compile_options=" -Wunreachable-code -Winline
-                    \ -Wshadow -Wredundant-decls -Waggregate-return "
-        if exists("g:_the_cpp_compile_options")
-            if g:_the_cpp_compile_options == "HDOJ"
-                "let _gpp_compile_options = _gpp_compile_options . " -std=c89 "
-                echomsg "HDOJ-C++"
-            endif
-        endif
-        execute "!g++ -Wall -Wextra -g -W -pipe " .
-                    \ _gpp_compile_options . " -o %:h/_%:t:r %:p -lm"
+        let _gpp_compile_options=" -Wfloat-equal -Wshadow "
+        execute "!g++ -Wall -Wextra -Wfatal-errors -g3 -pipe " .
+                    \ _gpp_compile_options . " -o %:h/_%:t:r %:p "
 "elseif &filetype == 'java'
     elseif &filetype == 'sh'
         "help function-list
@@ -526,4 +508,6 @@ augroup end
 "cc line
 
 noremap <leader>d :call NERDComment("n","Toggle") <CR>
+let g:NERDDefaultAlign = 'left'
+let g:NERDAltDelims_c = 1
 
