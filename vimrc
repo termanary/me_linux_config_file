@@ -60,6 +60,14 @@ if filereadable("/etc/vim/vimrc.local")
 endif
 
 
+if has('python3')==0 || has('terminal')==0
+    echomsg 'Need to recompile!'
+    " get source code from github by downloading *.zip by wget to compile
+    " ./configure -enable-python3interp
+    " make
+    " sudo make install
+endif
+
 "source file----------------------------------------------------------
 
 "for the temanary command define by the users
@@ -94,6 +102,7 @@ set smarttab
 
 set autoindent
 set smartindent
+set foldmethod=marker
 filetype indent plugin on
 
 set ignorecase
@@ -129,7 +138,11 @@ set nrformats="bin,octal,hex,alpha"
 "    see highlight for exmaple
 "    the order of next 3 line could not be change
 "colorscheme for ubuntu-18.04:zellner
-colorscheme MyColo
+if $USER == 'me'
+    colorscheme MyColo
+elseif $USER == 'syx'
+    colorscheme MyColo
+endif
 highlight cursorline cterm=NONE ctermbg=blue
 highlight cursorcolumn cterm=NONE ctermbg=blue
 
@@ -217,10 +230,6 @@ noremap <Leader>u g~aw
 noremap <Leader>e :setlocal cursorline! cursorcolumn!<CR>:sleep 400m
             \<CR>:setlocal cursorline! cursorcolumn!<CR>
 
-"comment
-"noremap <Leader>c @c
-"noremap <Leader>d @d
-
 "buffer
 noremap <Leader>bn :n <CR>
 noremap <Leader>bp :N <CR>
@@ -249,7 +258,7 @@ noremap <leader>va :!cp %:p /media/Program/main.c <CR>
 
 "script
 noremap <leader>vs :call _OPENFILE_("~/script/shell.sh","l") <CR>
-noremap <leader>vp :call _OPENFILE_("~/script/python.py","l") <CR>
+noremap <leader>vp :call _OPENFILE_("~/script/python3.py","l") <CR>
 
 "vimrc
 noremap <leader>ve :call _OPENFILE_("~/.vim/vimrc","l") <CR>
@@ -258,14 +267,18 @@ noremap <leader>vu :call _OPENFILE_("%:h/vimrc.tmp","l") <CR>
 
 "octave
 noremap <leader>vo :call _OPENFILE_("~/script/octave.m ","l") <CR>
-noremap <leader>vn :call _OPENFILE_("~/script/input","l") <CR>
+noremap <leader>vn :call _OPENFILE_("~/script/input.tst","l") <CR>
 noremap <leader>vc :call _OPENFILE_("~/.octaverc","l") <CR>
 
 "tnoremap----------------------------------------------------------
 
+if has('terminal')
 tnoremap <C-W>n <C-W>N
 tnoremap <C-W>N <C-W>n
 tnoremap <ESC> <C-w>p
+else
+    echo "Don't support terminal!"
+endif
 
 "function----------------------------------------------------------
 
@@ -279,7 +292,16 @@ if exists("_function_exists")
     delfunction _TEST_INPUT_TO_RUN_
     delfunction _FILETYPE_SET_REGISTER_
     delfunction _OPENFILE_
+    delfunction _PYTHON_FUNCTION_
 endif
+
+function _PYTHON_FUNCTION_()
+python3 << ENDPYTHON3
+print('python3')
+import vim
+vim.command("echom 'vim'")
+ENDPYTHON3
+endfunction
 
 "help function
 function _OPENFILE_(filename,lr)
@@ -313,7 +335,6 @@ function _COMPILE_()
         let _gpp_compile_options=" -Wfloat-equal -Wshadow "
         execute "!g++ -Wall -Wextra -Wfatal-errors -g3 -pipe " .
                     \ _gpp_compile_options . " -o %:h/_%:t:r %:p "
-"elseif &filetype == 'java'
     elseif &filetype == 'sh'
         "help function-list
         "help file-functions
@@ -328,14 +349,16 @@ function _COMPILE_()
         else
             !octave-cli %:p
         endif
-    elseif &filetype == 'vim'
-        source %:p
     elseif &filetype == 'python'
         if executable(expand("%:p"))
             ! %:p
         else
-            !python %:p
+            !python3 %:p
         endif
+    elseif &filetype == 'java'
+        !javac %:p
+    elseif &filetype == 'vim'
+        source %:p
     endif
 endfunction
 
@@ -353,22 +376,22 @@ function _TEST_INPUT_TO_RUN_()
     "findfile(),finddir()
     "register '%' and '#'
     "copen
+    if exists("g:_the_input_file_")
+        let _the_input_file_=g:_the_input_file_
+    else
+        "can not have ; with 'let'
+        let _the_input_file_="input.tst"
+    endif
+    "when you want to give a string variable to another ,
+    "you need to use "let"
+    "when you want to merge two string variable together ,
+    "use operator "."
+    if expand("%:h") != "."
+        let _result_=expand("%:h") . "/" . _the_input_file_
+    else
+        let _result_=_the_input_file_
+    endif
     if &filetype == 'c' || &filetype == 'cpp'
-        if exists("g:_the_input_file_")
-            let _the_input_file_=g:_the_input_file_
-        else
-            "can not have ; with 'let'
-            let _the_input_file_="input.tst"
-        endif
-        "when you want to give a string variable to another ,
-        "you need to use "let"
-        "when you want to merge two string variable together ,
-        "use operator "."
-        if expand("%:h") != "."
-            let _result_=expand("%:h") . "/" . _the_input_file_
-        else
-            let _result_=_the_input_file_
-        endif
         if findfile(_the_input_file_,expand("%:h"))
                     \ == _result_
             "help :!
@@ -380,7 +403,15 @@ function _TEST_INPUT_TO_RUN_()
             "echoerr
             echomsg 'ERROR!'
         endif
-"elseif &filetype == 'java'
+    elseif &filetype == 'java'
+        if findfile(_the_input_file_,expand("%:h"))
+                    \ == _result_
+            execute "!java %:r < %:h/" . _the_input_file_
+        elseif findfile(_the_input_file_) == ""
+            !java %:r 2>&1
+        else
+            echomsg 'ERROR!'
+        endif
     endif
 endfunction
 
@@ -397,15 +428,14 @@ function _FILETYPE_SET_REGISTER_()
         "highlight MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL ctermbg=red
         "match MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL /;\+$/
         highlight MATLAB_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
-        match MATLAB_MY_OWN_DEFINE_NOTE /^%%.*$/
-        let @o="A;j" | let @t="$xj"
+        match MATLAB_MY_OWN_DEFINE_NOTE /^% %.*$/
         let @m=expand("%:t:r")
         noremap <buffer> <leader>m :w <CR><C-w>l<C-W>"m<CR><C-w>p
-        noremap <buffer> <leader>; @o
-        noremap <buffer> <leader>, @t
+        noremap <buffer> <leader>; :s/$/;/<CR>:nohlsearch<CR>g;
+        noremap <buffer> <leader>, :s/;$//<CR>:nohlsearch<CR>g;
     elseif &filetype == 'python' || &filetype == 'sh' || &filetype == 'gdb' || &filetype == 'conf'
         highlight PYTHON_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
-        match PYTHON_MY_OWN_DEFINE_NOTE /^##.*$/
+        match PYTHON_MY_OWN_DEFINE_NOTE /^# #.*$/
     elseif &filetype == ''
         if expand("%:t:r") == 'input' || expand("%:t") == 'input.tst'
             set iskeyword+=.,-
@@ -435,6 +465,16 @@ augroup _MY_OWN_DEFINE_
 "au BufReadPost * if line("'\"") != 1 || line("'\"") != 1 | exe "normal! g`\"" | endif
     "autocmd CursorHold * redraw
 augroup end
+
+"color:
+"Black White
+"DarkRed Red
+"DarkYellow Yellow
+"DarkGreen Green
+"DarkBlue Blue
+"DarkCyan Cyan
+"DarkMagenta Magenta
+"DarkGrey Grey
 
 ""##### auto fcitx  ###########
 "let g:input_toggle = 1
@@ -476,7 +516,7 @@ augroup end
 "set statusline +=%2*0x%04B\ %*          "character under cursor
 
 
-" Concat the active statusline {{{
+" Concat the active statusline 
 " ------------------------------------------=--------------------=------------
 "               Gibberish                   | What da heck?      | Example
 " ------------------------------------------+--------------------+------------
@@ -496,7 +536,7 @@ augroup end
 "set statusline+=%(\ %{&fenc}\ %)           "| File encoding      | utf-8
 "set statusline+=%4*%*%(\ %{&ft}\ %)       "| File type          |  python
 "set statusline+=%3*%2*\ %l/%2c%4p%%\ %*   "| Line and column    | 69:77/ 90%
-" ------------------------------------------'--------------------'---------}}}
+" ------------------------------------------'--------------------'---------
 
 "nerdcommenter:
 "ca mode
@@ -505,9 +545,11 @@ augroup end
 "cs block
 "cm
 "c<space> toggle
-"cc line
+" cc line
 
 noremap <leader>d :call NERDComment("n","Toggle") <CR>
 let g:NERDDefaultAlign = 'left'
+let g:NERDSpaceDelims = 1
 let g:NERDAltDelims_c = 1
+let g:NERDAltDelims_python = 1
 
