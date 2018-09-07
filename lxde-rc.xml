@@ -256,6 +256,13 @@
             </action>
         </keybind>
 
+        <keybind key="C-A-e">
+            <action name="Execute">
+                <command>emacs --maximized /media/Program/main.c</command>
+
+            </action>
+        </keybind>
+
         <!-- It's the end of piece which is defined by syx -->
 
         <!-- 
