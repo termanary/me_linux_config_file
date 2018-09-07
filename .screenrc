@@ -27,7 +27,9 @@
 
 #this piece of code is write by me
 #caption always "%w %Y/%m/%d %D %c:%s %u"
-caption always "%{gk}%-= %Y/%m/%d %D %c:%s %u"
+#
+#caption always "%{gk}%-= %Y/%m/%d %D %c:%s %u"
+caption always "%{gk}%-= %Y/%m/%d %D %c:%s"
 
 #hardstatus string "%w %Y/%m/%d %D %c:%s %u"
 #caption always "%{= .Y}%50> %n*%f %t%{= G}%+Lw%< %-= %c:%s %m/%d/%Y"

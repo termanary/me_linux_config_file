@@ -1,5 +1,10 @@
+#get source code from : https://ftp.gnu.org/gnu/octave/ by wget 
+#compile dependence:libpcre3-dev
+
 #package load
 pkg load symbolic
+# pkg load io
+# pkg load statistics
 
 PS1("GNU Octave:\\#>> ")
 
@@ -16,7 +21,7 @@ sympref display flat
 #what dir :find *.m files
 #isdir('dir') :judge dir 
 #which function : find function file
-#cd /home/me/octave/tmp/
+# cd /home/me/octave/tmp/
 if exist('~/script/')==7
 #help exist
 addpath ~/script/
