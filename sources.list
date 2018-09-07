@@ -1,0 +1,32 @@
+# info :
+# https://www.debian.org/doc/manuals/debian-handbook/apt.zh-cn.html
+# https://www.debian.org/doc/manuals/debian-reference/ch02.zh-cn.html
+# 
+
+# deb cdrom:[Debian GNU/Linux 9.5.0 _Stretch_ - Official amd64 DVD Binary-1 20180714-10:25]/ stretch contrib main
+
+# deb cdrom:[Debian GNU/Linux 9.5.0 _Stretch_ - Official amd64 DVD Binary-1 20180714-10:25]/ stretch contrib main
+
+deb http://mirrors.163.com/debian stretch main contrib non-free
+deb-src http://mirrors.163.com/debian stretch main contrib non-free
+
+deb http://mirrors.tuna.tsinghua.edu.cn/debian/ stretch main contrib non-free
+deb-src http://mirrors.tuna.tsinghua.edu.cn/debian/ stretch main contrib non-free
+
+deb http://mirrors.ustc.edu.cn/debian/ stretch main contrib non-free
+deb-src http://mirrors.ustc.edu.cn/debian/ stretch main contrib non-free
+
+deb http://security.debian.org/debian-security stretch/updates main contrib non-free
+deb-src http://security.debian.org/debian-security stretch/updates main contrib non-free
+
+# stretch-updates, previously known as 'volatile'
+
+# deb http://mirrors.163.com/debian stretch-updates main contrib
+# deb-src http://mirrors.163.com/debian stretch-updates main contrib
+
+deb http://mirrors.tuna.tsinghua.edu.cn/debian/ stretch-updates main contrib non-free
+deb-src http://mirrors.tuna.tsinghua.edu.cn/debian/ stretch-updates main contrib non-free
+
+deb http://mirrors.ustc.edu.cn/debian/ stretch-updates main contrib non-free
+deb-src http://mirrors.ustc.edu.cn/debian/ stretch-updates main contrib non-free
+
