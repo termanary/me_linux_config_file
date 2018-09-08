@@ -9,15 +9,14 @@ bind -x '"\ev":vim '
 bind -x '"\eh":htop'
 
 #echo $PATH
+# env :all variable
 export EDITOR=/usr/local/bin/vim
 export PATH="$PATH:/media/MATLAB/Matlab_2018a/bin/"
-#export PATH="$PATH:$HOME/Bin/"
-
-HISTSIZE=100000
-
-LANGUAGE=en_US.UTF-8
-LANG=en_US.UTF-8
-#LC_ALL=en_US.UTF-8
+export PYTHONSTARTUP=~/.pythonstartup
+export HISTSIZE=100000
+export LANGUAGE=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 
 #it's necessary 
 alias grep='grep --color=auto -E '
