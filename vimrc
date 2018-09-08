@@ -62,8 +62,11 @@ endif
 
 if has('python3')==0 || has('terminal')==0
     echomsg 'Need to recompile!'
+    " dependence : ncurses->libncurses5-dev python-dev python3-dev
     " get source code from github by downloading *.zip by wget to compile
-    " ./configure -enable-python3interp
+    " ./configure -enable-pythoninterp -enable-python3interp
+    " \ --with-python-config-dir=/usr/lib/python2.7/config-x86_64-linux-gnu/
+    " \ --with-python3-config-dir=/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu/
     " make
     " sudo make install
 endif
@@ -329,11 +332,11 @@ function _COMPILE_()
     if &filetype == 'c'
         "std=c89
         let _gcc_compile_options=" -Wfloat-equal -Wshadow "
-        execute "!gcc -Wall -Wextra -Wfatal-errors -g3 -pipe " .
-                    \ _gcc_compile_options . " -o %:h/_%:t:r %:p -lm"
+        execute "!gcc -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
+                    \ _gcc_compile_options . " -o %:h/_%:t:r %:p -lm "
     elseif &filetype == 'cpp'
         let _gpp_compile_options=" -Wfloat-equal -Wshadow "
-        execute "!g++ -Wall -Wextra -Wfatal-errors -g3 -pipe " .
+        execute "!g++ -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
                     \ _gpp_compile_options . " -o %:h/_%:t:r %:p "
     elseif &filetype == 'sh'
         "help function-list
