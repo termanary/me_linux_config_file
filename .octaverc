@@ -1,5 +1,6 @@
 #get source code from : https://ftp.gnu.org/gnu/octave/ by wget 
-#compile dependence:libpcre3-dev
+#compile dependence:gfortran BLAS:libblas-dev 
+#LAPACK:liblapack-dev PCRE:libpcre3-dev readline:libreadline-dev
 
 #package load
 pkg load symbolic
