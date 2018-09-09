@@ -60,8 +60,13 @@ if filereadable("/etc/vim/vimrc.local")
 endif
 
 
-if has('python3')==0 || has('terminal')==0
+if has('terminal')==0 || has('python3_compiled')==0 || has('python_compiled')==0
+    " help if_pyth.txt
     echomsg 'Need to recompile!'
+    if has('python3_dynamic')==0 || has('python_dynamic')==0
+        echomsg 'Could not dynamic load!'
+    endif
+    " help python-building
     " dependence : ncurses->libncurses5-dev python-dev python3-dev
     " get source code from github by downloading *.zip by wget to compile
     " ./configure -enable-pythoninterp -enable-python3interp
@@ -124,6 +129,7 @@ set wildmenu
 set laststatus=1
 "set statusline+=%{strftime(\"%T\")}
 
+set pyxversion&
 set wildmode&
 set runtimepath&
 set modeline
@@ -145,6 +151,8 @@ if $USER == 'me'
     colorscheme MyColo
 elseif $USER == 'syx'
     colorscheme MyColo
+else
+    echomsg "Please set your colorscheme!"
 endif
 highlight cursorline cterm=NONE ctermbg=blue
 highlight cursorcolumn cterm=NONE ctermbg=blue
@@ -299,10 +307,20 @@ if exists("_function_exists")
 endif
 
 function _PYTHON_FUNCTION_()
+if has('python_compiled')==0
+    echomsg "Don't support python2!"
+endif
+if has('python3_compiled')==0
+    echomsg "Don't support python3!"
+endif
+if has('python3_dynamic')==0 || has('python_dynamic')==0
+    echomsg "Could dynamic load python3/python!"
+endif
+" help if_pyth.txt
 python3 << ENDPYTHON3
-print('python3')
-import vim
-vim.command("echom 'vim'")
+    print('python3')
+    import vim
+    vim.command("echom 'vim'")
 ENDPYTHON3
 endfunction
 
@@ -389,28 +407,24 @@ function _TEST_INPUT_TO_RUN_()
     "you need to use "let"
     "when you want to merge two string variable together ,
     "use operator "."
-    if expand("%:h") != "."
-        let _result_=expand("%:h") . "/" . _the_input_file_
-    else
-        let _result_=_the_input_file_
-    endif
+    " %:p:h is different from %:h , other like : %:r:r %:.
+    "help filename-modifiers
+    " let _result_=expand("%:p:h") . "/" . _the_input_file_
     if &filetype == 'c' || &filetype == 'cpp'
-        if findfile(_the_input_file_,expand("%:h"))
-                    \ == _result_
+        if findfile(_the_input_file_,expand("%:h")) != ""
             "help :!
             execute "! %:h/_%:t:r < %:h/" . _the_input_file_
             "\ . " 2>&1 \| tee /tmp/tmpoutput.%:t:r "
-        elseif findfile(_the_input_file_) == ""
+        elseif findfile(_the_input_file_,expand("%:h")) == ""
             ! %:h/_%:t:r 2>&1
         else
             "echoerr
             echomsg 'ERROR!'
         endif
     elseif &filetype == 'java'
-        if findfile(_the_input_file_,expand("%:h"))
-                    \ == _result_
+        if findfile(_the_input_file_,expand("%:h")) != ""
             execute "!java %:r < %:h/" . _the_input_file_
-        elseif findfile(_the_input_file_) == ""
+        elseif findfile(_the_input_file_,expand("%:h")) == ""
             !java %:r 2>&1
         else
             echomsg 'ERROR!'
