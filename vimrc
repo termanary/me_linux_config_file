@@ -121,6 +121,8 @@ set hlsearch
 set updatetime&
 set notimeout
 set ttimeout
+set timeoutlen=3000
+set ttimeoutlen=0
 
 set showcmd
 set ruler
@@ -211,6 +213,8 @@ noremap <expr> N v:searchforward ? 'N' : 'n'
 
 noremap 0 ^
 noremap ^ 0
+noremap [ {
+noremap ] }
 noremap m `
 noremap ' m
 noremap ` '
@@ -327,7 +331,11 @@ endfunction
 "help function
 function _OPENFILE_(filename,lr)
     if @% == ''
-        execute 'edit ' . a:filename
+        if &mod == 1
+            execute 'vsplit ' . a:filename
+        else
+            execute 'edit ' . a:filename
+        endif
     else
         if a:lr=='l'
             execute 'vsplit ' . a:filename
@@ -436,6 +444,7 @@ function _FILETYPE_SET_REGISTER_()
 "if filereadable(expand("%:h") . "/vimrc.tmp")
     "source %:h/vimrc.tmp
 "endif
+    mapclear <buffer>
     if     &filetype == 'c' || &filetype == 'cpp'
         syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2
         syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
