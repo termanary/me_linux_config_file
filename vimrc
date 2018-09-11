@@ -110,8 +110,9 @@ set smarttab
 
 set autoindent
 set smartindent
-set foldmethod=marker
 filetype indent plugin on
+set foldmethod=manual
+" set commentstring&
 
 set ignorecase
 set incsearch
@@ -127,14 +128,16 @@ set ttimeoutlen=0
 set showcmd
 set ruler
 "set rulerformat
-set wildmenu
 set laststatus=1
 "set statusline+=%{strftime(\"%T\")}
+set wildmenu
+set wildmode&
+
+set modeline
+set modelines=3
 
 set pyxversion&
-set wildmode&
 set runtimepath&
-set modeline
 set history=200
 set scrolloff=5
 set mouse-=a
@@ -221,7 +224,7 @@ noremap ` '
 noremap - :
 noremap \ :!
 
-noremap <F8> :source $HOME/Etc/vimrc.tmp <CR>
+noremap <F8> :source ~/script/vimscript.vim <CR>
 noremap <F9> :call _COMPILE_() <CR>
 noremap <F10> :call _TEST_INPUT_TO_RUN_() <CR>
 noremap <F11> :!emacs --eval "(gdb \"gdb -i=mi %:h/_%:t:r \")" <CR>
@@ -277,7 +280,7 @@ noremap <leader>vp :call _OPENFILE_("~/script/python3.py","l") <CR>
 
 "vimrc
 noremap <leader>ve :call _OPENFILE_("~/.vim/vimrc","l") <CR>
-noremap <leader>vt :call _OPENFILE_("$HOME/Etc/vimrc.tmp","l") <CR>
+noremap <leader>vt :call _OPENFILE_("~/script/vimscript.vim","l") <CR>
 noremap <leader>vu :call _OPENFILE_("%:h/vimrc.tmp","l") <CR>
 
 "octave
@@ -360,6 +363,7 @@ function _COMPILE_()
         let _gcc_compile_options=" -Wfloat-equal -Wshadow "
         execute "!gcc -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
                     \ _gcc_compile_options . " -o %:h/_%:t:r %:p -lm "
+        " make makeprg
     elseif &filetype == 'cpp'
         let _gpp_compile_options=" -Wfloat-equal -Wshadow "
         execute "!g++ -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
@@ -441,15 +445,21 @@ function _TEST_INPUT_TO_RUN_()
 endfunction
 
 function _FILETYPE_SET_REGISTER_()
-"if filereadable(expand("%:h") . "/vimrc.tmp")
+    "if filereadable(expand("%:h") . "/vimrc.tmp")
     "source %:h/vimrc.tmp
-"endif
+    "endif
     mapclear <buffer>
+    if @% != ''
+        loadview
+    endif
+    syntax match VIMFOLDMARKER "{{{"
+    syntax match VIMFOLDMARKER "}}}"
+    highlight VIMFOLDMARKER gui=NONE cterm=bold  ctermfg=white
     if     &filetype == 'c' || &filetype == 'cpp'
         syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2
         syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
         highlight cFunctions gui=NONE cterm=bold  ctermfg=yellow
-"elseif &filetype == 'java'
+        "elseif &filetype == 'java'
     elseif &filetype == 'matlab'
         "highlight MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL ctermbg=red
         "match MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL /;\+$/
@@ -488,7 +498,6 @@ augroup _MY_OWN_DEFINE_
     autocmd BufEnter * call _FILETYPE_SET_REGISTER_()
     autocmd CursorHoldI * stopinsert
     autocmd BufReadPost * if line("'\"") <= line("$") | exe "normal! g`\"" | endif
-"au BufReadPost * if line("'\"") != 1 || line("'\"") != 1 | exe "normal! g`\"" | endif
     "autocmd CursorHold * redraw
 augroup end
 
@@ -542,7 +551,7 @@ augroup end
 "set statusline +=%2*0x%04B\ %*          "character under cursor
 
 
-" Concat the active statusline 
+" Concat the active statusline
 " ------------------------------------------=--------------------=------------
 "               Gibberish                   | What da heck?      | Example
 " ------------------------------------------+--------------------+------------
