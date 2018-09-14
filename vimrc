@@ -66,14 +66,20 @@ if has('terminal')==0 || has('python3_compiled')==0 || has('python_compiled')==0
     if has('python3_dynamic')==0 || has('python_dynamic')==0
         echomsg 'Could not dynamic load!'
     endif
-    " help python-building
-    " dependence : ncurses->libncurses5-dev python-dev python3-dev
-    " get source code from github by downloading *.zip by wget to compile
-    " ./configure -enable-pythoninterp -enable-python3interp
-    " \ --with-python-config-dir=/usr/lib/python2.7/config-x86_64-linux-gnu/
-    " \ --with-python3-config-dir=/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu/
-    " make
-    " sudo make install
+    " or you could choose to install vim-nox or vim-gtk,
+    " it support all scripting and features.
+    " python's dll name must be find,if could not,delete cache,run again with no config_dir
+    " dependence : ncurses->libncurses5-dev libpython-dev libpython3-dev
+    " libperl-dev clipboard->libxt-dev
+    " wget https://github.com/vim/vim/archive/master.zip
+    " rm ./vim-master/src/auto/config.cache
+    " ./configure -enable-python3interp=dynamic -enable-pythoninterp=dynamic
+    " -enable-perlinterp=dynamic -with-compiledby=termanary
+    " use only once if could not be found :
+    " -with-python3-config-dir=/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu/
+    " -with-python-config-dir=/usr/lib/python2.7/config-x86_64-linux-gnu/
+    " -x-includes=/usr/include/X11
+    " -x-libraries=/usr/include/X11
 endif
 
 "source file----------------------------------------------------------
@@ -136,13 +142,16 @@ set wildmode&
 set modeline
 set modelines=3
 
+set nosplitbelow
+set nosplitright
+
 set pyxversion&
 set runtimepath&
 set history=200
 set scrolloff=5
 set mouse-=a
 set backspace=""
-set clipboard+=unnamed
+set clipboard+=unnamedplus
 set undolevels+=1000
 
 set cpoptions-=c
@@ -498,6 +507,7 @@ augroup _MY_OWN_DEFINE_
     autocmd BufEnter * call _FILETYPE_SET_REGISTER_()
     autocmd CursorHoldI * stopinsert
     autocmd BufReadPost * if line("'\"") <= line("$") | exe "normal! g`\"" | endif
+    autocmd BufWritePost * if $USER == 'me' | mkview | endif
     "autocmd CursorHold * redraw
 augroup end
 
