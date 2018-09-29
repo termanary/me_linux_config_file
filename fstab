@@ -15,19 +15,10 @@ UUID=fe8ca89b-2dba-4ccb-9b33-9eec429b2128 /home           ext4    defaults      
 UUID=9b61ece7-08c0-4216-ac82-89f885675d1b none            swap    sw              0       0
 
 
-#windows OS:/dev/sda3
-UUID="B0B2F7CBB2F79456"  /media/OS/ ntfs auto,ro,exec,nouser,nosuid,uid=root,gid=root,umask=222,dmask=222,fmask=222 0 0  
-#MATLAB :/dev/sda4
+# Microsoft Windows OS:/dev/sda3
+UUID="B0B2F7CBB2F79456"  /media/OS/ ntfs auto,ro,exec,nouser,nosuid,uid=root,gid=MATLAB,umask=227,dmask=227,fmask=227 0 0  
+# MATLAB :/dev/sda4
 UUID="f064339f-56da-4a64-b5d5-531bfe4925ca" /media/MATLAB/ ext4 auto,ro,exec,nouser,nosuid 0 0
+# MatheMatica :/dev/sda12
+UUID="4bca8524-34cf-4fe5-afc8-e737bb611624" /media/MatheMatica/ ext4 auto,ro,exec,nouser,nosuid 0 0
 
-#/dev/sda3: LABEL="OS" UUID="B0B2F7CBB2F79456" TYPE="ntfs" PARTLABEL="Basic data partition" PARTUUID="3b201b77-5f28-4f54-871e-6df178c4e1d0"
-#/dev/sda4: LABEL="MATLAB" UUID="f064339f-56da-4a64-b5d5-531bfe4925ca" TYPE="ext4" PARTUUID="f480876d-23d0-46bc-99a5-8bb4ce3fb5c6"
-
-#/dev/sda1: LABEL="SYSTEM" UUID="06F4-FC74" TYPE="vfat" PARTLABEL="EFI system partition" PARTUUID="1863d7b5-ba8a-4fa7-8f23-c7ee13173223"
-#/dev/sda2: PARTLABEL="Microsoft reserved partition" PARTUUID="f4a576f5-ad1c-4dcc-86f2-4f5e2f7464b4"
-#/dev/sda5: LABEL="home" UUID="1a753536-2484-4b79-80ec-e67d9a360e05" TYPE="ext4" PARTLABEL="/home" PARTUUID="15c03030-7fd1-401d-ac58-e5ee2deac9fc"
-#/dev/sda6: UUID="A29C408C9C405CC3" TYPE="ntfs" PARTLABEL="Basic data partition" PARTUUID="0b1e5825-d37c-4d35-8588-0ec6048de76c"
-#/dev/sda7: UUID="2A60F26160F232E5" TYPE="ntfs" PARTLABEL="Basic data partition" PARTUUID="e789aac6-ca0a-4ea1-97b9-73260bfd17b8"
-#/dev/sda8: UUID="e2d6afcc-7c82-4dba-ad2a-7d65b8f93651" TYPE="ext4" PARTLABEL="root" PARTUUID="e8f5e427-7ed6-4640-b709-e118deca5619"
-#/dev/sda9: UUID="fe8ca89b-2dba-4ccb-9b33-9eec429b2128" TYPE="ext4" PARTLABEL="home" PARTUUID="3e0d1aa1-904c-42e9-92b5-e2b6e075e9ba"
-#/dev/sda10: UUID="9b61ece7-08c0-4216-ac82-89f885675d1b" TYPE="swap" PARTLABEL="swap" PARTUUID="2a4e5c04-3ecd-4c76-bb64-5c039d6dd287"
