@@ -151,7 +151,9 @@ set history=200
 set scrolloff=5
 set mouse-=a
 set backspace=""
-set clipboard+=unnamedplus
+" \"* is select(copy or cut is unnecessary) and \"+ is copy or cut
+" use \"+ to communicate with system
+set clipboard=unnamedplus
 set undolevels+=1000
 
 set cpoptions-=c
@@ -186,15 +188,13 @@ cab t vertical rightbelow terminal ++rows=48 ++cols=70
 cab matlab vertical rightbelow terminal ++rows=48 ++cols=70 matlab
             \ -nodesktop -nosplash
 cab em echomsg
-cab s .,s/<left><left>
 cab vr vertical rightbelow vsplit
+" cab s .,s/<left><left>
 "cab a AsyncRun
 "cab as AsyncStop
 
 "cnoremap-------------------------------------------------------------
 
-"cnoremap <Esc>b <S-Left>
-"cnoremap <Esc>f <S-Right>
 cnoremap <C-f> <Right>
 cnoremap <C-b> <Left>
 cnoremap <C-a> <Home>
@@ -236,7 +236,8 @@ noremap \ :!
 noremap <F8> :source ~/script/vimscript.vim <CR>
 noremap <F9> :call _COMPILE_() <CR>
 noremap <F10> :call _TEST_INPUT_TO_RUN_() <CR>
-noremap <F11> :!emacs --eval "(gdb \"gdb -i=mi %:h/_%:t:r \")" <CR>
+noremap <F11> :call _DEBUG_() <CR>
+" noremap <F11> :!emacs --eval "(gdb \"gdb -i=mi %:h/_%:t:r \")" <CR>
 "emacs --eval "(pdb \"pdb %:p \")" <CR>
 
 "help key-codes
@@ -249,10 +250,15 @@ noremap <Leader>g G
 noremap <Leader>f F
 noremap <Leader>t T
 noremap <Leader>w <C-w>
+noremap <Leader>h <C-w>h
+noremap <Leader>l <C-w>l
+noremap <Leader>j <C-w>j
+noremap <Leader>k <C-w>k
+noremap <Leader>q <C-w>q
 "noremap <Leader>r <C-r>
 
 noremap m/ /\v
-noremap <Leader>h :nohlsearch <CR>
+noremap <Leader>/ :nohlsearch <CR>
 noremap <Leader>u g~aw
 noremap <Leader>e :setlocal cursorline! cursorcolumn!<CR>:sleep 400m
             \<CR>:setlocal cursorline! cursorcolumn!<CR>
@@ -262,10 +268,10 @@ noremap <Leader>bn :n <CR>
 noremap <Leader>bp :N <CR>
 
 "quickfix
-noremap <Leader>qo :copen <CR>
-noremap <Leader>qc :cclose <CR>
-"noremap <leader>a :AsyncRun 
-"noremap <leader>s :AsyncStop 
+" noremap <Leader>qo :copen <CR>
+" noremap <Leader>qc :cclose <CR>
+"noremap <Leader>a :AsyncRun 
+"noremap <Leader>s :AsyncStop 
 
 "file edit----------------------------------------------------------
 
@@ -274,28 +280,29 @@ noremap <Leader>qc :cclose <CR>
 "noremap <leader>a :if 1 == 1 \| echom '0' \| endif <CR>
 
 "OJ
-noremap <leader>vm :call _OPENFILE_("main.c*","l") <CR>
-noremap <leader>vi :call _OPENFILE_("input.tst","r") <CR>
-noremap <leader>vg :call _OPENFILE_("~/.gdbinit","r") <CR>
+noremap <Leader>vm :call _OPENFILE_("main.c*","l") <CR>
+noremap <Leader>vi :call _OPENFILE_("input.tst","r") <CR>
+noremap <Leader>vg :call _OPENFILE_("~/.gdbinit","r") <CR>
 
 "copy to save -> OJ
-noremap <leader>vh :!cp %:p ~/hdoj/all/
-noremap <leader>vk :!cp %:p ~/poj/all/
-noremap <leader>va :!cp %:p /media/Program/main.c <CR>
+noremap <Leader>vh :!cp %:p ~/hdoj/all/
+noremap <Leader>vk :!cp %:p ~/poj/all/
+noremap <Leader>va :!cp %:p /media/Program/main.c <CR>
 
 "script
-noremap <leader>vs :call _OPENFILE_("~/script/shell.sh","l") <CR>
-noremap <leader>vp :call _OPENFILE_("~/script/python3.py","l") <CR>
+noremap <Leader>vs :call _OPENFILE_("~/script/shell.sh","l") <CR>
+noremap <Leader>vp :call _OPENFILE_("~/script/python3.py","l") <CR>
+noremap <Leader>vy :call _OPENFILE_("~/.pythonstartup","l") <CR>
 
 "vimrc
-noremap <leader>ve :call _OPENFILE_("~/.vim/vimrc","l") <CR>
-noremap <leader>vt :call _OPENFILE_("~/script/vimscript.vim","l") <CR>
-noremap <leader>vu :call _OPENFILE_("%:h/vimrc.tmp","l") <CR>
+noremap <Leader>ve :call _OPENFILE_("~/.vim/vimrc","l") <CR>
+noremap <Leader>vt :call _OPENFILE_("~/script/vimscript.vim","l") <CR>
+noremap <Leader>vu :call _OPENFILE_("%:h/vimrc.tmp","l") <CR>
 
 "octave
-noremap <leader>vo :call _OPENFILE_("~/script/octave.m ","l") <CR>
-noremap <leader>vn :call _OPENFILE_("~/script/input.tst","l") <CR>
-noremap <leader>vc :call _OPENFILE_("~/.octaverc","l") <CR>
+noremap <Leader>vo :call _OPENFILE_("~/script/octave.m ","l") <CR>
+noremap <Leader>vn :call _OPENFILE_("~/script/input.tst","l") <CR>
+noremap <Leader>vc :call _OPENFILE_("~/.octaverc","l") <CR>
 
 "tnoremap----------------------------------------------------------
 
@@ -342,6 +349,7 @@ endfunction
 
 "help function
 function _OPENFILE_(filename,lr)
+    " vim -
     if @% == ''
         if &mod == 1
             execute 'vsplit ' . a:filename
@@ -368,39 +376,51 @@ function _COMPILE_()
     "set filetype=?
     "!cmd % --could handle currently file by shell command
     if &filetype == 'c'
+        " gcc  -I/usr/include/python2.7 -lpython2.7 main.c
+        " gcc -shared main.c -lpython2.7 -I/usr/include/python2.7
+        " mkoctfile --link-stand-alone main.cc -o _main
+        " make makeprg
         "std=c89
-        let _gcc_compile_options=" -Wfloat-equal -Wshadow "
+        " only do this could gcc compile assemble to 32-bit : gcc -m32
+        " sudo apt install gcc-multilib
+        let _gcc_compile_options=" -Wfloat-equal -Wshadow -Wstrict-prototypes "
         execute "!gcc -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
                     \ _gcc_compile_options . " -o %:h/_%:t:r %:p -lm "
-        " make makeprg
     elseif &filetype == 'cpp'
-        let _gpp_compile_options=" -Wfloat-equal -Wshadow "
+        let _gpp_compile_options=" -Wfloat-equal -Wshadow -Wstrict-prototypes "
         execute "!g++ -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
                     \ _gpp_compile_options . " -o %:h/_%:t:r %:p "
-    elseif &filetype == 'sh'
-        "help function-list
-        "help file-functions
-        if executable(expand("%:p"))
-            ! %:p
-        else
-            !bash %:p
-        endif
     elseif &filetype == 'matlab'
         if executable(expand("%:p"))
             ! %:p
         else
-            !octave-cli %:p
+            !octave-cli --no-init-file %:p
         endif
     elseif &filetype == 'python'
         if executable(expand("%:p"))
             ! %:p
         else
+            " pypy
             !python3 %:p
         endif
-    elseif &filetype == 'java'
-        !javac %:p
+    elseif &filetype == 'sh'
+        "help function-list
+        "help file-functions
+        "help :bar
+        if executable(expand("%:p"))
+            ! %:p
+        else
+            !bash %:p
+        endif
     elseif &filetype == 'vim'
         source %:p
+    elseif &filetype == 'java'
+        !javac %:p
+    elseif &filetype == 'verilog'
+        !iverilog -o %:h/_%:t:r %:p
+    elseif &filetype == 'asm'
+        !nasm -f elf %:p -o %:h/%:t:r.o
+        !gcc -m32 %:h/%:t:r.o -o %:h/_%:t:r
     endif
 endfunction
 
@@ -431,7 +451,7 @@ function _TEST_INPUT_TO_RUN_()
     " %:p:h is different from %:h , other like : %:r:r %:.
     "help filename-modifiers
     " let _result_=expand("%:p:h") . "/" . _the_input_file_
-    if &filetype == 'c' || &filetype == 'cpp'
+    if &filetype == 'c' || &filetype == 'cpp' || &filetype == 'asm'
         if findfile(_the_input_file_,expand("%:h")) != ""
             "help :!
             execute "! %:h/_%:t:r < %:h/" . _the_input_file_
@@ -453,31 +473,36 @@ function _TEST_INPUT_TO_RUN_()
     endif
 endfunction
 
+function _DEBUG_()
+    if &filetype == 'c' || &filetype == 'cpp'
+        !emacs --eval "(gdb \"gdb -i=mi %:h/_%:t:r \")"
+    elseif &filetype == 'python'
+        !pudb %:p
+    endif
+endfunction
+
 function _FILETYPE_SET_REGISTER_()
     "if filereadable(expand("%:h") . "/vimrc.tmp")
     "source %:h/vimrc.tmp
     "endif
     mapclear <buffer>
-    if @% != ''
-        loadview
-    endif
-    syntax match VIMFOLDMARKER "{{{"
-    syntax match VIMFOLDMARKER "}}}"
+    " syntax match VIMFOLDMARKER "{{{"
+    " syntax match VIMFOLDMARKER "}}}"
     highlight VIMFOLDMARKER gui=NONE cterm=bold  ctermfg=white
     if     &filetype == 'c' || &filetype == 'cpp'
         syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2
         syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
         highlight cFunctions gui=NONE cterm=bold  ctermfg=yellow
-        "elseif &filetype == 'java'
     elseif &filetype == 'matlab'
         "highlight MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL ctermbg=red
         "match MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL /;\+$/
+        inoremap <buffer> ' '
         highlight MATLAB_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
         match MATLAB_MY_OWN_DEFINE_NOTE /^% %.*$/
         let @m=expand("%:t:r")
-        noremap <buffer> <leader>m :w <CR><C-w>l<C-W>"m<CR><C-w>p
-        noremap <buffer> <leader>; :s/$/;/<CR>:nohlsearch<CR>g;
-        noremap <buffer> <leader>, :s/;$//<CR>:nohlsearch<CR>g;
+        noremap <buffer> <Leader>m :w <CR><C-w>l<C-W>"m<CR><C-w>p
+        noremap <buffer> <Leader>; :s/$/;/<CR>:nohlsearch<CR>g;
+        noremap <buffer> <Leader>, :s/;$//<CR>:nohlsearch<CR>g;
     elseif &filetype == 'python' || &filetype == 'sh' || &filetype == 'gdb' || &filetype == 'conf'
         highlight PYTHON_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
         match PYTHON_MY_OWN_DEFINE_NOTE /^# #.*$/
@@ -491,7 +516,9 @@ function _FILETYPE_SET_REGISTER_()
         match VIM_MY_OWN_DEFINE_SPACE_EOL /\s\+$/
         "elseif &filetype == 'make'
         "setlocal list listchars=tab:>-,trail:@
-    else
+    elseif &filetype == 'verilog'
+        inoremap <buffer> ' '
+    elseif &filetype == 'java'
     endif
 endfunction
 
@@ -507,7 +534,8 @@ augroup _MY_OWN_DEFINE_
     autocmd BufEnter * call _FILETYPE_SET_REGISTER_()
     autocmd CursorHoldI * stopinsert
     autocmd BufReadPost * if line("'\"") <= line("$") | exe "normal! g`\"" | endif
-    autocmd BufWritePost * if $USER == 'me' | mkview | endif
+    " autocmd BufWritePost * if $USER == 'me' | mkview | endif
+    " autocmd BufReadPost * if @% != '' && $USER == 'me' | loadview | endif
     "autocmd CursorHold * redraw
 augroup end
 
@@ -520,31 +548,6 @@ augroup end
 "DarkCyan Cyan
 "DarkMagenta Magenta
 "DarkGrey Grey
-
-""##### auto fcitx  ###########
-"let g:input_toggle = 1
-"function! Fcitx2en()
-"let s:input_status = system("fcitx-remote")
-"if s:input_status == 2
-  "let g:input_toggle = 1
-  "let l:a = system("fcitx-remote -c")
-"endif
-"endfunction
-"
-"function! Fcitx2zh()
-"let s:input_status = system("fcitx-remote")
-"if s:input_status != 2 && g:input_toggle == 1
-  "let l:a = system("fcitx-remote -o")
-  "let g:input_toggle = 0
-"endif
-"endfunction
-"
-"set ttimeoutlen=150
-""退出插入模式
-"autocmd InsertLeave * call Fcitx2en()
-""进入插入模式
-"autocmd InsertEnter * call Fcitx2zh()
-""##### auto fcitx end ######
 
 " Status line
 " https://groups.google.com/forum/#!topic/vim_use/wPnsi-40FhE
@@ -592,7 +595,7 @@ augroup end
 "c<space> toggle
 " cc line
 
-noremap <leader>d :call NERDComment("n","Toggle") <CR>
+noremap <Leader>d :call NERDComment("n","Toggle") <CR>
 let g:NERDDefaultAlign = 'left'
 let g:NERDSpaceDelims = 1
 let g:NERDAltDelims_c = 1
