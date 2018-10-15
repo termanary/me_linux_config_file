@@ -110,9 +110,10 @@ set numberwidth=3
 
 set tabstop=4
 set expandtab
-set shiftwidth=4
 set softtabstop=4
 set smarttab
+set shiftwidth=4
+set nojoinspaces
 
 set autoindent
 set smartindent
@@ -306,12 +307,12 @@ noremap <Leader>vc :call _OPENFILE_("~/.octaverc","l") <CR>
 
 "tnoremap----------------------------------------------------------
 
-if has('terminal')
-tnoremap <C-W>n <C-W>N
-tnoremap <C-W>N <C-W>n
-tnoremap <ESC> <C-w>p
-else
+if has('terminal')==0
     echo "Don't support terminal!"
+else
+    tnoremap <C-W>n <C-W>N
+    tnoremap <C-W>N <C-W>n
+    tnoremap <ESC> <C-w>p
 endif
 
 "function----------------------------------------------------------
@@ -330,20 +331,26 @@ if exists("_function_exists")
 endif
 
 function _PYTHON_FUNCTION_()
-if has('python_compiled')==0
-    echomsg "Don't support python2!"
-endif
-if has('python3_compiled')==0
-    echomsg "Don't support python3!"
+if has('python_compiled')==0 || has('python3_compiled')==0
+    echomsg "Don't support python3/python!"
+    " finish
+    return
 endif
 if has('python3_dynamic')==0 || has('python_dynamic')==0
-    echomsg "Could dynamic load python3/python!"
+    echomsg "Could not dynamic load python3/python!"
+    return
 endif
 " help if_pyth.txt
 python3 << ENDPYTHON3
     print('python3')
-    import vim
-    vim.command("echom 'vim'")
+    # import vim
+    # vim.command("echom 'vim'")
+    # import os
+    files=[
+    "main.c" ,
+    "main.cpp" ,
+    "Main.java" ,]
+    print(files)
 ENDPYTHON3
 endfunction
 
@@ -387,21 +394,21 @@ function _COMPILE_()
         execute "!gcc -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
                     \ _gcc_compile_options . " -o %:h/_%:t:r %:p -lm "
     elseif &filetype == 'cpp'
-        let _gpp_compile_options=" -Wfloat-equal -Wshadow -Wstrict-prototypes "
+        let _gpp_compile_options=" -Wfloat-equal -Wshadow "
         execute "!g++ -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
                     \ _gpp_compile_options . " -o %:h/_%:t:r %:p "
-    elseif &filetype == 'matlab'
-        if executable(expand("%:p"))
-            ! %:p
-        else
-            !octave-cli --no-init-file %:p
-        endif
     elseif &filetype == 'python'
         if executable(expand("%:p"))
             ! %:p
         else
             " pypy
             !python3 %:p
+        endif
+    elseif &filetype == 'matlab'
+        if executable(expand("%:p"))
+            ! %:p
+        else
+            !octave-cli --no-init-file %:p
         endif
     elseif &filetype == 'sh'
         "help function-list
@@ -421,6 +428,8 @@ function _COMPILE_()
     elseif &filetype == 'asm'
         !nasm -f elf %:p -o %:h/%:t:r.o
         !gcc -m32 %:h/%:t:r.o -o %:h/_%:t:r
+    elseif &filetype == 'haskell'
+        !ghc %:p -o %:h/_%:t:r
     endif
 endfunction
 
@@ -452,6 +461,7 @@ function _TEST_INPUT_TO_RUN_()
     "help filename-modifiers
     " let _result_=expand("%:p:h") . "/" . _the_input_file_
     if &filetype == 'c' || &filetype == 'cpp' || &filetype == 'asm'
+                \ || &filetype == 'haskell'
         if findfile(_the_input_file_,expand("%:h")) != ""
             "help :!
             execute "! %:h/_%:t:r < %:h/" . _the_input_file_
