@@ -190,7 +190,6 @@ cab matlab vertical rightbelow terminal ++rows=48 ++cols=70 matlab
             \ -nodesktop -nosplash
 cab em echomsg
 cab vr vertical rightbelow vsplit
-" cab s .,s/<left><left>
 "cab a AsyncRun
 "cab as AsyncStop
 
@@ -389,7 +388,7 @@ function _COMPILE_()
         " make makeprg
         "std=c89
         " only do this could gcc compile assemble to 32-bit : gcc -m32
-        " sudo apt install gcc-multilib
+        " sudo apt install gcc-multilib g++-multilib
         let _gcc_compile_options=" -Wfloat-equal -Wshadow -Wstrict-prototypes "
         execute "!gcc -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
                     \ _gcc_compile_options . " -o %:h/_%:t:r %:p -lm "
@@ -405,6 +404,9 @@ function _COMPILE_()
             !python3 %:p
         endif
     elseif &filetype == 'matlab'
+        " sudo apt install liboctave-dev
+        " !mkoctfile %:p
+        " !octave-cli --eval '%:t:r (*)'
         if executable(expand("%:p"))
             ! %:p
         else
@@ -424,6 +426,7 @@ function _COMPILE_()
     elseif &filetype == 'java'
         !javac %:p
     elseif &filetype == 'verilog'
+        " iverilog gtkwave
         !iverilog -o %:h/_%:t:r %:p
     elseif &filetype == 'asm'
         !nasm -f elf %:p -o %:h/%:t:r.o
@@ -496,9 +499,6 @@ function _FILETYPE_SET_REGISTER_()
     "source %:h/vimrc.tmp
     "endif
     mapclear <buffer>
-    " syntax match VIMFOLDMARKER "{{{"
-    " syntax match VIMFOLDMARKER "}}}"
-    highlight VIMFOLDMARKER gui=NONE cterm=bold  ctermfg=white
     if     &filetype == 'c' || &filetype == 'cpp'
         syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2
         syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
@@ -528,7 +528,6 @@ function _FILETYPE_SET_REGISTER_()
         "setlocal list listchars=tab:>-,trail:@
     elseif &filetype == 'verilog'
         inoremap <buffer> ' '
-    elseif &filetype == 'java'
     endif
 endfunction
 
@@ -573,7 +572,6 @@ augroup end
 "set statusline +=%1*%4c\ %*             "column number
 "set statusline +=%2*0x%04B\ %*          "character under cursor
 
-
 " Concat the active statusline
 " ------------------------------------------=--------------------=------------
 "               Gibberish                   | What da heck?      | Example
@@ -610,4 +608,3 @@ let g:NERDDefaultAlign = 'left'
 let g:NERDSpaceDelims = 1
 let g:NERDAltDelims_c = 1
 let g:NERDAltDelims_python = 1
-
