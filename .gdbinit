@@ -11,13 +11,8 @@ end
 define g
 #set $k=0
 #record
-b 10
+b 69
 r <input.tst
-#display /d j
-display /d i
-display /d n
-display /d a[i]
-display /d f[i]
-display /d a[n-1]
+# display /d j
 end
 
