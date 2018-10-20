@@ -293,6 +293,7 @@ noremap <Leader>va :!cp %:p /media/Program/main.c <CR>
 noremap <Leader>vs :call _OPENFILE_("~/script/shell.sh","l") <CR>
 noremap <Leader>vp :call _OPENFILE_("~/script/python3.py","l") <CR>
 noremap <Leader>vy :call _OPENFILE_("~/.pythonstartup","l") <CR>
+noremap <Leader>vb :call _OPENFILE_("~/.bash_aliases","r") <CR>
 
 "vimrc
 noremap <Leader>ve :call _OPENFILE_("~/.vim/vimrc","l") <CR>
@@ -382,17 +383,27 @@ function _COMPILE_()
     "set filetype=?
     "!cmd % --could handle currently file by shell command
     if &filetype == 'c'
-        " gcc  -I/usr/include/python2.7 -lpython2.7 main.c
-        " gcc -shared main.c -lpython2.7 -I/usr/include/python2.7
-        " mkoctfile --link-stand-alone main.cc -o _main
+        " ---------------------------------------------------
         " make makeprg
-        "std=c89
-        " only do this could gcc compile assemble to 32-bit : gcc -m32
+        " ---------------------------------------------------
+        " options : standard : -std=c89
+        " release compilation : -static
+        " ---------------------------------------------------
+        " 32-bit : gcc -m32
         " sudo apt install gcc-multilib g++-multilib
+        " ---------------------------------------------------
+        " windows : cygwin : simulation ; mingw-w64 : compilation ;
+        " sudo apt install mingw-w64
+        " x86_64-w64-mingw32-gcc ; i686-w64-mingw32-gcc
+        " ---------------------------------------------------
         let _gcc_compile_options=" -Wfloat-equal -Wshadow -Wstrict-prototypes "
         execute "!gcc -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
                     \ _gcc_compile_options . " -o %:h/_%:t:r %:p -lm "
     elseif &filetype == 'cpp'
+        " octave-C++ :
+        " sudo apt install liboctave-dev
+        " mkoctfile helloworld.cpp
+        " octave-cli --eval 'helloworld(*)'
         let _gpp_compile_options=" -Wfloat-equal -Wshadow "
         execute "!g++ -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
                     \ _gpp_compile_options . " -o %:h/_%:t:r %:p "
@@ -416,6 +427,7 @@ function _COMPILE_()
         "help function-list
         "help file-functions
         "help :bar
+        " zsh
         if executable(expand("%:p"))
             ! %:p
         else
@@ -424,11 +436,16 @@ function _COMPILE_()
     elseif &filetype == 'vim'
         source %:p
     elseif &filetype == 'java'
-        !javac %:p
+        " gnu-gcc:gcj/gij :was removed after gcc-7,was available before gcc-6
+        !javac -g -d %:h/class/ %:p
     elseif &filetype == 'verilog'
-        " iverilog gtkwave
+        " sudo apt install iverilog gtkwave verilator
         !iverilog -o %:h/_%:t:r %:p
     elseif &filetype == 'asm'
+        " only do this could gcc compile assemble to 32-bit : gcc -m32
+        " sudo apt install gcc-multilib g++-multilib
+        " intel : sudo apt install nasm
+        " AT&T : sudo apt install as
         !nasm -f elf %:p -o %:h/%:t:r.o
         !gcc -m32 %:h/%:t:r.o -o %:h/_%:t:r
     elseif &filetype == 'haskell'
@@ -476,10 +493,10 @@ function _TEST_INPUT_TO_RUN_()
             echomsg 'ERROR!'
         endif
     elseif &filetype == 'java'
-        if findfile(_the_input_file_,expand("%:h")) != ""
-            execute "!java %:r < %:h/" . _the_input_file_
-        elseif findfile(_the_input_file_,expand("%:h")) == ""
-            !java %:r 2>&1
+        if findfile(_the_input_file_,expand("%:h/class")) != ""
+            execute "!java -classpath %:h/class/ %:t:r < %:h/" . _the_input_file_
+        elseif findfile(_the_input_file_,expand("%:h/class")) == ""
+            !java -classpath %:h/class/ %:t:r 2>&1
         else
             echomsg 'ERROR!'
         endif
@@ -491,6 +508,8 @@ function _DEBUG_()
         !emacs --eval "(gdb \"gdb -i=mi %:h/_%:t:r \")"
     elseif &filetype == 'python'
         !pudb %:p
+    elseif &filetype == 'java'
+        !jdb -classpath %:h/class %:t:r
     endif
 endfunction
 
@@ -608,3 +627,4 @@ let g:NERDDefaultAlign = 'left'
 let g:NERDSpaceDelims = 1
 let g:NERDAltDelims_c = 1
 let g:NERDAltDelims_python = 1
+
