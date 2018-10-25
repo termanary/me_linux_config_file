@@ -146,7 +146,12 @@ set modelines=3
 set nosplitbelow
 set nosplitright
 
-set pyxversion&
+" set pyxversion&
+" set pythondll&
+" set pythonhome&
+" set pythonthreedll&
+" set pythonthreehome&
+
 set runtimepath&
 set history=200
 set scrolloff=5
@@ -186,7 +191,7 @@ highlight cursorcolumn cterm=NONE ctermbg=blue
 
 cab h vertical leftabove help
 cab t vertical rightbelow terminal ++rows=48 ++cols=70
-cab matlab vertical rightbelow terminal ++rows=48 ++cols=70 matlab
+cab mat vertical rightbelow terminal ++rows=48 ++cols=70 matlab
             \ -nodesktop -nosplash
 cab em echomsg
 cab vr vertical rightbelow vsplit
@@ -280,7 +285,7 @@ noremap <Leader>bp :N <CR>
 "noremap <leader>a :if 1 == 1 \| echom '0' \| endif <CR>
 
 "OJ
-noremap <Leader>vm :call _OPENFILE_("main.c*","l") <CR>
+noremap <Leader>vm :call _OPENFILE_("","l") <CR>
 noremap <Leader>vi :call _OPENFILE_("input.tst","r") <CR>
 noremap <Leader>vg :call _OPENFILE_("~/.gdbinit","r") <CR>
 
@@ -342,34 +347,83 @@ if has('python3_dynamic')==0 || has('python_dynamic')==0
 endif
 " help if_pyth.txt
 python3 << ENDPYTHON3
-    print('python3')
-    # import vim
-    # vim.command("echom 'vim'")
-    # import os
-    files=[
-    "main.c" ,
-    "main.cpp" ,
-    "Main.java" ,]
-    print(files)
+import os
+import vim
+FileName = [
+"main.c",
+"main.cpp",
+"Main.java",
+"main.v",
+"main.hs",
+"main.asm",
+]
+FileFormat = [
+".c",
+".cpp",
+".java",
+".py",
+".m",
+".sh",
+".vim",
+".v",
+".hs",
+".asm",
+]
+for fn in FileName :
+    if fn in os.listdir(".") :
+        if vim.eval("@%") != "" or vim.eval("&mod") == "1" :
+            RetStatus = vim.command("vsplit " + fn)
+        else :
+            RetStatus = vim.command("edit " + fn)
+# if "RetStatus" in locals() or "RetStatus" in globals() :
+if "RetStatus" in globals() :
+    pass
+else :
+    FileNumber = 0
+    for ld in os.listdir(".") :
+        for ff in FileFormat :
+            if os.path.splitext(ld)[-1] == ff :
+                FileNumber += 1
+                if FileNumber == 1 :
+                    if vim.eval("@%") != "" or vim.eval("&mod") == "1" :
+                        RetStatus = vim.command("vsplit " + ld)
+                    else :
+                        RetStatus = vim.command("edit " + ld)
+                elif FileNumber <= 4 :
+                    RetStatus = vim.command("vsplit " + ld)
+                else :
+                    RetStatus = vim.command("argadd " + ld)
+                break
+    if "RetStatus" in globals() :
+        pass
+    else :
+        print("File not found!")
 ENDPYTHON3
 endfunction
 
 "help function
 function _OPENFILE_(filename,lr)
     " vim -
-    if @% == ''
-        if &mod == 1
-            execute 'vsplit ' . a:filename
-        else
-            execute 'edit ' . a:filename
-        endif
+    " :vsplit : for f in [ 'files','files' ] | exe 'vsplit ' f | endfor
+    " help :for
+    " help :bar
+    if a:filename == ""
+        call _PYTHON_FUNCTION_()
     else
-        if a:lr=='l'
-            execute 'vsplit ' . a:filename
-        elseif a:lr=='r'
-            execute 'vertical rightbelow vsplit ' . a:filename
+        if @% == ''
+            if &mod == 1
+                execute 'vsplit ' . a:filename
+            else
+                execute 'edit ' . a:filename
+            endif
         else
-            echomsg 'ERROR'
+            if a:lr=='l'
+                execute 'vsplit ' . a:filename
+            elseif a:lr=='r'
+                execute 'vertical rightbelow vsplit ' . a:filename
+            else
+                echomsg 'ERROR!'
+            endif
         endif
     endif
 endfunction
@@ -393,8 +447,11 @@ function _COMPILE_()
         " sudo apt install gcc-multilib g++-multilib
         " ---------------------------------------------------
         " windows : cygwin : simulation ; mingw-w64 : compilation ;
+        " linux : wine : simulation ; mignw-w64 : compilation ;
         " sudo apt install mingw-w64
         " x86_64-w64-mingw32-gcc ; i686-w64-mingw32-gcc
+        " sudo ln -s /usr/bin/i686-w64-mingw32-gcc gccwin32
+        " sudo ln -s /usr/bin/x86_64-w64-mingw32-g++ g++win64
         " ---------------------------------------------------
         let _gcc_compile_options=" -Wfloat-equal -Wshadow -Wstrict-prototypes "
         execute "!gcc -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
@@ -423,7 +480,7 @@ function _COMPILE_()
         else
             !octave-cli --no-init-file %:p
         endif
-    elseif &filetype == 'sh'
+    elseif &filetype == 'sh' || &filetype == 'zsh'
         "help function-list
         "help file-functions
         "help :bar
@@ -485,7 +542,7 @@ function _TEST_INPUT_TO_RUN_()
         if findfile(_the_input_file_,expand("%:h")) != ""
             "help :!
             execute "! %:h/_%:t:r < %:h/" . _the_input_file_
-            "\ . " 2>&1 \| tee /tmp/tmpoutput.%:t:r "
+                        "\ . " 2>&1 \| tee /tmp/tmpoutput.%:t:r "
         elseif findfile(_the_input_file_,expand("%:h")) == ""
             ! %:h/_%:t:r 2>&1
         else
@@ -525,14 +582,14 @@ function _FILETYPE_SET_REGISTER_()
     elseif &filetype == 'matlab'
         "highlight MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL ctermbg=red
         "match MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL /;\+$/
-        inoremap <buffer> ' '
         highlight MATLAB_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
         match MATLAB_MY_OWN_DEFINE_NOTE /^% %.*$/
         let @m=expand("%:t:r")
         noremap <buffer> <Leader>m :w <CR><C-w>l<C-W>"m<CR><C-w>p
         noremap <buffer> <Leader>; :s/$/;/<CR>:nohlsearch<CR>g;
         noremap <buffer> <Leader>, :s/;$//<CR>:nohlsearch<CR>g;
-    elseif &filetype == 'python' || &filetype == 'sh' || &filetype == 'gdb' || &filetype == 'conf'
+    elseif &filetype == 'python' || &filetype == 'sh' || &filetype == 'gdb'
+                \ || &filetype == 'zsh' || &filetype == 'conf'
         highlight PYTHON_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
         match PYTHON_MY_OWN_DEFINE_NOTE /^# #.*$/
     elseif &filetype == ''
