@@ -19,7 +19,7 @@ runtime! debian.vim
 " Uncomment the next line to make Vim more Vi-compatible
 " NOTE: debian.vim sets 'nocompatible'.  Setting 'compatible' changes numerous
 " options, so any other options should be set AFTER setting 'compatible'.
-"set compatible
+" set compatible
 
 " Vim5 and later versions support syntax highlighting. Uncommenting the next
 " line enables syntax highlighting by default.
@@ -33,32 +33,31 @@ set background=dark
 
 " Uncomment the following to have Vim jump to the last position when
 " reopening a file
-"if has("autocmd")
+" if has("autocmd")
 "  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-"endif
+" endif
 
 " Uncomment the following to have Vim load indentation rules and plugins
 " according to the detected filetype.
-"if has("autocmd")
+" if has("autocmd")
 "  filetype plugin indent on
-"endif
+" endif
 
 " The following are commented out as they cause vim to behave a lot
 " differently from regular Vi. They are highly recommended though.
-"set showcmd		" Show (partial) command in status line.
-"set showmatch		" Show matching brackets.
-"set ignorecase		" Do case insensitive matching
-"set smartcase		" Do smart case matching
-"set incsearch		" Incremental search
-"set autowrite		" Automatically save before commands like :next and :make
-"set hidden		" Hide buffers when they are abandoned
-"set mouse=a		" Enable mouse usage (all modes)
+" set showcmd		" Show (partial) command in status line.
+" set showmatch		" Show matching brackets.
+" set ignorecase		" Do case insensitive matching
+" set smartcase		" Do smart case matching
+" set incsearch		" Incremental search
+" set autowrite		" Automatically save before commands like :next and :make
+" set hidden		" Hide buffers when they are abandoned
+" set mouse=a		" Enable mouse usage (all modes)
 
 " Source a global configuration file if available
 if filereadable("/etc/vim/vimrc.local")
     source /etc/vim/vimrc.local
 endif
-
 
 if has('terminal')==0 || has('python3_compiled')==0 || has('python_compiled')==0
     " help if_pyth.txt
@@ -82,27 +81,27 @@ if has('terminal')==0 || has('python3_compiled')==0 || has('python_compiled')==0
     " -x-libraries=/usr/include/X11
 endif
 
-"source file----------------------------------------------------------
+" source file----------------------------------------------------------
 
-"for the temanary command define by the users
-"if you want to know all the function already
-"difined by vim ,see usr_41.txt
-"the next code could run successfully
+" for the temanary command define by the users
+" if you want to know all the function already
+" difined by vim ,see usr_41.txt
+" the next code could run successfully
 
-"~ could not be recognize
-"$HOME must out of ""
-"if filereadable($HOME . "/Etc" . "/defaults.vim")
+" ~ could not be recognize
+" $HOME must out of ""
+" if filereadable($HOME . "/Etc" . "/defaults.vim")
 if filereadable("/usr/share/vim/vim80/defaults.vim")
-    "source $HOME/Etc/defaults.vim
+    " source $HOME/Etc/defaults.vim
     source /usr/share/vim/vim80/defaults.vim
 endif
 
 if filereadable("/usr/share/vim/vim80/ftplugin.vim")
-    "source $HOME/Etc/ftplugin.vim
+    " source $HOME/Etc/ftplugin.vim
     source /usr/share/vim/vim80/ftplugin.vim
 endif
 
-"set ---------------------------------------------------------------------
+" set ---------------------------------------------------------------------
 
 set number
 set relativenumber
@@ -134,9 +133,9 @@ set ttimeoutlen=0
 
 set showcmd
 set ruler
-"set rulerformat
+" set rulerformat
 set laststatus=1
-"set statusline+=%{strftime(\"%T\")}
+" set statusline+=%{strftime(\"%T\")}
 set wildmenu
 set wildmode&
 
@@ -163,12 +162,12 @@ set clipboard=unnamedplus
 set undolevels+=1000
 
 set cpoptions-=c
-"set cpoptions+=q
+" set cpoptions+=q
 set nrformats="bin,octal,hex,alpha"
 
-"    see highlight for exmaple
-"    the order of next 3 line could not be change
-"colorscheme for ubuntu-18.04:zellner
+" see highlight for exmaple
+" the order of next 3 line could not be change
+" colorscheme for ubuntu-18.04:zellner
 if $USER == 'me'
     colorscheme MyColo
 elseif $USER == 'syx'
@@ -179,15 +178,15 @@ endif
 highlight cursorline cterm=NONE ctermbg=blue
 highlight cursorcolumn cterm=NONE ctermbg=blue
 
-"set autochdir
-"set shellcmdflag=-ic
-"set revins
-"set autowriteall
-"set cindent
-"set cursorline
-"set lines=33 columns=95
+" set autochdir
+" set shellcmdflag=-ic
+" set revins
+" set autowriteall
+" set cindent
+" set cursorline
+" set lines=33 columns=95
 
-"cab-------------------------------------------------------------------
+" cab-------------------------------------------------------------------
 
 cab h vertical leftabove help
 cab t vertical rightbelow terminal ++rows=48 ++cols=70
@@ -195,10 +194,10 @@ cab mat vertical rightbelow terminal ++rows=48 ++cols=70 matlab
             \ -nodesktop -nosplash
 cab em echomsg
 cab vr vertical rightbelow vsplit
-"cab a AsyncRun
-"cab as AsyncStop
+" cab a AsyncRun
+" cab as AsyncStop
 
-"cnoremap-------------------------------------------------------------
+" cnoremap-------------------------------------------------------------
 
 cnoremap <C-f> <Right>
 cnoremap <C-b> <Left>
@@ -206,7 +205,7 @@ cnoremap <C-a> <Home>
 cnoremap <C-e> <End>
 cnoremap <C-d> <Del>
 
-"inoremap-------------------------------------------------------------
+" inoremap-------------------------------------------------------------
 
 inoremap ' ''<left>
 inoremap " ""<left>
@@ -218,13 +217,13 @@ inoremap } {}<left>
 inoremap <C-f> <right>
 inoremap <C-e> <end>
 
-"noremap--------------------------------------------------------------
+" noremap--------------------------------------------------------------
 
-"help getcharsearch()  <expr> map-argument
-"map could have argument
+" help getcharsearch()  <expr> map-argument
+" map could have argument
 noremap <expr> ; getcharsearch().forward ? ';' : ','
 noremap <expr> , getcharsearch().forward ? ',' : ';'
-"help internal-variables
+" help internal-variables
 noremap <expr> n v:searchforward ? 'n' : 'N'
 noremap <expr> N v:searchforward ? 'N' : 'n'
 
@@ -243,9 +242,9 @@ noremap <F9> :call _COMPILE_() <CR>
 noremap <F10> :call _TEST_INPUT_TO_RUN_() <CR>
 noremap <F11> :call _DEBUG_() <CR>
 " noremap <F11> :!emacs --eval "(gdb \"gdb -i=mi %:h/_%:t:r \")" <CR>
-"emacs --eval "(pdb \"pdb %:p \")" <CR>
+" emacs --eval "(pdb \"pdb %:p \")" <CR>
 
-"help key-codes
+" help key-codes
 let mapleader = "\<Space>"
 noremap <Space> <Nop>
 noremap <Leader>4 $
@@ -260,7 +259,7 @@ noremap <Leader>l <C-w>l
 noremap <Leader>j <C-w>j
 noremap <Leader>k <C-w>k
 noremap <Leader>q <C-w>q
-"noremap <Leader>r <C-r>
+" noremap <Leader>r <C-r>
 
 noremap m/ /\v
 noremap <Leader>/ :nohlsearch <CR>
@@ -268,49 +267,49 @@ noremap <Leader>u g~aw
 noremap <Leader>e :setlocal cursorline! cursorcolumn!<CR>:sleep 400m
             \<CR>:setlocal cursorline! cursorcolumn!<CR>
 
-"buffer
+" buffer
 noremap <Leader>bn :n <CR>
 noremap <Leader>bp :N <CR>
 
-"quickfix
+" quickfix
 " noremap <Leader>qo :copen <CR>
 " noremap <Leader>qc :cclose <CR>
-"noremap <Leader>a :AsyncRun 
-"noremap <Leader>s :AsyncStop 
+" noremap <Leader>a :AsyncRun 
+" noremap <Leader>s :AsyncStop 
 
-"file edit----------------------------------------------------------
+" file edit----------------------------------------------------------
 
-"How to use one line for 'if' in cmdline : au , map : |
-"autocmd CursorHold * if 1==1 | echomsg '0' | endif
-"noremap <leader>a :if 1 == 1 \| echom '0' \| endif <CR>
+" How to use one line for 'if' in cmdline : au , map : |
+" autocmd CursorHold * if 1==1 | echomsg '0' | endif
+" noremap <leader>a :if 1 == 1 \| echom '0' \| endif <CR>
 
-"OJ
+" OJ
 noremap <Leader>vm :call _OPENFILE_("","l") <CR>
 noremap <Leader>vi :call _OPENFILE_("input.tst","r") <CR>
 noremap <Leader>vg :call _OPENFILE_("~/.gdbinit","r") <CR>
 
-"copy to save -> OJ
+" copy to save -> OJ
 noremap <Leader>vh :!cp %:p ~/hdoj/all/
 noremap <Leader>vk :!cp %:p ~/poj/all/
 noremap <Leader>va :!cp %:p /media/Program/main.c <CR>
 
-"script
+" script
 noremap <Leader>vs :call _OPENFILE_("~/script/shell.sh","l") <CR>
 noremap <Leader>vp :call _OPENFILE_("~/script/python3.py","l") <CR>
 noremap <Leader>vy :call _OPENFILE_("~/.pythonstartup","l") <CR>
 noremap <Leader>vb :call _OPENFILE_("~/.bash_aliases","r") <CR>
 
-"vimrc
+" vimrc
 noremap <Leader>ve :call _OPENFILE_("~/.vim/vimrc","l") <CR>
 noremap <Leader>vt :call _OPENFILE_("~/script/vimscript.vim","l") <CR>
 noremap <Leader>vu :call _OPENFILE_("%:h/vimrc.tmp","l") <CR>
 
-"octave
+" octave
 noremap <Leader>vo :call _OPENFILE_("~/script/octave.m ","l") <CR>
 noremap <Leader>vn :call _OPENFILE_("~/script/input.tst","l") <CR>
 noremap <Leader>vc :call _OPENFILE_("~/.octaverc","l") <CR>
 
-"tnoremap----------------------------------------------------------
+" tnoremap----------------------------------------------------------
 
 if has('terminal')==0
     echo "Don't support terminal!"
@@ -320,12 +319,12 @@ else
     tnoremap <ESC> <C-w>p
 endif
 
-"function----------------------------------------------------------
+" function----------------------------------------------------------
 
-"the difference between "function x" and "function! x"
-"when the vim-file is sourced ,"function x" will become
-"an error and the function will not be substitute ,but
-"the "function! x" not
+" the difference between "function x" and "function! x"
+" when the vim-file is sourced ,"function x" will become
+" an error and the function will not be substitute ,but
+" the "function! x" not
 
 if exists("_function_exists")
     "delfunction _COMPILE_
@@ -349,6 +348,7 @@ endif
 python3 << ENDPYTHON3
 import os
 import vim
+
 FileName = [
 "main.c",
 "main.cpp",
@@ -401,7 +401,7 @@ else :
 ENDPYTHON3
 endfunction
 
-"help function
+" help function
 function _OPENFILE_(filename,lr)
     " vim -
     " :vsplit : for f in [ 'files','files' ] | exe 'vsplit ' f | endfor
@@ -429,13 +429,13 @@ function _OPENFILE_(filename,lr)
 endfunction
 
 function _COMPILE_()
-    "if you want to get all the variable :see options.txt
+    " if you want to get all the variable :see options.txt
     if &mod == 1
         write
     endif
-    "help filename-modifiers
-    "set filetype=?
-    "!cmd % --could handle currently file by shell command
+    " help filename-modifiers
+    " set filetype=?
+    " !cmd % --could handle currently file by shell command
     if &filetype == 'c'
         " ---------------------------------------------------
         " make makeprg
@@ -481,9 +481,9 @@ function _COMPILE_()
             !octave-cli --no-init-file %:p
         endif
     elseif &filetype == 'sh' || &filetype == 'zsh'
-        "help function-list
-        "help file-functions
-        "help :bar
+        " help function-list
+        " help file-functions
+        " help :bar
         " zsh
         if executable(expand("%:p"))
             ! %:p
@@ -510,43 +510,43 @@ function _COMPILE_()
     endif
 endfunction
 
-"help internal-variables to see l:
-"if the variables definded out of a function,
-"it's global ,if it is inside a function,
-"it is function-local . outside the function
-"could not use the variables in a function,
-"in a function ,if you want to use the global
-"varialbles ,you must add "g:" before a variables,
-"the global-variable would not cover the function-local
-"varialbles
+" help internal-variables to see l:
+" if the variables definded out of a function,
+" it's global ,if it is inside a function,
+" it is function-local . outside the function
+" could not use the variables in a function,
+" in a function ,if you want to use the global
+" varialbles ,you must add "g:" before a variables,
+" the global-variable would not cover the function-local
+" varialbles
 
 function _TEST_INPUT_TO_RUN_()
-    "findfile(),finddir()
-    "register '%' and '#'
-    "copen
+    " findfile(),finddir()
+    " register '%' and '#'
+    " copen
     if exists("g:_the_input_file_")
         let _the_input_file_=g:_the_input_file_
     else
-        "can not have ; with 'let'
+        " can not have ; with 'let'
         let _the_input_file_="input.tst"
     endif
-    "when you want to give a string variable to another ,
-    "you need to use "let"
-    "when you want to merge two string variable together ,
-    "use operator "."
+    " when you want to give a string variable to another ,
+    " you need to use "let"
+    " when you want to merge two string variable together ,
+    " use operator "."
     " %:p:h is different from %:h , other like : %:r:r %:.
-    "help filename-modifiers
+    " help filename-modifiers
     " let _result_=expand("%:p:h") . "/" . _the_input_file_
     if &filetype == 'c' || &filetype == 'cpp' || &filetype == 'asm'
                 \ || &filetype == 'haskell'
         if findfile(_the_input_file_,expand("%:h")) != ""
-            "help :!
+            " help :!
             execute "! %:h/_%:t:r < %:h/" . _the_input_file_
                         "\ . " 2>&1 \| tee /tmp/tmpoutput.%:t:r "
         elseif findfile(_the_input_file_,expand("%:h")) == ""
             ! %:h/_%:t:r 2>&1
         else
-            "echoerr
+            " echoerr
             echomsg 'ERROR!'
         endif
     elseif &filetype == 'java'
@@ -571,17 +571,17 @@ function _DEBUG_()
 endfunction
 
 function _FILETYPE_SET_REGISTER_()
-    "if filereadable(expand("%:h") . "/vimrc.tmp")
-    "source %:h/vimrc.tmp
-    "endif
+    " if filereadable(expand("%:h") . "/vimrc.tmp")
+    " source %:h/vimrc.tmp
+    " endif
     mapclear <buffer>
     if     &filetype == 'c' || &filetype == 'cpp'
         syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2
         syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
         highlight cFunctions gui=NONE cterm=bold  ctermfg=yellow
     elseif &filetype == 'matlab'
-        "highlight MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL ctermbg=red
-        "match MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL /;\+$/
+        " highlight MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL ctermbg=red
+        " match MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL /;\+$/
         highlight MATLAB_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
         match MATLAB_MY_OWN_DEFINE_NOTE /^% %.*$/
         let @m=expand("%:t:r")
@@ -597,86 +597,86 @@ function _FILETYPE_SET_REGISTER_()
             set iskeyword+=.,-
         endif
     elseif &filetype == 'vim'
-        "help cterm-colors
+        " help cterm-colors
         highlight VIM_MY_OWN_DEFINE_SPACE_EOL ctermbg=red
         match VIM_MY_OWN_DEFINE_SPACE_EOL /\s\+$/
-        "elseif &filetype == 'make'
-        "setlocal list listchars=tab:>-,trail:@
+        " elseif &filetype == 'make'
+        " setlocal list listchars=tab:>-,trail:@
     elseif &filetype == 'verilog'
         inoremap <buffer> ' '
     endif
 endfunction
 
 let _function_exists=0
-"autocmd--------------------------------------------------------------
+" autocmd--------------------------------------------------------------
 
 augroup _MY_OWN_DEFINE_
-    "autocmd!  -->clear the autocmd had been defined before
-    "the current augroup before the current command
+    " autocmd!  -->clear the autocmd had been defined before
+    " the current augroup before the current command
     autocmd!
-    "autocmd OptionSet insertmode  call _MY_OWN_KEY_MAP_INSERTMODE_()
-    "updatetime->CursorHoldI
+    " autocmd OptionSet insertmode  call _MY_OWN_KEY_MAP_INSERTMODE_()
+    " updatetime->CursorHoldI
     autocmd BufEnter * call _FILETYPE_SET_REGISTER_()
     autocmd CursorHoldI * stopinsert
     autocmd BufReadPost * if line("'\"") <= line("$") | exe "normal! g`\"" | endif
     " autocmd BufWritePost * if $USER == 'me' | mkview | endif
     " autocmd BufReadPost * if @% != '' && $USER == 'me' | loadview | endif
-    "autocmd CursorHold * redraw
+    " autocmd CursorHold * redraw
 augroup end
 
-"color:
-"Black White
-"DarkRed Red
-"DarkYellow Yellow
-"DarkGreen Green
-"DarkBlue Blue
-"DarkCyan Cyan
-"DarkMagenta Magenta
-"DarkGrey Grey
+" color:
+" Black White
+" DarkRed Red
+" DarkYellow Yellow
+" DarkGreen Green
+" DarkBlue Blue
+" DarkCyan Cyan
+" DarkMagenta Magenta
+" DarkGrey Grey
 
 " Status line
 " https://groups.google.com/forum/#!topic/vim_use/wPnsi-40FhE
-"set laststatus=2
-"set statusline=
-"set statusline +=%1*\ %n\ %*            "buffer number
-"set statusline +=%5*%{&ff}%*            "file format
-"set statusline +=%3*%y%*                "file type
-"set statusline +=%4*\ %<%F%*            "full path
-"set statusline +=%2*%m%*                "modified flag
-"set statusline +=%1*%=%5l%*             "current line
-"set statusline +=%2*/%L%*               "total lines
-"set statusline +=%1*%4c\ %*             "column number
-"set statusline +=%2*0x%04B\ %*          "character under cursor
+" set laststatus=2
+" set statusline=
+" set statusline +=%1*\ %n\ %*            "buffer number
+" set statusline +=%5*%{&ff}%*            "file format
+" set statusline +=%3*%y%*                "file type
+" set statusline +=%4*\ %<%F%*            "full path
+" set statusline +=%2*%m%*                "modified flag
+" set statusline +=%1*%=%5l%*             "current line
+" set statusline +=%2*/%L%*               "total lines
+" set statusline +=%1*%4c\ %*             "column number
+" set statusline +=%2*0x%04B\ %*          "character under cursor
 
 " Concat the active statusline
 " ------------------------------------------=--------------------=------------
 "               Gibberish                   | What da heck?      | Example
 " ------------------------------------------+--------------------+------------
-"set statusline=                            "| Clear status line  |
-"set statusline+=\ %7*%{&paste?'=':''}%*    "| Paste symbol       | =
-"set statusline+=%4*%{&ro?'':'#'}%*         "| Modifiable symbol  | #
-"set statusline+=%6*%{TlMode()}             "| Readonly symbol    | 
-"set statusline+=%*%n                       "| Buffer number      | 3
-"set statusline+=%6*%{TlModified()}%0*      "| Write symbol       | +
-"set statusline+=\ %1*%{TlSuperName()}%*    "| Relative supername | cor/app.js
-"set statusline+=\ %<                       "| Truncate here      |
-"set statusline+=%(\ %{TlBranchName()}\ %) "| Git branch name    |  master
-"set statusline+=%4*%(%{TlWhitespace()}\ %) "| Space and indent   | trail34
-"set statusline+=%(%{TlSyntax()}\ %)%*      "| syntax error/warn  | E:1W:1
-"set statusline+=%=                         "| Align to right     |
-"set statusline+=%{TlFormat()}\ %4*%*      "| File format        | unix 
-"set statusline+=%(\ %{&fenc}\ %)           "| File encoding      | utf-8
-"set statusline+=%4*%*%(\ %{&ft}\ %)       "| File type          |  python
-"set statusline+=%3*%2*\ %l/%2c%4p%%\ %*   "| Line and column    | 69:77/ 90%
+" set statusline=                            "| Clear status line  |
+" set statusline+=\ %7*%{&paste?'=':''}%*    "| Paste symbol       | =
+" set statusline+=%4*%{&ro?'':'#'}%*         "| Modifiable symbol  | #
+" set statusline+=%6*%{TlMode()}             "| Readonly symbol    | 
+" set statusline+=%*%n                       "| Buffer number      | 3
+" set statusline+=%6*%{TlModified()}%0*      "| Write symbol       | +
+" set statusline+=\ %1*%{TlSuperName()}%*    "| Relative supername | cor/app.js
+" set statusline+=\ %<                       "| Truncate here      |
+" set statusline+=%(\ %{TlBranchName()}\ %) "| Git branch name    |  master
+" set statusline+=%4*%(%{TlWhitespace()}\ %) "| Space and indent   | trail34
+" set statusline+=%(%{TlSyntax()}\ %)%*      "| syntax error/warn  | E:1W:1
+" set statusline+=%=                         "| Align to right     |
+" set statusline+=%{TlFormat()}\ %4*%*      "| File format        | unix 
+" set statusline+=%(\ %{&fenc}\ %)           "| File encoding      | utf-8
+" set statusline+=%4*%*%(\ %{&ft}\ %)       "| File type          |  python
+" set statusline+=%3*%2*\ %l/%2c%4p%%\ %*   "| Line and column    | 69:77/ 90%
 " ------------------------------------------'--------------------'---------
 
-"nerdcommenter:
-"ca mode
-"cA insert end of line
-"c$ comment to end
-"cs block
-"cm
-"c<space> toggle
+" nerdcommenter:
+" ca mode
+" cA insert end of line
+" c$ comment to end
+" cs block
+" cm
+" c<space> toggle
 " cc line
 
 noremap <Leader>d :call NERDComment("n","Toggle") <CR>
