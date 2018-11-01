@@ -15,17 +15,17 @@ UUID=fe8ca89b-2dba-4ccb-9b33-9eec429b2128 /home           ext4    defaults      
 UUID=9b61ece7-08c0-4216-ac82-89f885675d1b none            swap    sw              0       0
 
 
-# Microsoft Windows OS:/dev/sda3
-UUID="B0B2F7CBB2F79456"  /media/OS/ ntfs auto,ro,exec,nouser,nosuid,uid=root,gid=MATLAB,umask=227,dmask=227,fmask=227 0 0  
-# MATLAB :/dev/sda4
-UUID="f064339f-56da-4a64-b5d5-531bfe4925ca" /media/MATLAB/ ext4 auto,ro,exec,nouser,nosuid 0 0
-# MatheMatica :/dev/sda12
-UUID="4bca8524-34cf-4fe5-afc8-e737bb611624" /media/MatheMatica/ ext4 auto,ro,exec,nouser,nosuid 0 0
-#Altera Quartus 2 /dev/sda11
-UUID="7a653826-550f-4708-92a8-b301dec8db0b" /media/Altera_Quartus_2/ ext4 auto,ro,exec,nouser,nosuid 0 0
+# Microsoft Windows OS : /dev/sda3
+UUID="B0B2F7CBB2F79456"  /media/OS/ ntfs auto,ro,noexec,nouser,nosuid,uid=root,gid=MATLAB,umask=227,dmask=227,fmask=337 0 2  
+# MATLAB : /dev/sda4
+UUID="f064339f-56da-4a64-b5d5-531bfe4925ca" /media/MATLAB/ ext4 auto,ro,exec,nouser,nosuid 0 2
+# MatheMatica : /dev/sda12
+UUID="4bca8524-34cf-4fe5-afc8-e737bb611624" /media/MatheMatica/ ext4 auto,ro,exec,nouser,nosuid 0 2
+#Altera Quartus 2 : /dev/sda11
+UUID="7a653826-550f-4708-92a8-b301dec8db0b" /media/Altera_Quartus_2/ ext4 auto,ro,exec,nouser,nosuid 0 2
 #Torrent : /dev/sda10 
-UUID="2d5901cf-0ce0-4a45-a317-78b15f873d07" /media/Torrent/ ext4 auto,exec,nouser,nosuid 0 0
+UUID="2d5901cf-0ce0-4a45-a317-78b15f873d07" /media/Torrent/ ext4 auto,ro,noexec,nouser,nosuid 0 2
 #Windows
-UUID="A29C408C9C405CC3"  /media/Windows/ ntfs auto,exec,nouser,nosuid,uid=root,gid=MATLAB,umask=007,dmask=007,fmask=007 0 0  
+UUID="A29C408C9C405CC3"  /media/Windows/ ntfs auto,rw,noexec,nouser,nosuid,uid=root,gid=MATLAB,umask=007,dmask=007,fmask=117 0 2  
 
 
