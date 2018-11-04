@@ -125,7 +125,7 @@ set incsearch
 set smartcase
 set hlsearch
 
-set updatetime&
+" set updatetime&
 set notimeout
 set ttimeout
 set timeoutlen=3000
@@ -136,8 +136,15 @@ set ruler
 " set rulerformat
 set laststatus=1
 " set statusline+=%{strftime(\"%T\")}
+
+set noexrc
+set nosecure
+
+" help wildcard
+" set suffixes&
+set wildignore+=*.o,*.class,*.hi,*.mn
 set wildmenu
-set wildmode&
+" set wildmode&
 
 set modeline
 set modelines=3
@@ -151,7 +158,7 @@ set nosplitright
 " set pythonthreedll&
 " set pythonthreehome&
 
-set runtimepath&
+" set runtimepath&
 set history=200
 set scrolloff=5
 set mouse-=a
@@ -369,8 +376,9 @@ FileFormat = [
 ".hs",
 ".asm",
 ]
+CurDirList = os.listdir(".")
 for fn in FileName :
-    if fn in os.listdir(".") :
+    if fn in CurDirList :
         if vim.eval("@%") != "" or vim.eval("&mod") == "1" :
             RetStatus = vim.command("vsplit " + fn)
         else :
@@ -380,13 +388,14 @@ if "RetStatus" in globals() :
     pass
 else :
     FileNumber = 0
-    for ld in os.listdir(".") :
+    for ld in CurDirList :
         for ff in FileFormat :
             if os.path.splitext(ld)[-1] == ff :
                 FileNumber += 1
                 if FileNumber == 1 :
                     if vim.eval("@%") != "" or vim.eval("&mod") == "1" :
                         RetStatus = vim.command("vsplit " + ld)
+                        FileNumber += 1
                     else :
                         RetStatus = vim.command("edit " + ld)
                 elif FileNumber <= 4 :
@@ -428,6 +437,11 @@ function _OPENFILE_(filename,lr)
     endif
 endfunction
 
+if exists("g:_the_input_file_") == 0
+    " can not have ; with 'let'
+    let g:_the_input_file_="input.tst"
+endif
+
 function _COMPILE_()
     " if you want to get all the variable :see options.txt
     if &mod == 1
@@ -455,7 +469,7 @@ function _COMPILE_()
         " ---------------------------------------------------
         let _gcc_compile_options=" -Wfloat-equal -Wshadow -Wstrict-prototypes "
         execute "!gcc -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
-                    \ _gcc_compile_options . " -o %:h/_%:t:r %:p -lm "
+                    \ _gcc_compile_options . " -o %:h/%:t:r.mn %:p -lm "
     elseif &filetype == 'cpp'
         " octave-C++ :
         " sudo apt install liboctave-dev
@@ -463,13 +477,25 @@ function _COMPILE_()
         " octave-cli --eval 'helloworld(*)'
         let _gpp_compile_options=" -Wfloat-equal -Wshadow "
         execute "!g++ -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
-                    \ _gpp_compile_options . " -o %:h/_%:t:r %:p "
+                    \ _gpp_compile_options . " -o %:h/%:t:r.mn %:p "
     elseif &filetype == 'python'
-        if executable(expand("%:p"))
-            ! %:p
+        if expand("%:h") == "/home/me/script"
+            " for script
+            if findfile(g:_the_input_file_,$PWD) != ""
+                " pypy
+                execute "!" . (executable(expand("%:p"))?"":"python3")
+                            \ . " %:p <$PWD/input.tst"
+            else
+                execute "!" . (executable(expand("%:p"))?"":"python3") . " %:p"
+            endif
         else
-            " pypy
-            !python3 %:p
+            " for OJ
+            if findfile(g:_the_input_file_,expand("%:h")) != ""
+                execute "!" . (executable(expand("%:p"))?"":"python3")
+                            \ . " %:p <%:h/input.tst"
+            else
+                execute "!" . (executable(expand("%:p"))?"":"python3") . " %:p"
+            endif
         endif
     elseif &filetype == 'matlab'
         " sudo apt install liboctave-dev
@@ -497,16 +523,16 @@ function _COMPILE_()
         !javac -g -d %:h/class/ %:p
     elseif &filetype == 'verilog'
         " sudo apt install iverilog gtkwave verilator
-        !iverilog -o %:h/_%:t:r %:p
+        !iverilog -o %:h/%:t:r.mn %:p
     elseif &filetype == 'asm'
         " only do this could gcc compile assemble to 32-bit : gcc -m32
         " sudo apt install gcc-multilib g++-multilib
         " intel : sudo apt install nasm
         " AT&T : sudo apt install as
         !nasm -f elf %:p -o %:h/%:t:r.o
-        !gcc -m32 %:h/%:t:r.o -o %:h/_%:t:r
+        !gcc -m32 %:h/%:t:r.o -o %:h/%:t:r.mn
     elseif &filetype == 'haskell'
-        !ghc %:p -o %:h/_%:t:r
+        !ghc %:p -o %:h/%:t:r.mn
     endif
 endfunction
 
@@ -524,11 +550,8 @@ function _TEST_INPUT_TO_RUN_()
     " findfile(),finddir()
     " register '%' and '#'
     " copen
-    if exists("g:_the_input_file_")
-        let _the_input_file_=g:_the_input_file_
-    else
-        " can not have ; with 'let'
-        let _the_input_file_="input.tst"
+    if &mod == 1
+        write
     endif
     " when you want to give a string variable to another ,
     " you need to use "let"
@@ -536,23 +559,24 @@ function _TEST_INPUT_TO_RUN_()
     " use operator "."
     " %:p:h is different from %:h , other like : %:r:r %:.
     " help filename-modifiers
-    " let _result_=expand("%:p:h") . "/" . _the_input_file_
+    " let _result_=expand("%:p:h") . "/" . g:_the_input_file_
     if &filetype == 'c' || &filetype == 'cpp' || &filetype == 'asm'
                 \ || &filetype == 'haskell'
-        if findfile(_the_input_file_,expand("%:h")) != ""
+        if findfile(g:_the_input_file_,expand("%:h")) != ""
             " help :!
-            execute "! %:h/_%:t:r < %:h/" . _the_input_file_
-                        "\ . " 2>&1 \| tee /tmp/tmpoutput.%:t:r "
-        elseif findfile(_the_input_file_,expand("%:h")) == ""
-            ! %:h/_%:t:r 2>&1
+            execute "! %:h/%:t:r.mn < %:h/" . g:_the_input_file_
+                        " \ . " 2>&1 \| tee /tmp/tmpoutput.%:t:r "
+        elseif findfile(g:_the_input_file_,expand("%:h")) == ""
+            ! %:h/%:t:r.mn 2>&1
         else
             " echoerr
             echomsg 'ERROR!'
         endif
     elseif &filetype == 'java'
-        if findfile(_the_input_file_,expand("%:h/class")) != ""
-            execute "!java -classpath %:h/class/ %:t:r < %:h/" . _the_input_file_
-        elseif findfile(_the_input_file_,expand("%:h/class")) == ""
+        if findfile(g:_the_input_file_,expand("%:h")) != ""
+            execute "!java -classpath %:h/class/ %:t:r < %:h/"
+                        \ . g:_the_input_file_
+        elseif findfile(g:_the_input_file_,expand("%:h")) == ""
             !java -classpath %:h/class/ %:t:r 2>&1
         else
             echomsg 'ERROR!'
@@ -562,7 +586,7 @@ endfunction
 
 function _DEBUG_()
     if &filetype == 'c' || &filetype == 'cpp'
-        !emacs --eval "(gdb \"gdb -i=mi %:h/_%:t:r \")"
+        !emacs --eval "(gdb \"gdb -i=mi %:h/%:t:r.mn \")"
     elseif &filetype == 'python'
         !pudb %:p
     elseif &filetype == 'java'
