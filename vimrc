@@ -59,10 +59,10 @@ if filereadable("/etc/vim/vimrc.local")
     source /etc/vim/vimrc.local
 endif
 
-if has('terminal')==0 || has('python3_compiled')==0 || has('python_compiled')==0
+if !has('terminal') || !has('python3_compiled') || !has('python_compiled')
     " help if_pyth.txt
     echomsg 'Need to recompile!'
-    if has('python3_dynamic')==0 || has('python_dynamic')==0
+    if !has('python3_dynamic') || !has('python_dynamic')
         echomsg 'Could not dynamic load!'
     endif
     " or you could choose to install vim-nox or vim-gtk,
@@ -151,6 +151,7 @@ set modelines=3
 
 set nosplitbelow
 set nosplitright
+set noconfirm
 
 " set pyxversion&
 " set pythondll&
@@ -179,8 +180,6 @@ if $USER == 'me'
     colorscheme MyColo
 elseif $USER == 'syx'
     colorscheme MyColo
-else
-    echomsg "Please set your colorscheme!"
 endif
 highlight cursorline cterm=NONE ctermbg=blue
 highlight cursorcolumn cterm=NONE ctermbg=blue
@@ -199,10 +198,8 @@ cab h vertical leftabove help
 cab t vertical rightbelow terminal ++rows=48 ++cols=70
 cab mat vertical rightbelow terminal ++rows=48 ++cols=70 matlab
             \ -nodesktop -nosplash
+cab eo echo
 cab em echomsg
-cab vr vertical rightbelow vsplit
-" cab a AsyncRun
-" cab as AsyncStop
 
 " cnoremap-------------------------------------------------------------
 
@@ -234,6 +231,11 @@ noremap <expr> , getcharsearch().forward ? ',' : ';'
 noremap <expr> n v:searchforward ? 'n' : 'N'
 noremap <expr> N v:searchforward ? 'N' : 'n'
 
+noremap <F8> :source ~/script/vimscript.vim <CR>
+noremap <F9> :call _COMPILE_() <CR>
+noremap <F10> :call _TEST_INPUT_TO_RUN_() <CR>
+noremap <F11> :call _DEBUG_() <CR>
+
 noremap 0 ^
 noremap ^ 0
 noremap [ {
@@ -243,13 +245,6 @@ noremap ' m
 noremap ` '
 noremap - :
 noremap \ :!
-
-noremap <F8> :source ~/script/vimscript.vim <CR>
-noremap <F9> :call _COMPILE_() <CR>
-noremap <F10> :call _TEST_INPUT_TO_RUN_() <CR>
-noremap <F11> :call _DEBUG_() <CR>
-" noremap <F11> :!emacs --eval "(gdb \"gdb -i=mi %:h/_%:t:r \")" <CR>
-" emacs --eval "(pdb \"pdb %:p \")" <CR>
 
 " help key-codes
 let mapleader = "\<Space>"
@@ -263,8 +258,6 @@ noremap <Leader>t T
 noremap <Leader>w <C-w>
 noremap <Leader>h <C-w>h
 noremap <Leader>l <C-w>l
-noremap <Leader>j <C-w>j
-noremap <Leader>k <C-w>k
 noremap <Leader>q <C-w>q
 " noremap <Leader>r <C-r>
 
@@ -281,8 +274,6 @@ noremap <Leader>bp :N <CR>
 " quickfix
 " noremap <Leader>qo :copen <CR>
 " noremap <Leader>qc :cclose <CR>
-" noremap <Leader>a :AsyncRun 
-" noremap <Leader>s :AsyncStop 
 
 " file edit----------------------------------------------------------
 
@@ -339,18 +330,19 @@ if exists("_function_exists")
     delfunction _FILETYPE_SET_REGISTER_
     delfunction _OPENFILE_
     delfunction _PYTHON_FUNCTION_
+    delfunction VsplitFunction
 endif
 
 function _PYTHON_FUNCTION_()
-if has('python_compiled')==0 || has('python3_compiled')==0
-    echomsg "Don't support python3/python!"
-    " finish
-    return
-endif
-if has('python3_dynamic')==0 || has('python_dynamic')==0
-    echomsg "Could not dynamic load python3/python!"
-    return
-endif
+    if !has('python_compiled') || !has('python3_compiled')
+        echomsg "Don't support python3/python!"
+        " finish
+        return
+    endif
+    if !has('python3_dynamic') || !has('python_dynamic')
+        echomsg "Could not dynamic load python3/python!"
+        return
+    endif
 " help if_pyth.txt
 python3 << ENDPYTHON3
 import os
@@ -376,9 +368,10 @@ FileFormat = [
 ".hs",
 ".asm",
 ]
+
 CurDirList = os.listdir(".")
 for fn in FileName :
-    if fn in CurDirList :
+    if fn in CurDirList and os.path.isfile(fn) :
         if vim.eval("@%") != "" or vim.eval("&mod") == "1" :
             RetStatus = vim.command("vsplit " + fn)
         else :
@@ -390,7 +383,7 @@ else :
     FileNumber = 0
     for ld in CurDirList :
         for ff in FileFormat :
-            if os.path.splitext(ld)[-1] == ff :
+            if os.path.isfile(ld) and os.path.splitext(ld)[-1] == ff :
                 FileNumber += 1
                 if FileNumber == 1 :
                     if vim.eval("@%") != "" or vim.eval("&mod") == "1" :
@@ -407,10 +400,12 @@ else :
         pass
     else :
         print("File not found!")
+
 ENDPYTHON3
 endfunction
 
 " help function
+" help function-list
 function _OPENFILE_(filename,lr)
     " vim -
     " :vsplit : for f in [ 'files','files' ] | exe 'vsplit ' f | endfor
@@ -437,7 +432,7 @@ function _OPENFILE_(filename,lr)
     endif
 endfunction
 
-if exists("g:_the_input_file_") == 0
+if !exists("g:_the_input_file_")
     " can not have ; with 'let'
     let g:_the_input_file_="input.tst"
 endif
@@ -469,7 +464,7 @@ function _COMPILE_()
         " ---------------------------------------------------
         let _gcc_compile_options=" -Wfloat-equal -Wshadow -Wstrict-prototypes "
         execute "!gcc -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
-                    \ _gcc_compile_options . " -o %:h/%:t:r.mn %:p -lm "
+                    \ _gcc_compile_options . " -o %:h/_%:t:r.mn %:p -lm "
     elseif &filetype == 'cpp'
         " octave-C++ :
         " sudo apt install liboctave-dev
@@ -477,9 +472,10 @@ function _COMPILE_()
         " octave-cli --eval 'helloworld(*)'
         let _gpp_compile_options=" -Wfloat-equal -Wshadow "
         execute "!g++ -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
-                    \ _gpp_compile_options . " -o %:h/%:t:r.mn %:p "
+                    \ _gpp_compile_options . " -o %:h/_%:t:r.mn %:p "
     elseif &filetype == 'python'
-        if expand("%:h") == "/home/me/script"
+        if expand("%:h") == "/home/me/script" || expand("%:h") ==
+                    \ "/tmp"
             " for script
             if findfile(g:_the_input_file_,$PWD) != ""
                 " pypy
@@ -501,21 +497,12 @@ function _COMPILE_()
         " sudo apt install liboctave-dev
         " !mkoctfile %:p
         " !octave-cli --eval '%:t:r (*)'
-        if executable(expand("%:p"))
-            ! %:p
-        else
-            !octave-cli --no-init-file %:p
-        endif
+        execute "!" . (executable(expand("%:p"))?"":"octave-cli --no-init-file ")
+                    \ . "%:p"
     elseif &filetype == 'sh' || &filetype == 'zsh'
-        " help function-list
-        " help file-functions
         " help :bar
         " zsh
-        if executable(expand("%:p"))
-            ! %:p
-        else
-            !bash %:p
-        endif
+        execute "!" . (executable(expand("%:p"))?"":"bash ") . "%:p"
     elseif &filetype == 'vim'
         source %:p
     elseif &filetype == 'java'
@@ -523,16 +510,16 @@ function _COMPILE_()
         !javac -g -d %:h/class/ %:p
     elseif &filetype == 'verilog'
         " sudo apt install iverilog gtkwave verilator
-        !iverilog -o %:h/%:t:r.mn %:p
+        !iverilog -o %:h/_%:t:r.mn %:p
     elseif &filetype == 'asm'
         " only do this could gcc compile assemble to 32-bit : gcc -m32
         " sudo apt install gcc-multilib g++-multilib
         " intel : sudo apt install nasm
         " AT&T : sudo apt install as
-        !nasm -f elf %:p -o %:h/%:t:r.o
-        !gcc -m32 %:h/%:t:r.o -o %:h/%:t:r.mn
+        !nasm -f elf %:p -o %:h/_%:t:r.o
+        !gcc -m32 %:h/_%:t:r.o -o %:h/_%:t:r.mn
     elseif &filetype == 'haskell'
-        !ghc %:p -o %:h/%:t:r.mn
+        !ghc %:p -o %:h/_%:t:r.mn
     endif
 endfunction
 
@@ -564,10 +551,10 @@ function _TEST_INPUT_TO_RUN_()
                 \ || &filetype == 'haskell'
         if findfile(g:_the_input_file_,expand("%:h")) != ""
             " help :!
-            execute "! %:h/%:t:r.mn < %:h/" . g:_the_input_file_
+            execute "! %:h/_%:t:r.mn < %:h/" . g:_the_input_file_
                         " \ . " 2>&1 \| tee /tmp/tmpoutput.%:t:r "
         elseif findfile(g:_the_input_file_,expand("%:h")) == ""
-            ! %:h/%:t:r.mn 2>&1
+            ! %:h/_%:t:r.mn 2>&1
         else
             " echoerr
             echomsg 'ERROR!'
@@ -586,7 +573,7 @@ endfunction
 
 function _DEBUG_()
     if &filetype == 'c' || &filetype == 'cpp'
-        !emacs --eval "(gdb \"gdb -i=mi %:h/%:t:r.mn \")"
+        !emacs --eval "(gdb \"gdb -i=mi %:h/_%:t:r.mn \")"
     elseif &filetype == 'python'
         !pudb %:p
     elseif &filetype == 'java'
@@ -640,13 +627,62 @@ augroup _MY_OWN_DEFINE_
     autocmd!
     " autocmd OptionSet insertmode  call _MY_OWN_KEY_MAP_INSERTMODE_()
     " updatetime->CursorHoldI
-    autocmd BufEnter * call _FILETYPE_SET_REGISTER_()
     autocmd CursorHoldI * stopinsert
     autocmd BufReadPost * if line("'\"") <= line("$") | exe "normal! g`\"" | endif
+    autocmd BufEnter * call _FILETYPE_SET_REGISTER_()
     " autocmd BufWritePost * if $USER == 'me' | mkview | endif
     " autocmd BufReadPost * if @% != '' && $USER == 'me' | loadview | endif
     " autocmd CursorHold * redraw
 augroup end
+
+" command--------------------------------------------------------------
+
+" help function-argument
+" help command-complete
+" help 40.2
+command -complete=file -nargs=* Vlsplit :call VsplitFunction("l",<f-args>)
+command -complete=file -nargs=* Vrsplit :call VsplitFunction("r",<f-args>)
+function VsplitFunction(direction, ... )
+    if a:direction != "l" && a:direction != "r"
+        echomsg "Direction have no effect!"
+        return
+    endif
+    if a:0 == 1
+        if a:direction == "l"
+            execute "vsplit "
+        elseif a:direction == "r"
+            execute "vertical rightbelow vsplit "
+        endif
+    else
+        for Files in a:000
+            if a:direction == "l"
+                execute "vsplit " . Files
+            elseif a:direction == "r"
+                execute "vertical rightbelow vsplit " . Files
+            endif
+        endfor
+    endif
+endfunction
+
+" Plugin---------------------------------------------------------------
+
+" nerdcommenter:
+" ca mode
+" cA insert end of line
+" c$ comment to end
+" cs block
+" cm
+" c<space> toggle
+" cc line
+
+" Plugin : NERDCommment
+noremap <Leader>d :call NERDComment("n","Toggle") <CR>
+let g:NERDDefaultAlign = 'left'
+let g:NERDSpaceDelims = 1
+let g:NERDAltDelims_c = 1
+let g:NERDAltDelims_python = 1
+
+" Comment--------------------------------------------------------------
 
 " color:
 " Black White
@@ -693,19 +729,4 @@ augroup end
 " set statusline+=%4*%*%(\ %{&ft}\ %)       "| File type          |  python
 " set statusline+=%3*%2*\ %l/%2c%4p%%\ %*   "| Line and column    | 69:77/ 90%
 " ------------------------------------------'--------------------'---------
-
-" nerdcommenter:
-" ca mode
-" cA insert end of line
-" c$ comment to end
-" cs block
-" cm
-" c<space> toggle
-" cc line
-
-noremap <Leader>d :call NERDComment("n","Toggle") <CR>
-let g:NERDDefaultAlign = 'left'
-let g:NERDSpaceDelims = 1
-let g:NERDAltDelims_c = 1
-let g:NERDAltDelims_python = 1
 
