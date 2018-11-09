@@ -103,56 +103,71 @@ endif
 
 " set ---------------------------------------------------------------------
 
+" number
 set number
 set relativenumber
 set numberwidth=3
 
+" tab
 set tabstop=4
 set expandtab
 set softtabstop=4
 set smarttab
 set shiftwidth=4
 set nojoinspaces
+" set list
+" set listchars=tab:>-
 
+" indent
 set autoindent
 set smartindent
 filetype indent plugin on
 set foldmethod=manual
-" set commentstring&
 
+" search
 set ignorecase
 set incsearch
 set smartcase
 set hlsearch
 
-" set updatetime&
+" map waiting
 set notimeout
 set ttimeout
 set timeoutlen=3000
 set ttimeoutlen=0
 
+" statusline
 set showcmd
 set ruler
 " set rulerformat
 set laststatus=1
 " set statusline+=%{strftime(\"%T\")}
 
-set noexrc
-set nosecure
-
+" wild menu
 " help wildcard
-" set suffixes&
-set wildignore+=*.o,*.class,*.hi,*.mn
 set wildmenu
 " set wildmode&
+set wildignore+=*.o,*.hi,*.class
+" set suffixes&
 
+" modeline
 set modeline
 set modelines=3
 
+" split
 set nosplitbelow
 set nosplitright
 set noconfirm
 
+" bells
+set noerrorbells
+set novisualbell
+
+" vimrc in curent dir
+set noexrc
+set nosecure
+
+" python
 " set pyxversion&
 " set pythondll&
 " set pythonhome&
@@ -198,7 +213,6 @@ cab h vertical leftabove help
 cab t vertical rightbelow terminal ++rows=48 ++cols=70
 cab mat vertical rightbelow terminal ++rows=48 ++cols=70 matlab
             \ -nodesktop -nosplash
-cab eo echo
 cab em echomsg
 
 " cnoremap-------------------------------------------------------------
@@ -223,6 +237,11 @@ inoremap <C-e> <end>
 
 " noremap--------------------------------------------------------------
 
+noremap <F8> :source ~/script/vimscript.vim <CR>
+noremap <F9> :call _COMPILE_() <CR>
+noremap <F10> :call _TEST_INPUT_TO_RUN_() <CR>
+noremap <F11> :call _DEBUG_() <CR>
+
 " help getcharsearch()  <expr> map-argument
 " map could have argument
 noremap <expr> ; getcharsearch().forward ? ';' : ','
@@ -230,11 +249,6 @@ noremap <expr> , getcharsearch().forward ? ',' : ';'
 " help internal-variables
 noremap <expr> n v:searchforward ? 'n' : 'N'
 noremap <expr> N v:searchforward ? 'N' : 'n'
-
-noremap <F8> :source ~/script/vimscript.vim <CR>
-noremap <F9> :call _COMPILE_() <CR>
-noremap <F10> :call _TEST_INPUT_TO_RUN_() <CR>
-noremap <F11> :call _DEBUG_() <CR>
 
 noremap 0 ^
 noremap ^ 0
@@ -295,7 +309,7 @@ noremap <Leader>va :!cp %:p /media/Program/main.c <CR>
 noremap <Leader>vs :call _OPENFILE_("~/script/shell.sh","l") <CR>
 noremap <Leader>vp :call _OPENFILE_("~/script/python3.py","l") <CR>
 noremap <Leader>vy :call _OPENFILE_("~/.pythonstartup","l") <CR>
-noremap <Leader>vb :call _OPENFILE_("~/.bash_aliases","r") <CR>
+noremap <Leader>vb :call _OPENFILE_("~/.bash_aliases","l") <CR>
 
 " vimrc
 noremap <Leader>ve :call _OPENFILE_("~/.vim/vimrc","l") <CR>
@@ -309,8 +323,8 @@ noremap <Leader>vc :call _OPENFILE_("~/.octaverc","l") <CR>
 
 " tnoremap----------------------------------------------------------
 
-if has('terminal')==0
-    echo "Don't support terminal!"
+if !has('terminal')
+    echomsg "Don't support terminal!"
 else
     tnoremap <C-W>n <C-W>N
     tnoremap <C-W>N <C-W>n
@@ -333,6 +347,10 @@ if exists("_function_exists")
     delfunction VsplitFunction
 endif
 
+" diference between echo and echomsg :
+" echo : all types , no messages
+" echomsg : string type , messages
+
 function _PYTHON_FUNCTION_()
     if !has('python_compiled') || !has('python3_compiled')
         echomsg "Don't support python3/python!"
@@ -345,64 +363,90 @@ function _PYTHON_FUNCTION_()
     endif
 " help if_pyth.txt
 python3 << ENDPYTHON3
-import os
-import vim
 
-FileName = [
-"main.c",
-"main.cpp",
-"Main.java",
-"main.v",
-"main.hs",
-"main.asm",
-]
-FileFormat = [
-".c",
-".cpp",
-".java",
-".py",
-".m",
-".sh",
-".vim",
-".v",
-".hs",
-".asm",
-]
+#  import os
+#  import vim
 
-CurDirList = os.listdir(".")
-for fn in FileName :
-    if fn in CurDirList and os.path.isfile(fn) :
-        if vim.eval("@%") != "" or vim.eval("&mod") == "1" :
-            RetStatus = vim.command("vsplit " + fn)
-        else :
-            RetStatus = vim.command("edit " + fn)
-# if "RetStatus" in locals() or "RetStatus" in globals() :
-if "RetStatus" in globals() :
-    pass
-else :
-    FileNumber = 0
-    for ld in CurDirList :
-        for ff in FileFormat :
-            if os.path.isfile(ld) and os.path.splitext(ld)[-1] == ff :
-                FileNumber += 1
-                if FileNumber == 1 :
-                    if vim.eval("@%") != "" or vim.eval("&mod") == "1" :
-                        RetStatus = vim.command("vsplit " + ld)
-                        FileNumber += 1
-                    else :
-                        RetStatus = vim.command("edit " + ld)
-                elif FileNumber <= 4 :
-                    RetStatus = vim.command("vsplit " + ld)
-                else :
-                    RetStatus = vim.command("argadd " + ld)
-                break
-    if "RetStatus" in globals() :
-        pass
-    else :
-        print("File not found!")
+#  FileName = [
+#  "main.c",
+#  "main.cpp",
+#  "Main.java",
+#  "main.v",
+#  "main.hs",
+#  "main.asm",
+#  ]
+#  FileFormat = [
+#  ".c",
+#  ".cpp",
+#  ".java",
+#  ".py",
+#  ".m",
+#  ".sh",
+#  ".vim",
+#  ".v",
+#  ".hs",
+#  ".asm",
+#  ]
+
+#  CurDirList = os.listdir(".")
+#  for fn in FileName :
+#      if fn in CurDirList and os.path.isfile(fn) :
+#          if vim.eval("@%") != "" or vim.eval("&mod") == "1" :
+#              RetStatus = vim.command("vsplit " + fn)
+#          else :
+#              RetStatus = vim.command("edit " + fn)
+#          break
+#  # if "RetStatus" in locals() or "RetStatus" in globals() :
+#  if "RetStatus" in globals() :
+#      pass
+#  else :
+#      FileNumber = 0
+#      for ld in CurDirList :
+#          for ff in FileFormat :
+#              if os.path.isfile(ld) and os.path.splitext(ld)[-1] == ff :
+#                  FileNumber += 1
+#                  if FileNumber == 1 :
+#                      if vim.eval("@%") != "" or vim.eval("&mod") == "1" :
+#                          RetStatus = vim.command("vsplit " + ld)
+#                          FileNumber += 1
+#                      else :
+#                          RetStatus = vim.command("edit " + ld)
+#                  elif FileNumber <= 4 :
+#                      RetStatus = vim.command("vsplit " + ld)
+#                  else :
+#                      RetStatus = vim.command("argadd " + ld)
+#                  break
+#      if "RetStatus" in globals() :
+#          pass
+#      else :
+#          print("File not found!")
 
 ENDPYTHON3
 endfunction
+
+" if a global variable do not define as this ,
+" it will not be aoto-complete in cmd-line
+let g:FileName = [
+            \ "main.c",
+            \ "main.cpp",
+            \ "Main.java",
+            \ "main.v",
+            \ "main.hs",
+            \ "main.asm",
+            \ ]
+
+let g:FileFormat = [
+            \ "*.c",
+            \ "*.cpp",
+            \ "*.java",
+            \ "*.py",
+            \ "*.m",
+            \ "*.sh",
+            \ "*.vim",
+            \ "*.v",
+            \ "*.hs",
+            \ "*.asm",
+            \ ]
 
 " help function
 " help function-list
@@ -412,7 +456,47 @@ function _OPENFILE_(filename,lr)
     " help :for
     " help :bar
     if a:filename == ""
-        call _PYTHON_FUNCTION_()
+        " help List
+
+        " $PWD , . = %:h
+        for fn in g:FileName
+            " help cmdline file-searching
+            " &path &cdpath
+            " finddir() findfile() globpath() split()
+            " find
+            if findfile(fn,$PWD) != ""
+                if &mod || @% != ""
+                    execute "vsplit " . fn
+                else
+                    execute "edit " .fn
+                endif
+                let FindFileSucess = 0
+                break
+            endif
+        endfor
+
+        if !exists("FindFileSucess")
+            let FileNumber = 0
+            for ff in g:FileFormat
+                let GetFiles = glob(ff)
+                if GetFiles != "" && !isdirectory(GetFiles)
+                    let FileNumber += 1
+                    if FileNumber == 1
+                        if &mod || @% != ""
+                            execute "vsplit " . GetFiles
+                            let FileNumber += 1
+                        else
+                            execute "edit " . GetFiles
+                        endif
+                    elseif FileNumber <= 4
+                        execute "vsplit " . GetFiles
+                    else
+                        execute "argadd " . GetFiles
+                    endif
+                endif
+            endfor
+        endif
+
     else
         if @% == ''
             if &mod == 1
@@ -611,8 +695,7 @@ function _FILETYPE_SET_REGISTER_()
         " help cterm-colors
         highlight VIM_MY_OWN_DEFINE_SPACE_EOL ctermbg=red
         match VIM_MY_OWN_DEFINE_SPACE_EOL /\s\+$/
-        " elseif &filetype == 'make'
-        " setlocal list listchars=tab:>-,trail:@
+    " elseif &filetype == 'make'
     elseif &filetype == 'verilog'
         inoremap <buffer> ' '
     endif
@@ -681,6 +764,9 @@ let g:NERDDefaultAlign = 'left'
 let g:NERDSpaceDelims = 1
 let g:NERDAltDelims_c = 1
 let g:NERDAltDelims_python = 1
+
+" Plugin : Pydiction
+let g:pydiction_location = '/home/me/.vim/after/ftplugin/complete-dict'
 
 " Comment--------------------------------------------------------------
 
