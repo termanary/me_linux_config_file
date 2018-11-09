@@ -150,6 +150,9 @@ set wildmenu
 set wildignore+=*.o,*.hi,*.class
 " set suffixes&
 
+" tab-page
+set tabpagemax=4
+
 " modeline
 set modeline
 set modelines=3
@@ -209,6 +212,7 @@ highlight cursorcolumn cterm=NONE ctermbg=blue
 
 " cab-------------------------------------------------------------------
 
+" help vert windo bufdo
 cab h vertical leftabove help
 cab t vertical rightbelow terminal ++rows=48 ++cols=70
 cab mat vertical rightbelow terminal ++rows=48 ++cols=70 matlab
@@ -364,62 +368,62 @@ function _PYTHON_FUNCTION_()
 " help if_pyth.txt
 python3 << ENDPYTHON3
 
-#  import os
-#  import vim
+import os
+import vim
 
-#  FileName = [
-#  "main.c",
-#  "main.cpp",
-#  "Main.java",
-#  "main.v",
-#  "main.hs",
-#  "main.asm",
-#  ]
-#  FileFormat = [
-#  ".c",
-#  ".cpp",
-#  ".java",
-#  ".py",
-#  ".m",
-#  ".sh",
-#  ".vim",
-#  ".v",
-#  ".hs",
-#  ".asm",
-#  ]
+FileName = [
+"main.c",
+"main.cpp",
+"Main.java",
+"main.v",
+"main.hs",
+"main.asm",
+]
+FileFormat = [
+".c",
+".cpp",
+".java",
+".py",
+".m",
+".sh",
+".vim",
+".v",
+".hs",
+".asm",
+]
 
-#  CurDirList = os.listdir(".")
-#  for fn in FileName :
-#      if fn in CurDirList and os.path.isfile(fn) :
-#          if vim.eval("@%") != "" or vim.eval("&mod") == "1" :
-#              RetStatus = vim.command("vsplit " + fn)
-#          else :
-#              RetStatus = vim.command("edit " + fn)
-#          break
-#  # if "RetStatus" in locals() or "RetStatus" in globals() :
-#  if "RetStatus" in globals() :
-#      pass
-#  else :
-#      FileNumber = 0
-#      for ld in CurDirList :
-#          for ff in FileFormat :
-#              if os.path.isfile(ld) and os.path.splitext(ld)[-1] == ff :
-#                  FileNumber += 1
-#                  if FileNumber == 1 :
-#                      if vim.eval("@%") != "" or vim.eval("&mod") == "1" :
-#                          RetStatus = vim.command("vsplit " + ld)
-#                          FileNumber += 1
-#                      else :
-#                          RetStatus = vim.command("edit " + ld)
-#                  elif FileNumber <= 4 :
-#                      RetStatus = vim.command("vsplit " + ld)
-#                  else :
-#                      RetStatus = vim.command("argadd " + ld)
-#                  break
-#      if "RetStatus" in globals() :
-#          pass
-#      else :
-#          print("File not found!")
+CurDirList = os.listdir(".")
+for fn in FileName :
+    if fn in CurDirList and os.path.isfile(fn) :
+        if vim.eval("@%") != "" or vim.eval("&mod") == "1" :
+            RetStatus = vim.command("vsplit " + fn)
+        else :
+            RetStatus = vim.command("edit " + fn)
+        break
+# if "RetStatus" in locals() or "RetStatus" in globals() :
+if "RetStatus" in globals() :
+    pass
+else :
+    FileNumber = 0
+    for ld in CurDirList :
+        for ff in FileFormat :
+            if os.path.isfile(ld) and os.path.splitext(ld)[-1] == ff :
+                FileNumber += 1
+                if FileNumber == 1 :
+                    if vim.eval("@%") != "" or vim.eval("&mod") == "1" :
+                        RetStatus = vim.command("vsplit " + ld)
+                        FileNumber += 1
+                    else :
+                        RetStatus = vim.command("edit " + ld)
+                elif FileNumber <= 4 :
+                    RetStatus = vim.command("vsplit " + ld)
+                else :
+                    RetStatus = vim.command("argadd " + ld)
+                break
+    if "RetStatus" in globals() :
+        pass
+    else :
+        print("File not found!")
 
 ENDPYTHON3
 endfunction
@@ -435,6 +439,7 @@ let g:FileName = [
             \ "main.asm",
             \ ]
 
+" help List
 let g:FileFormat = [
             \ "*.c",
             \ "*.cpp",
@@ -456,46 +461,51 @@ function _OPENFILE_(filename,lr)
     " help :for
     " help :bar
     if a:filename == ""
-        " help List
+        call _PYTHON_FUNCTION_()
 
-        " $PWD , . = %:h
-        for fn in g:FileName
-            " help cmdline file-searching
-            " &path &cdpath
-            " finddir() findfile() globpath() split()
-            " find
-            if findfile(fn,$PWD) != ""
-                if &mod || @% != ""
-                    execute "vsplit " . fn
-                else
-                    execute "edit " .fn
-                endif
-                let FindFileSucess = 0
-                break
-            endif
-        endfor
+        " " $PWD , . = %:h
+        " for fn in g:FileName
+        "     " help cmdline file-searching
+        "     " &path &cdpath
+        "     " finddir() findfile() glob() globpath() split()
+        "     " find
+        "     if findfile(fn,$PWD) != ""
+        "         if &mod || @% != ""
+        "             execute "vsplit " . fn
+        "         else
+        "             execute "edit " .fn
+        "         endif
+        "         let FindFileSucess = 0
+        "         break
+        "     endif
+        " endfor
 
-        if !exists("FindFileSucess")
-            let FileNumber = 0
-            for ff in g:FileFormat
-                let GetFiles = glob(ff)
-                if GetFiles != "" && !isdirectory(GetFiles)
-                    let FileNumber += 1
-                    if FileNumber == 1
-                        if &mod || @% != ""
-                            execute "vsplit " . GetFiles
-                            let FileNumber += 1
-                        else
-                            execute "edit " . GetFiles
-                        endif
-                    elseif FileNumber <= 4
-                        execute "vsplit " . GetFiles
-                    else
-                        execute "argadd " . GetFiles
-                    endif
-                endif
-            endfor
-        endif
+        " if !exists("FindFileSucess")
+        "     let FileNumber = 0
+        "     for ff in g:FileFormat
+        "         let GetFiles = glob(ff)
+        "         if GetFiles != ""
+        "             let GetFiles = split(GetFiles,"\n")
+        "             for gf in GetFiles
+        "                 if !isdirectory(gf)
+        "                     let FileNumber += 1
+        "                     if FileNumber == 1
+        "                         if &mod || @% != ""
+        "                             execute "vsplit " . gf
+        "                             let FileNumber += 1
+        "                         else
+        "                             execute "edit " . gf
+        "                         endif
+        "                     elseif FileNumber <= 4
+        "                         execute "vsplit " . gf
+        "                     else
+        "                         execute "argadd " . gf
+        "                     endif
+        "                 endif
+        "             endfor
+        "         endif
+        "     endfor
+        " endif
 
     else
         if @% == ''
