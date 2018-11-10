@@ -189,7 +189,7 @@ set undolevels+=1000
 
 set cpoptions-=c
 " set cpoptions+=q
-set nrformats="bin,octal,hex,alpha"
+set nrformats=bin,octal,hex,alpha
 
 " see highlight for exmaple
 " the order of next 3 line could not be change
@@ -241,7 +241,7 @@ inoremap <C-e> <end>
 
 " noremap--------------------------------------------------------------
 
-noremap <F8> :source ~/script/vimscript.vim <CR>
+" noremap <F8> :source ~/script/vimscript.vim <CR>
 noremap <F9> :call _COMPILE_() <CR>
 noremap <F10> :call _TEST_INPUT_TO_RUN_() <CR>
 noremap <F11> :call _DEBUG_() <CR>
