@@ -342,9 +342,10 @@ endif
 " an error and the function will not be substitute ,but
 " the "function! x" not
 
-if exists("_function_exists")
+if exists("s:_function_exists")
     "delfunction _COMPILE_
     delfunction _TEST_INPUT_TO_RUN_
+    delfunction _DEBUG_
     delfunction _FILETYPE_SET_REGISTER_
     delfunction _OPENFILE_
     delfunction _PYTHON_FUNCTION_
@@ -526,6 +527,7 @@ function _OPENFILE_(filename,lr)
     endif
 endfunction
 
+" help v:
 if !exists("g:_the_input_file_")
     " can not have ; with 'let'
     let g:_the_input_file_="input.tst"
@@ -711,7 +713,7 @@ function _FILETYPE_SET_REGISTER_()
     endif
 endfunction
 
-let _function_exists=0
+let s:_function_exists=0
 " autocmd--------------------------------------------------------------
 
 augroup _MY_OWN_DEFINE_
@@ -723,12 +725,20 @@ augroup _MY_OWN_DEFINE_
     autocmd CursorHoldI * stopinsert
     autocmd BufReadPost * if line("'\"") <= line("$") | exe "normal! g`\"" | endif
     autocmd BufEnter * call _FILETYPE_SET_REGISTER_()
+    " see indent/verilog.vim : for write a indent file,
+    " you need to know API in vim and regular expression
+    autocmd BufReadPre *.v let b:verilog_indent_modules = 1
     " autocmd BufWritePost * if $USER == 'me' | mkview | endif
     " autocmd BufReadPost * if @% != '' && $USER == 'me' | loadview | endif
     " autocmd CursorHold * redraw
 augroup end
 
 " command--------------------------------------------------------------
+
+if exists("s:_command_exists")
+    delcommand Vlsplit
+    delcommand Vrsplit
+endif
 
 " help function-argument
 " help command-complete
@@ -756,6 +766,8 @@ function VsplitFunction(direction, ... )
         endfor
     endif
 endfunction
+
+let s:_command_exists=0
 
 " Plugin---------------------------------------------------------------
 
