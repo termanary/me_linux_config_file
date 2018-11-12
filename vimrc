@@ -146,7 +146,7 @@ set laststatus=1
 " wild menu
 " help wildcard
 set wildmenu
-" set wildmode&
+set wildmode=full
 set wildignore+=*.o,*.hi,*.class
 " set suffixes&
 
@@ -186,6 +186,7 @@ set backspace=""
 " use \"+ to communicate with system
 set clipboard=unnamedplus
 set undolevels+=1000
+" set path
 
 set cpoptions-=c
 " set cpoptions+=q
@@ -217,7 +218,7 @@ cab h vertical leftabove help
 cab t vertical rightbelow terminal ++rows=48 ++cols=70
 cab mat vertical rightbelow terminal ++rows=48 ++cols=70 matlab
             \ -nodesktop -nosplash
-cab em echomsg
+" cab em echomsg
 
 " cnoremap-------------------------------------------------------------
 
@@ -376,14 +377,12 @@ FileName = [
 "main.c",
 "main.cpp",
 "Main.java",
-"main.v",
-"main.hs",
-"main.asm",
 ]
 FileFormat = [
 ".c",
 ".cpp",
 ".java",
+".h",
 ".py",
 ".m",
 ".sh",
@@ -391,6 +390,10 @@ FileFormat = [
 ".v",
 ".hs",
 ".asm",
+]
+FileAdd = [
+".c",
+".cpp",
 ]
 
 CurDirList = os.listdir(".")
@@ -403,23 +406,28 @@ for fn in FileName :
         break
 # if "RetStatus" in locals() or "RetStatus" in globals() :
 if "RetStatus" in globals() :
-    pass
+    # pass
+    for ld in CurDirList :
+        for ff in FileAdd :
+            if os.path.isfile(ld) and os.path.splitext(ld)[-1] == ff :
+                RetStatus = vim.command("argadd " + ld)
+                break
 else :
-    FileNumber = 0
+    FileNumber = int(vim.eval("len(tabpagebuflist())"))
     for ld in CurDirList :
         for ff in FileFormat :
             if os.path.isfile(ld) and os.path.splitext(ld)[-1] == ff :
-                FileNumber += 1
                 if FileNumber == 1 :
                     if vim.eval("@%") != "" or vim.eval("&mod") == "1" :
                         RetStatus = vim.command("vsplit " + ld)
-                        FileNumber += 1
                     else :
                         RetStatus = vim.command("edit " + ld)
-                elif FileNumber <= 4 :
+                        FileNumber -= 1
+                elif FileNumber < 4 :
                     RetStatus = vim.command("vsplit " + ld)
                 else :
                     RetStatus = vim.command("argadd " + ld)
+                FileNumber += 1
                 break
     if "RetStatus" in globals() :
         pass
