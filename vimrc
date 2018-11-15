@@ -398,6 +398,7 @@ FileAdd = [
 
 CurDirList = os.listdir(".")
 for fn in FileName :
+    # OJ,task,project
     if fn in CurDirList and os.path.isfile(fn) :
         if vim.eval("@%") != "" or vim.eval("&mod") == "1" :
             RetStatus = vim.command("vsplit " + fn)
@@ -413,7 +414,9 @@ if "RetStatus" in globals() :
                 RetStatus = vim.command("argadd " + ld)
                 break
 else :
+    # other,script
     FileNumber = int(vim.eval("len(tabpagebuflist())"))
+    WinCount = 4
     for ld in CurDirList :
         for ff in FileFormat :
             if os.path.isfile(ld) and os.path.splitext(ld)[-1] == ff :
@@ -422,8 +425,8 @@ else :
                         RetStatus = vim.command("vsplit " + ld)
                     else :
                         RetStatus = vim.command("edit " + ld)
-                        FileNumber -= 1
-                elif FileNumber < 4 :
+                        break
+                elif FileNumber < WinCount :
                     RetStatus = vim.command("vsplit " + ld)
                 else :
                     RetStatus = vim.command("argadd " + ld)
@@ -517,6 +520,7 @@ function _OPENFILE_(filename,lr)
         " endif
 
     else
+        " help argadd
         if @% == ''
             if &mod == 1
                 execute 'vsplit ' . a:filename
@@ -551,7 +555,7 @@ function _COMPILE_()
     " !cmd % --could handle currently file by shell command
     if &filetype == 'c'
         " ---------------------------------------------------
-        " make makeprg
+        " help make makeprg errorformat quickfix
         " ---------------------------------------------------
         " options : standard : -std=c89
         " release compilation : -static
@@ -749,8 +753,10 @@ if exists("s:_command_exists")
 endif
 
 " help function-argument
-" help command-complete
+" help command-complete cmdline-completion
 " help 40.2
+" -nargs = x : just supply a number of x arguments
+" help <f-args> <args>
 command -complete=file -nargs=* Vlsplit :call VsplitFunction("l",<f-args>)
 command -complete=file -nargs=* Vrsplit :call VsplitFunction("r",<f-args>)
 function VsplitFunction(direction, ... )
@@ -758,13 +764,14 @@ function VsplitFunction(direction, ... )
         echomsg "Direction have no effect!"
         return
     endif
-    if a:0 == 1
+    if a:0 == 0
         if a:direction == "l"
             execute "vsplit "
         elseif a:direction == "r"
             execute "vertical rightbelow vsplit "
         endif
     else
+        " help a:0 a:1 a:000 a:000[0]
         for Files in a:000
             if a:direction == "l"
                 execute "vsplit " . Files
