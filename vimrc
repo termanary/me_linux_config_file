@@ -242,7 +242,6 @@ inoremap <C-e> <end>
 
 " noremap--------------------------------------------------------------
 
-" noremap <F8> :source ~/script/vimscript.vim <CR>
 noremap <F9> :call _COMPILE_() <CR>
 noremap <F10> :call _TEST_INPUT_TO_RUN_() <CR>
 noremap <F11> :call _DEBUG_() <CR>
@@ -786,24 +785,16 @@ let s:_command_exists=0
 
 " Plugin---------------------------------------------------------------
 
-" nerdcommenter:
-" ca mode
-" cA insert end of line
-" c$ comment to end
-" cs block
-" cm
-" c<space> toggle
-" cc line
-
 " Plugin : NERDCommment
 noremap <Leader>d :call NERDComment("n","Toggle") <CR>
 let g:NERDDefaultAlign = 'left'
 let g:NERDSpaceDelims = 1
 let g:NERDAltDelims_c = 1
 let g:NERDAltDelims_python = 1
-
-" Plugin : Pydiction
-let g:pydiction_location = '/home/me/.vim/after/ftplugin/complete-dict'
+let g:NERDCommentEmptyLines = 1
+let g:NERDCreateDefaultMappings = 0
+let g:NERDTrimTrailingWhitespace = 1
+let g:NERDCompactSexyComs = 0
 
 " Comment--------------------------------------------------------------
 
