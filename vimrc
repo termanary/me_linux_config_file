@@ -286,8 +286,9 @@ noremap <Leader>e :setlocal cursorline! cursorcolumn!<CR>:sleep 400m
             \<CR>:setlocal cursorline! cursorcolumn!<CR>
 
 " buffer
-noremap <Leader>bn :n <CR>
-noremap <Leader>bp :N <CR>
+" buffer-list argument-list
+noremap <Leader>bn :bn <CR>
+noremap <Leader>bp :bN <CR>
 
 " quickfix
 " noremap <Leader>qo :copen <CR>
@@ -307,7 +308,7 @@ noremap <Leader>vg :call _OPENFILE_("~/.gdbinit","r") <CR>
 " copy to save -> OJ
 noremap <Leader>vh :!cp %:p ~/hdoj/all/
 noremap <Leader>vk :!cp %:p ~/poj/all/
-noremap <Leader>va :!cp %:p /media/Program/main.c <CR>
+noremap <Leader>va :!cp %:p /media/Program/main <CR>
 
 " script
 noremap <Leader>vs :call _OPENFILE_("~/script/shell.sh","l") <CR>
@@ -410,7 +411,8 @@ if "RetStatus" in globals() :
     for ld in CurDirList :
         for ff in FileAdd :
             if os.path.isfile(ld) and os.path.splitext(ld)[-1] == ff :
-                RetStatus = vim.command("argadd " + ld)
+                # RetStatus = vim.command("argadd " + ld)
+                RetStatus = vim.command("badd " + ld)
                 break
 else :
     # other,script
@@ -428,7 +430,8 @@ else :
                 elif FileNumber < WinCount :
                     RetStatus = vim.command("vsplit " + ld)
                 else :
-                    RetStatus = vim.command("argadd " + ld)
+                    # RetStatus = vim.command("argadd " + ld)
+                    RetStatus = vim.command("badd " + ld)
                 FileNumber += 1
                 break
     if "RetStatus" in globals() :
