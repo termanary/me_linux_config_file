@@ -262,9 +262,12 @@ noremap ` '
 noremap - :
 noremap \ :!
 
+noremap <Space> <Nop>
+noremap <Del> <Nop>
+noremap <insert> <Nop>
+
 " help key-codes
 let mapleader = "\<Space>"
-noremap <Space> <Nop>
 noremap <Leader>4 $
 noremap <Leader>o O
 noremap <Leader>p P
@@ -366,6 +369,7 @@ function _PYTHON_FUNCTION_()
         return
     endif
 " help if_pyth.txt
+" py3eval()
 python3 << ENDPYTHON3
 
 import os
