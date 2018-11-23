@@ -94,6 +94,7 @@ tm ()
     then
         echo "Too many argument!"
     else
+
         if [ $1 == "c" ]
         then
             touch main.c input.tst
@@ -102,6 +103,7 @@ tm ()
                 echo -e "#include<stdio.h>\n\nint main(void)\
 \n{\n    return 0;\n}\n" > main.c
             fi
+
         elif [ $1 == "p" ]
         then
             touch main.cpp input.tst
@@ -110,6 +112,28 @@ tm ()
                 echo -e "#include<cstdio>\n\nusing namespace std;\n\n\
 int main(void)\n{\n    return 0;\n}\n" > main.cpp
             fi
+
+        elif [ $1 == "v" ]
+        then
+            touch main.v main_tb.v
+            if ! [ -s "main_tb.v" ]
+            then
+                echo -e "\
+module ;\n\
+\n\
+    initial\n\
+    begin\n\
+        \$dumpfile(".vcd");\n\
+        \$dumpvars(0,_tb);\n\
+        \$monitor("%g %b.",$time,x_tb);\n\
+        #1 \$finish;\n\
+    end\n\
+\n\
+endmodule\n\
+\n\
+" > main_tb.v
+            fi
+
         else
             echo "Do not know the argument!"
         fi
