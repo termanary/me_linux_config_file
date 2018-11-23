@@ -185,6 +185,8 @@ set clipboard=unnamedplus
 set undolevels+=1000
 " set path
 
+" set termwinkey=
+
 set cpoptions-=c
 " set cpoptions+=q
 " : bin,octal,hex,alpha
@@ -393,6 +395,7 @@ FileAdd = [
 ]
 
 CurDirList = os.listdir(".")
+CurDirList.reverse()
 for fn in FileName :
     # OJ,task,project
     if fn in CurDirList and os.path.isfile(fn) :
@@ -622,13 +625,22 @@ function _COMPILE_()
         !javac -g -d %:h/class/ %:p
     elseif &filetype == 'verilog'
         " sudo apt install / iverilog gtkwave / verilator
+        " help : bufwinnr("str") windo
         let _tb_index=strridx(expand("%:t:r"),"_tb")
         if _tb_index == -1
             "verilog source file
+            let _other_source_file_nr=bufwinnr(expand("%:t:r")."_tb")
+            execute _other_source_file_nr == -1 ? "" : _other_source_file_nr
+                        \ . " windo write"
+            wincmd p
             !iverilog -o %:h/_%:t:r.mn %:p %:h/%:t:r_tb.v
         else
             "verilog testbench file
             let _new_filename=strcharpart(expand("%:t:r"),0,_tb_index)
+            let _other_source_file_nr=bufwinnr(_new_filename . ".v")
+            execute _other_source_file_nr == -1 ? "" : _other_source_file_nr
+                        \ . " windo write"
+            wincmd p
             execute "!iverilog -o %:h/_" . _new_filename . ".mn %:h/" .
                         \ _new_filename . ".v %:p"
         endif
