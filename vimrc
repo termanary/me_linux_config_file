@@ -121,6 +121,7 @@ set nojoinspaces
 " indent
 set autoindent
 set smartindent
+" see $VIMRUNTIME/scripts.vim $VIMRUNTIME/filetype.vim
 filetype indent plugin on
 set foldmethod=manual
 
@@ -162,10 +163,6 @@ set nosplitbelow
 set nosplitright
 set noconfirm
 
-" bells
-set noerrorbells
-set novisualbell
-
 " vimrc in curent dir
 set noexrc
 set nosecure
@@ -181,7 +178,7 @@ set nosecure
 set history=200
 set scrolloff=5
 set mouse-=a
-set backspace=""
+set backspace=start
 " \"* is select(copy or cut is unnecessary) and \"+ is copy or cut
 " use \"+ to communicate with system
 set clipboard=unnamedplus
@@ -190,7 +187,8 @@ set undolevels+=1000
 
 set cpoptions-=c
 " set cpoptions+=q
-set nrformats=bin,octal,hex,alpha
+" : bin,octal,hex,alpha
+set nrformats=bin,octal,hex
 
 " see highlight for exmaple
 " the order of next 3 line could not be change
@@ -218,7 +216,6 @@ cab h vertical leftabove help
 cab t vertical rightbelow terminal ++rows=48 ++cols=70
 cab mat vertical rightbelow terminal ++rows=48 ++cols=70 matlab
             \ -nodesktop -nosplash
-" cab em echomsg
 
 " cnoremap-------------------------------------------------------------
 
@@ -234,8 +231,7 @@ inoremap ' ''<left>
 inoremap " ""<left>
 inoremap [ []<left>
 inoremap ( ()<left>
-inoremap { {<CR>}<up><CR>
-inoremap } {}<left>
+inoremap { {}<left>
 
 inoremap <C-f> <right>
 inoremap <C-e> <end>
@@ -550,7 +546,13 @@ endif
 function _COMPILE_()
     " if you want to get all the variable :see options.txt
     if &mod == 1
-        write
+        " help 'write
+        if @% == ''
+            echomsg "File name is needed!"
+            return
+        else
+            write
+        endif
     endif
     " help filename-modifiers
     " set filetype=?
@@ -619,8 +621,19 @@ function _COMPILE_()
         " gnu-gcc:gcj/gij :was removed after gcc-7,was available before gcc-6
         !javac -g -d %:h/class/ %:p
     elseif &filetype == 'verilog'
-        " sudo apt install iverilog gtkwave verilator
-        !iverilog -o %:h/_%:t:r.mn %:p
+        " sudo apt install / iverilog gtkwave / verilator
+        let _tb_index=strridx(expand("%:t:r"),"_tb")
+        if _tb_index == -1
+            "verilog source file
+            !iverilog -o %:h/_%:t:r.mn %:p %:h/%:t:r_tb.v
+        else
+            "verilog testbench file
+            let _new_filename=strcharpart(expand("%:t:r"),0,_tb_index)
+            execute "!iverilog -o %:h/_" . _new_filename . ".mn %:h/" .
+                        \ _new_filename . ".v %:p"
+        endif
+    elseif &filetype == 'haskell'
+        !ghc %:p -o %:h/_%:t:r.mn
     elseif &filetype == 'asm'
         " only do this could gcc compile assemble to 32-bit : gcc -m32
         " sudo apt install gcc-multilib g++-multilib
@@ -628,8 +641,6 @@ function _COMPILE_()
         " AT&T : sudo apt install as
         !nasm -f elf %:p -o %:h/_%:t:r.o
         !gcc -m32 %:h/_%:t:r.o -o %:h/_%:t:r.mn
-    elseif &filetype == 'haskell'
-        !ghc %:p -o %:h/_%:t:r.mn
     endif
 endfunction
 
@@ -648,7 +659,12 @@ function _TEST_INPUT_TO_RUN_()
     " register '%' and '#'
     " copen
     if &mod == 1
-        write
+        if @% == ''
+            echomsg "File name is needed!"
+            return
+        else
+            write
+        endif
     endif
     " when you want to give a string variable to another ,
     " you need to use "let"
@@ -678,6 +694,41 @@ function _TEST_INPUT_TO_RUN_()
         else
             echomsg 'ERROR!'
         endif
+    elseif &filetype == 'verilog'
+        " if $TERM == 'linux' || $TERM == 'screen.linux'
+        "
+        " elseif $TERM == "xterm" || $TERM == 'screen'
+        "
+        " else
+        "
+        " endif
+        "
+        " verilog example :
+        " initial
+        " begin
+        "     $dumpfile("first.vcd");
+        "     $dumpvars(0,first_tb);
+        "     $monitor("%g\t A is %b, B is %b.",$time,x_tb,y_tb);
+        "     #1000 $finish;
+        " end
+        "
+        let _tb_index=strridx(expand("%:t:r"),"_tb")
+        if _tb_index == -1
+            "verilog source file
+            ! %:h/_%:t:r.mn
+            if !exists("g:gtkwave_ban") && ( $TERM == "xterm"
+                        \ || $TERM == 'screen' )
+                !gtkwave %:h/%:t:r.vcd
+            endif
+        else
+            "verilog testbench file
+            let _new_filename=strcharpart(expand("%:t:r"),0,_tb_index)
+            execute "! %:h/_" . _new_filename . ".mn"
+            if !exists("g:gtkwave_ban") && ( $TERM == "xterm"
+                        \ || $TERM == 'screen' )
+                execute "!gtkwave %:h/" . _new_filename . ".vcd"
+            endif
+        endif
     endif
 endfunction
 
@@ -696,6 +747,9 @@ function _FILETYPE_SET_REGISTER_()
     " source %:h/vimrc.tmp
     " endif
     mapclear <buffer>
+    " vmapclear <buffer>
+    " smapclear <buffer>
+    " imapclear <buffer>
     if     &filetype == 'c' || &filetype == 'cpp'
         syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2
         syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
@@ -721,7 +775,6 @@ function _FILETYPE_SET_REGISTER_()
         " help cterm-colors
         highlight VIM_MY_OWN_DEFINE_SPACE_EOL ctermbg=red
         match VIM_MY_OWN_DEFINE_SPACE_EOL /\s\+$/
-    " elseif &filetype == 'make'
     elseif &filetype == 'verilog'
         inoremap <buffer> ' '
     endif
@@ -742,6 +795,7 @@ augroup _MY_OWN_DEFINE_
     " see indent/verilog.vim : for write a indent file,
     " you need to know API in vim and regular expression
     autocmd BufReadPre *.v let b:verilog_indent_modules = 1
+    autocmd BufReadPre *.c,*.cpp,*.h inoremap <buffer> { {<CR>}<up><CR>
     " autocmd BufWritePost * if $USER == 'me' | mkview | endif
     " autocmd BufReadPost * if @% != '' && $USER == 'me' | loadview | endif
     " autocmd CursorHold * redraw
@@ -793,11 +847,16 @@ noremap <Leader>d :call NERDComment("n","Toggle") <CR>
 let g:NERDDefaultAlign = 'left'
 let g:NERDSpaceDelims = 1
 let g:NERDAltDelims_c = 1
-let g:NERDAltDelims_python = 1
+let g:NERDAltDelims_python = 0
 let g:NERDCommentEmptyLines = 1
 let g:NERDCreateDefaultMappings = 0
 let g:NERDTrimTrailingWhitespace = 1
 let g:NERDCompactSexyComs = 0
+
+" Plugin : auto-pairs
+" Affected Char : \' \" ( [ {
+" Needed Function :(<insert>) (<BS>) (<SPACE>) (<indent>)
+" Vim-Function : getline() col() indent()
 
 " Comment--------------------------------------------------------------
 
