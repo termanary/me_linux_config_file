@@ -743,8 +743,11 @@ function _DEBUG_()
 endfunction
 
 function _FILETYPE_SET_REGISTER_()
+    " this function is about filetype and for options , syntax
+    " highlighting , <buffer> map and b:variables .
+    "
     " if filereadable(expand("%:h") . "/vimrc.tmp")
-    " source %:h/vimrc.tmp
+    "     source %:h/vimrc.tmp
     " endif
     mapclear <buffer>
     " vmapclear <buffer>
@@ -754,6 +757,15 @@ function _FILETYPE_SET_REGISTER_()
         syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2
         syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
         highlight cFunctions gui=NONE cterm=bold  ctermfg=yellow
+        inoremap <buffer> { {<CR>}<up><CR>
+    elseif &filetype == ''
+        if expand("%:t:r") == 'input' || expand("%:t") == 'input.tst'
+            set iskeyword+=.,-
+        endif
+    elseif &filetype == 'python' || &filetype == 'sh' || &filetype == 'gdb'
+                \ || &filetype == 'zsh' || &filetype == 'conf'
+        highlight PYTHON_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
+        match PYTHON_MY_OWN_DEFINE_NOTE /^# #.*$/
     elseif &filetype == 'matlab'
         " highlight MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL ctermbg=red
         " match MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL /;\+$/
@@ -763,19 +775,14 @@ function _FILETYPE_SET_REGISTER_()
         noremap <buffer> <Leader>m :w <CR><C-w>l<C-W>"m<CR><C-w>p
         noremap <buffer> <Leader>; :s/$/;/<CR>:nohlsearch<CR>g;
         noremap <buffer> <Leader>, :s/;$//<CR>:nohlsearch<CR>g;
-    elseif &filetype == 'python' || &filetype == 'sh' || &filetype == 'gdb'
-                \ || &filetype == 'zsh' || &filetype == 'conf'
-        highlight PYTHON_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
-        match PYTHON_MY_OWN_DEFINE_NOTE /^# #.*$/
-    elseif &filetype == ''
-        if expand("%:t:r") == 'input' || expand("%:t") == 'input.tst'
-            set iskeyword+=.,-
-        endif
     elseif &filetype == 'vim'
         " help cterm-colors
         highlight VIM_MY_OWN_DEFINE_SPACE_EOL ctermbg=red
         match VIM_MY_OWN_DEFINE_SPACE_EOL /\s\+$/
     elseif &filetype == 'verilog'
+        " see indent/verilog.vim : for write a indent file,
+        " you need to know API in vim and regular expression
+        let b:verilog_indent_modules = 1
         inoremap <buffer> ' '
     endif
 endfunction
@@ -792,10 +799,6 @@ augroup _MY_OWN_DEFINE_
     autocmd CursorHoldI * stopinsert
     autocmd BufReadPost * if line("'\"") <= line("$") | exe "normal! g`\"" | endif
     autocmd BufEnter * call _FILETYPE_SET_REGISTER_()
-    " see indent/verilog.vim : for write a indent file,
-    " you need to know API in vim and regular expression
-    autocmd BufReadPre *.v let b:verilog_indent_modules = 1
-    autocmd BufReadPre *.c,*.cpp,*.h inoremap <buffer> { {<CR>}<up><CR>
     " autocmd BufWritePost * if $USER == 'me' | mkview | endif
     " autocmd BufReadPost * if @% != '' && $USER == 'me' | loadview | endif
     " autocmd CursorHold * redraw
