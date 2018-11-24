@@ -399,6 +399,7 @@ FileAdd = [
 ]
 
 CurDirList = os.listdir(".")
+CurDirList.sort()
 CurDirList.reverse()
 for fn in FileName :
     # OJ,task,project
