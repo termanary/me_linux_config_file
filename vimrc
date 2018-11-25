@@ -635,10 +635,12 @@ function _COMPILE_()
         if _tb_index == -1
             "verilog source file
             let _other_source_file_nr=bufwinnr(expand("%:t:r")."_tb")
+            " NOTE: check mod ?
             execute _other_source_file_nr == -1 ? "" : _other_source_file_nr
                         \ . " windo write"
             wincmd p
-            !iverilog -o %:h/_%:t:r.mn %:p %:h/%:t:r_tb.v
+            execute "!iverilog -o %:h/_%:t:r.mn %:p" .
+                        \ (_other_source_file_nr == -1 ? "" : " %:h/%:t:r_tb.v")
         else
             "verilog testbench file
             let _new_filename=strcharpart(expand("%:t:r"),0,_tb_index)
@@ -732,7 +734,8 @@ function _TEST_INPUT_TO_RUN_()
         let _tb_index=strridx(expand("%:t:r"),"_tb")
         if _tb_index == -1
             "verilog source file
-            ! %:h/_%:t:r.mn
+            execute "!%:h/_%:t:r.mn" . (exists("g:less_use")?
+                        \" | tee /tmp/out":"")
             if !exists("g:gtkwave_ban") && ( $TERM == "xterm"
                         \ || $TERM == 'screen' )
                 !gtkwave %:h/%:t:r.vcd
@@ -740,7 +743,8 @@ function _TEST_INPUT_TO_RUN_()
         else
             "verilog testbench file
             let _new_filename=strcharpart(expand("%:t:r"),0,_tb_index)
-            execute "! %:h/_" . _new_filename . ".mn"
+            execute "! %:h/_" . _new_filename . ".mn" .(exists("g:less_use")?
+                        \" | tee /tmp/out":"")
             if !exists("g:gtkwave_ban") && ( $TERM == "xterm"
                         \ || $TERM == 'screen' )
                 execute "!gtkwave %:h/" . _new_filename . ".vcd"
