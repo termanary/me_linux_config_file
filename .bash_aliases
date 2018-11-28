@@ -45,6 +45,7 @@ alias cs='cd ~/script/;ls'
 alias ca='cd ~/Acm/Tmp/;ls'
 alias ch='cd ~/hdoj/tmp/;ls'
 alias ck='cd ~/poj/tmp/;ls'
+alias cv='cd /media/Program/verilog/first/'
 
 alias df='df -h '
 alias du='du -h '
@@ -65,6 +66,9 @@ alias gdb='gdbtui '
 alias o='octave-cli'
 alias matlab='matlab -nosplash -nodesktop '
 alias vi="vim --clean "
+
+alias dos="sed -i 's/\r*$/\r/' "
+alias unix="sed -i 's/\r*$//' "
 
 #copy from stackoverflow
 #g () { emacs --eval "(insert \"autocmd\") " ; }
@@ -100,8 +104,7 @@ tm ()
             touch main.c input.tst
             if ! [ -s "main.c" ]
             then
-                echo -e "#include<stdio.h>\n\nint main(void)\
-\n{\n    return 0;\n}\n" > main.c
+                cat ~/.vim/example/main.c > ./main.c
             fi
 
         elif [ $1 == "p" ]
@@ -109,8 +112,7 @@ tm ()
             touch main.cpp input.tst
             if ! [ -s "main.cpp" ]
             then
-                echo -e "#include<cstdio>\n\nusing namespace std;\n\n\
-int main(void)\n{\n    return 0;\n}\n" > main.cpp
+                cat ~/.vim/example/main.cpp > ./main.cpp
             fi
 
         elif [ $1 == "v" ]
@@ -118,20 +120,7 @@ int main(void)\n{\n    return 0;\n}\n" > main.cpp
             touch main.v main_tb.v
             if ! [ -s "main_tb.v" ]
             then
-                echo -e "\
-module ;\n\
-\n\
-    initial\n\
-    begin\n\
-        \$dumpfile(".vcd");\n\
-        \$dumpvars(0,_tb);\n\
-        \$monitor("%g %b.",$time,x_tb);\n\
-        #1 \$finish;\n\
-    end\n\
-\n\
-endmodule\n\
-\n\
-" > main_tb.v
+                cat ~/.vim/example/main_tb.v > ./main_tb.v
             fi
 
         else
