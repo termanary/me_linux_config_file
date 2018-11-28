@@ -441,7 +441,7 @@ else :
     if "RetStatus" in globals() :
         pass
     else :
-        print("File not found!")
+        print("File Not Found!")
 
 ENDPYTHON3
 endfunction
@@ -673,6 +673,9 @@ endfunction
 " the global-variable would not cover the function-local
 " varialbles
 
+let g:gtkwave_ban = 1
+noremap <F8> :let g:gtkwave_ban = !g:gtkwave_ban <CR>
+
 function _TEST_INPUT_TO_RUN_()
     " findfile(),finddir()
     " register '%' and '#'
@@ -736,7 +739,7 @@ function _TEST_INPUT_TO_RUN_()
             "verilog source file
             execute "!%:h/_%:t:r.mn" . (exists("g:less_use")?
                         \" | tee /tmp/out":"")
-            if !exists("g:gtkwave_ban") && ( $TERM == "xterm"
+            if g:gtkwave_ban==0 && ( $TERM == "xterm"
                         \ || $TERM == 'screen' )
                 !gtkwave %:h/%:t:r.vcd
             endif
@@ -745,7 +748,7 @@ function _TEST_INPUT_TO_RUN_()
             let _new_filename=strcharpart(expand("%:t:r"),0,_tb_index)
             execute "! %:h/_" . _new_filename . ".mn" .(exists("g:less_use")?
                         \" | tee /tmp/out":"")
-            if !exists("g:gtkwave_ban") && ( $TERM == "xterm"
+            if g:gtkwave_ban==0 && ( $TERM == "xterm"
                         \ || $TERM == 'screen' )
                 execute "!gtkwave %:h/" . _new_filename . ".vcd"
             endif
@@ -770,6 +773,15 @@ function _FILETYPE_SET_REGISTER_()
     " if filereadable(expand("%:h") . "/vimrc.tmp")
     "     source %:h/vimrc.tmp
     " endif
+    if @% != ""
+        let Filesystem=strridx(expand("%:p:h"),"/media/Windows")
+        if Filesystem == -1
+            set fileformat=unix
+        else
+            set fileformat=dos
+            echomsg "DOS FILE!"
+        endif
+    endif
     mapclear <buffer>
     " vmapclear <buffer>
     " smapclear <buffer>
@@ -861,6 +873,26 @@ function VsplitFunction(direction, ... )
         endfor
     endif
 endfunction
+
+" For Java Complete :
+" command! -nargs=1 -complete=customlist,JavaComplete Java !java <args>
+"
+" " getcompletion()
+" " function! FileCompletion(ArgLead, CmdLine, CursorPos)
+" "     return getcompletion(a:ArgLead, 'file')
+" " endfunction
+"
+" function! JavaComplete(ArgLead,CmdLine,CursorPos)
+"     if match(&wildignore,"*.class") != -1
+"         set wildignore -=*.class
+"         let re = split(glob("*.class"),"\n")
+"         set wildignore +=*.class
+"         return re
+"     else
+"         let re = split(glob("*.class"),"\n")
+"         return split(glob("*.class"),"\n")
+"     endif
+" endfunction
 
 let s:_command_exists=0
 
