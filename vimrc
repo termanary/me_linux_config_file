@@ -639,26 +639,30 @@ function _COMPILE_()
         " sudo apt install / iverilog gtkwave / verilator
         " help : bufwinnr("str") windo
         " %:t:r:r : main.v main.tb.v
-        let _tb_index=strridx(expand("%:t:r"),"_tb")
-        if _tb_index == -1
-            "verilog source file
-            let _other_source_file_nr=bufwinnr(expand("%:t:r")."_tb")
-            " NOTE: check mod ?
-            execute _other_source_file_nr == -1 ? "" : _other_source_file_nr
-                        \ . " windo write"
-            wincmd p
-            " -Wall
-            execute "!iverilog -o %:h/_%:t:r.mn %:p" .
-                        \ (_other_source_file_nr == -1 ? "" : " %:h/%:t:r_tb.v")
+        if exists("g:Compile_Verilog_Only") && g:Compile_Verilog_Only
+            !iverilog -o %:h/_%:t:r.mn %:p
         else
-            "verilog testbench file
-            let _new_filename=strcharpart(expand("%:t:r"),0,_tb_index)
-            let _other_source_file_nr=bufwinnr(_new_filename . ".v")
-            execute _other_source_file_nr == -1 ? "" : _other_source_file_nr
-                        \ . " windo write"
-            wincmd p
-            execute "!iverilog -o %:h/_" . _new_filename . ".mn %:h/" .
-                        \ _new_filename . ".v %:p"
+            let _tb_index=strridx(expand("%:t:r"),"_tb")
+            if _tb_index == -1
+                "verilog source file
+                let _other_source_file_nr=bufwinnr(expand("%:t:r")."_tb")
+                " NOTE: check mod ?
+                execute _other_source_file_nr == -1 ? "" : _other_source_file_nr
+                            \ . " windo write"
+                wincmd p
+                " -Wall
+                execute "!iverilog -o %:h/_%:t:r.mn %:p" .
+                            \ (_other_source_file_nr == -1 ? "" : " %:h/%:t:r_tb.v")
+            else
+                "verilog testbench file
+                let _new_filename=strcharpart(expand("%:t:r"),0,_tb_index)
+                let _other_source_file_nr=bufwinnr(_new_filename . ".v")
+                execute _other_source_file_nr == -1 ? "" : _other_source_file_nr
+                            \ . " windo write"
+                wincmd p
+                execute "!iverilog -o %:h/_" . _new_filename . ".mn %:h/" .
+                            \ _new_filename . ".v %:p"
+            endif
         endif
     elseif &filetype == 'haskell'
         !ghc %:p -o %:h/_%:t:r.mn
@@ -682,7 +686,6 @@ endfunction
 " the global-variable would not cover the function-local
 " varialbles
 
-let g:gtkwave_ban = 1
 noremap <F8> :let g:gtkwave_ban = !g:gtkwave_ban <CR>
 
 function _TEST_INPUT_TO_RUN_()
@@ -744,21 +747,22 @@ function _TEST_INPUT_TO_RUN_()
         " end
         "
         let _tb_index=strridx(expand("%:t:r"),"_tb")
+        if !exists("g:gtkwave_ban")
+            g:gtkwave_ban = 0
+        endif
         if _tb_index == -1
             "verilog source file
-            execute "!%:h/_%:t:r.mn" . (exists("g:less_use")?
+            execute "!%:h/_%:t:r.mn" . (exists("g:less_use") && g:less_use ?
                         \" | tee /tmp/out":"")
-            if g:gtkwave_ban==0 && ( $TERM == "xterm"
-                        \ || $TERM == 'screen' )
+            if g:gtkwave_ban == 0 && ( $TERM == "xterm" || $TERM == 'screen' )
                 !gtkwave %:h/%:t:r.vcd
             endif
         else
             "verilog testbench file
             let _new_filename=strcharpart(expand("%:t:r"),0,_tb_index)
-            execute "! %:h/_" . _new_filename . ".mn" .(exists("g:less_use")?
-                        \" | tee /tmp/out":"")
-            if g:gtkwave_ban==0 && ( $TERM == "xterm"
-                        \ || $TERM == 'screen' )
+            execute "! %:h/_" . _new_filename . ".mn" .(exists("g:less_use")
+                        \ && g:less_use ? " | tee /tmp/out":"")
+            if g:gtkwave_ban==0 && ( $TERM == "xterm" || $TERM == 'screen' )
                 execute "!gtkwave %:h/" . _new_filename . ".vcd"
             endif
         endif
