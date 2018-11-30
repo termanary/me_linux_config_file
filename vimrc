@@ -124,6 +124,12 @@ set smartindent
 " see $VIMRUNTIME/scripts.vim $VIMRUNTIME/filetype.vim
 filetype indent plugin on
 set foldmethod=manual
+" help cinoptions-value
+set cinoptions=(1s
+" help ft-python-indent
+let g:pyindent_open_paren = '&sw'
+let g:pyindent_continue = '&sw * 2'
+" let g:pyindent_nested_paren = '&sw * 2'
 
 " search
 set ignorecase
@@ -352,6 +358,7 @@ if exists("s:_function_exists")
     delfunction _OPENFILE_
     delfunction _PYTHON_FUNCTION_
     delfunction VsplitFunction
+    delfunction PAIRS
 endif
 
 " diference between echo and echomsg :
@@ -631,6 +638,7 @@ function _COMPILE_()
     elseif &filetype == 'verilog'
         " sudo apt install / iverilog gtkwave / verilator
         " help : bufwinnr("str") windo
+        " %:t:r:r : main.v main.tb.v
         let _tb_index=strridx(expand("%:t:r"),"_tb")
         if _tb_index == -1
             "verilog source file
@@ -639,6 +647,7 @@ function _COMPILE_()
             execute _other_source_file_nr == -1 ? "" : _other_source_file_nr
                         \ . " windo write"
             wincmd p
+            " -Wall
             execute "!iverilog -o %:h/_%:t:r.mn %:p" .
                         \ (_other_source_file_nr == -1 ? "" : " %:h/%:t:r_tb.v")
         else
@@ -773,14 +782,10 @@ function _FILETYPE_SET_REGISTER_()
     " if filereadable(expand("%:h") . "/vimrc.tmp")
     "     source %:h/vimrc.tmp
     " endif
-    if @% != ""
-        let Filesystem=strridx(expand("%:p:h"),"/media/Windows")
-        if Filesystem == -1
-            set fileformat=unix
-        else
-            set fileformat=dos
-            echomsg "DOS FILE!"
-        endif
+    if @% != "" && strridx(expand("%:p:h"),"/media/Windows") != -1
+                \ && &fileformat == "unix"
+        setlocal fileformat=dos
+        echomsg "DOS FILE!"
     endif
     mapclear <buffer>
     " vmapclear <buffer>
@@ -790,10 +795,10 @@ function _FILETYPE_SET_REGISTER_()
         syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2
         syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
         highlight cFunctions gui=NONE cterm=bold  ctermfg=yellow
-        inoremap <buffer> { {<CR>}<up><CR>
+        inoremap <buffer> { {<ESC>:call PAIRS()<CR>
     elseif &filetype == ''
         if expand("%:t:r") == 'input' || expand("%:t") == 'input.tst'
-            set iskeyword+=.,-
+            setlocal iskeyword+=.,-
         endif
     elseif &filetype == 'python' || &filetype == 'sh' || &filetype == 'gdb'
                 \ || &filetype == 'zsh' || &filetype == 'conf'
@@ -817,7 +822,34 @@ function _FILETYPE_SET_REGISTER_()
         " you need to know API in vim and regular expression
         let b:verilog_indent_modules = 1
         inoremap <buffer> ' '
+        noremap <buffer> <leader>s :%s/\<\>//gc<left><left><left><left><left><left>
     endif
+endfunction
+
+function PAIRS()
+    let Pos = col(".") - 1
+    let LineString = getline(".")
+    while Pos >= 1
+        if LineString[Pos] != " "
+            if LineString[Pos] == ')'
+                call append(".",repeat(" ",indent(".")) . "}")
+                call append(".",repeat(" ",indent(".") + &shiftwidth))
+                call cursor(line(".")+1,col(".")+&shiftwidth)
+                startinsert!
+                return
+            elseif LineString[Pos] == '='
+                call setline(".",getline(".") . "}")
+                call cursor(line("."),col(".") + 1)
+                startinsert
+                return
+            endif
+        endif
+        let Pos -= 1
+    endwhile
+    call append(".",repeat(" ",indent(".")) . "}")
+    call append(".",repeat(" ",indent(".") + &shiftwidth))
+    call cursor(line(".")+1,col(".")+&shiftwidth)
+    startinsert!
 endfunction
 
 let s:_function_exists=0
