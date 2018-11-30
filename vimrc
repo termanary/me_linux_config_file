@@ -646,20 +646,20 @@ function _COMPILE_()
             if _tb_index == -1
                 "verilog source file
                 let _other_source_file_nr=bufwinnr(expand("%:t:r")."_tb")
-                " NOTE: check mod ?
-                execute _other_source_file_nr == -1 ? "" : _other_source_file_nr
-                            \ . " windo write"
-                wincmd p
+                execute _other_source_file_nr == -1 ||
+                    \ getbufinfo(bufnr(expand("%:t:r")."_tb"))[0].changed == 0
+                    \ ? "" : _other_source_file_nr . " windo write | wincmd p"
                 " -Wall
                 execute "!iverilog -o %:h/_%:t:r.mn %:p" .
-                            \ (_other_source_file_nr == -1 ? "" : " %:h/%:t:r_tb.v")
+                    \ (findfile(expand("%:t:r")."_tb.v",expand("%:h")) == -1
+                    \ ? "" : " %:h/%:t:r_tb.v")
             else
                 "verilog testbench file
                 let _new_filename=strcharpart(expand("%:t:r"),0,_tb_index)
                 let _other_source_file_nr=bufwinnr(_new_filename . ".v")
-                execute _other_source_file_nr == -1 ? "" : _other_source_file_nr
-                            \ . " windo write"
-                wincmd p
+                execute _other_source_file_nr == -1 ||
+                    \ getbufinfo(bufnr(_new_filename . ".v"))[0].changed == 0 ?
+                    \ "" : _other_source_file_nr . " windo write | wincmd p"
                 execute "!iverilog -o %:h/_" . _new_filename . ".mn %:h/" .
                             \ _new_filename . ".v %:p"
             endif
