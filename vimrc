@@ -796,10 +796,12 @@ function _FILETYPE_SET_REGISTER_()
     " smapclear <buffer>
     " imapclear <buffer>
     if     &filetype == 'c' || &filetype == 'cpp'
-        syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2
-        syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
-        highlight cFunctions gui=NONE cterm=bold  ctermfg=yellow
         inoremap <buffer> { {<ESC>:call PAIRS()<CR>
+        if &filetype == 'c'
+            syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2
+            syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
+            highlight cFunctions gui=NONE cterm=bold  ctermfg=yellow
+        endif
     elseif &filetype == ''
         if expand("%:t:r") == 'input' || expand("%:t") == 'input.tst'
             setlocal iskeyword+=.,-
