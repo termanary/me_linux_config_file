@@ -835,6 +835,17 @@ endfunction
 function PAIRS()
     let Pos = col(".") - 1
     let LineString = getline(".")
+    if Pos + 1 != strchars(LineString)
+        call cursor(line("."),col(".") + 1)
+        startinsert
+        return
+    endif
+    if strridx(LineString,"enum ") != -1
+        call setline(".",getline(".") . "}")
+        call cursor(line("."),col(".") + 1)
+        startinsert
+        return
+    endif
     while Pos >= 1
         if LineString[Pos] != " "
             if LineString[Pos] == ')'
@@ -848,11 +859,17 @@ function PAIRS()
                 call cursor(line("."),col(".") + 1)
                 startinsert
                 return
+            " elseif LineString[Pos] == '\"'
+            "     return
             endif
         endif
         let Pos -= 1
     endwhile
-    call append(".",repeat(" ",indent(".")) . "}")
+    if strridx(getline(line(".")==1?line("."):line(".")-1),"struct ") == -1
+        call append(".",repeat(" ",indent(".")) . "}")
+    else
+        call append(".",repeat(" ",indent(".")) . "};")
+    endif
     call append(".",repeat(" ",indent(".") + &shiftwidth))
     call cursor(line(".")+1,col(".")+&shiftwidth)
     startinsert!
@@ -950,7 +967,6 @@ let g:NERDCompactSexyComs = 0
 " Plugin : auto-pairs
 " Affected Char : \' \" ( [ {
 " Needed Function :(<insert>) (<BS>) (<SPACE>) (<indent>)
-" Vim-Function : getline() col() indent()
 
 " Comment--------------------------------------------------------------
 
