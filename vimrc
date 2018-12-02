@@ -863,6 +863,8 @@ function PAIRS()
                             \ LineString[ col(".") : strchars(LineString) ] )
                 call cursor(line("."),col(".") + 1)
                 startinsert
+                " if there is no "return" , vimscript will run out of the next
+                " command after "startinsert" before run "startinsert"
                 return
             " elseif LineString[Pos] == '\"'
             "     return
