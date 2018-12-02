@@ -241,8 +241,12 @@ inoremap [ []<left>
 inoremap ( ()<left>
 inoremap { {}<left>
 
+" inoremap <C-b> <left>
 inoremap <C-f> <right>
 inoremap <C-e> <end>
+" inoremap <C-d> <delete>
+" inoremap <C-g> <C-d>
+inoremap <delete> <Nop>
 
 " noremap--------------------------------------------------------------
 
@@ -651,7 +655,7 @@ function _COMPILE_()
                     \ ? "" : _other_source_file_nr . " windo write | wincmd p"
                 " -Wall
                 execute "!iverilog -o %:h/_%:t:r.mn %:p" .
-                    \ (findfile(expand("%:t:r")."_tb.v",expand("%:h")) == -1
+                    \ (findfile(expand("%:t:r")."_tb.v",expand("%:h")) == ""
                     \ ? "" : " %:h/%:t:r_tb.v")
             else
                 "verilog testbench file
@@ -748,7 +752,7 @@ function _TEST_INPUT_TO_RUN_()
         "
         let _tb_index=strridx(expand("%:t:r"),"_tb")
         if !exists("g:gtkwave_ban")
-            g:gtkwave_ban = 0
+            let g:gtkwave_ban = 0
         endif
         if _tb_index == -1
             "verilog source file
@@ -835,11 +839,11 @@ endfunction
 function PAIRS()
     let Pos = col(".") - 1
     let LineString = getline(".")
-    if Pos + 1 != strchars(LineString)
-        call cursor(line("."),col(".") + 1)
-        startinsert
-        return
-    endif
+    " if Pos + 1 != strchars(LineString)
+    "     call cursor(line("."),col(".") + 1)
+    "     startinsert
+    "     return
+    " endif
     if strridx(LineString,"enum ") != -1
         call setline(".",getline(".") . "}")
         call cursor(line("."),col(".") + 1)
@@ -855,7 +859,8 @@ function PAIRS()
                 startinsert!
                 return
             elseif LineString[Pos] == '='
-                call setline(".",getline(".") . "}")
+                call setline( "." , LineString[0:col(".")-1] . "}" .
+                            \ LineString[ col(".") : strchars(LineString) ] )
                 call cursor(line("."),col(".") + 1)
                 startinsert
                 return
