@@ -325,7 +325,7 @@ noremap <Leader>va :!cp %:p /media/Program/main <CR>
 noremap <Leader>vs :call _OPENFILE_("~/script/shell.sh","l") <CR>
 noremap <Leader>vp :call _OPENFILE_("~/script/python3.py","l") <CR>
 noremap <Leader>vy :call _OPENFILE_("~/.pythonstartup","l") <CR>
-noremap <Leader>vb :call _OPENFILE_("~/.bash_aliases","l") <CR>
+noremap <Leader>vb :call _OPENFILE_("~/.zsh_aliases","l") <CR>
 
 " vimrc
 noremap <Leader>ve :call _OPENFILE_("~/.vim/vimrc","l") <CR>
