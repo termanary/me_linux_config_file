@@ -120,7 +120,9 @@ tm ()
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 # $TTY : could just used in zsh , not bash
-vim_zsh() { vim < $TTY; zle redisplay; }
+# vim_zsh() { vim < $TTY; zle redisplay; }
+# next line is better :
+vim_zsh() { BUFFER="vim"; zle accept-line; }
 zle -N vim_zsh
 bindkey 'v' vim_zsh
 
