@@ -833,6 +833,11 @@ function _FILETYPE_SET_REGISTER_()
         let b:verilog_indent_modules = 1
         inoremap <buffer> ' '
         noremap <buffer> <leader>s :%s/\<\>//gc<left><left><left><left><left><left>
+    elseif &filetype == 'asm'
+        syntax match AsmAddress "^\s\+\<[0-9a-fA-F]*\>:"me=e-1
+        syntax match AsmNumber "\<[0-9a-fA-f]\{2}\> "
+        highlight AsmAddress gui=NONE cterm=bold  ctermfg=darkyellow
+        highlight AsmNumber gui=NONE cterm=bold  ctermfg=darkyellow
     endif
 endfunction
 
