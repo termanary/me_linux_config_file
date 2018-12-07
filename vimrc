@@ -841,50 +841,51 @@ function _FILETYPE_SET_REGISTER_()
     endif
 endfunction
 
-function PAIRS()
-    let Pos = col(".") - 1
-    let LineString = getline(".")
-    " if Pos + 1 != strchars(LineString)
-    "     call cursor(line("."),col(".") + 1)
-    "     startinsert
-    "     return
-    " endif
-    if strridx(LineString,"enum ") != -1
-        call setline(".",getline(".") . "}")
-        call cursor(line("."),col(".") + 1)
-        startinsert
-        return
-    endif
-    while Pos >= 1
-        if LineString[Pos] != " "
-            if LineString[Pos] == ')'
-                call append(".",repeat(" ",indent(".")) . "}")
-                call append(".",repeat(" ",indent(".") + &shiftwidth))
-                call cursor(line(".")+1,col(".")+&shiftwidth)
-                startinsert!
-                return
-            elseif LineString[Pos] == '='
-                call setline( "." , LineString[0:col(".")-1] . "}" .
-                            \ LineString[ col(".") : strchars(LineString) ] )
-                call cursor(line("."),col(".") + 1)
-                startinsert
-                " if there is no "return" , vimscript will run out of the next
-                " command after "startinsert" before run "startinsert"
-                return
-            " elseif LineString[Pos] == '\"'
-            "     return
-            endif
-        endif
-        let Pos -= 1
-    endwhile
-    if strridx(getline(line(".")==1?line("."):line(".")-1),"struct ") == -1
-        call append(".",repeat(" ",indent(".")) . "}")
-    else
-        call append(".",repeat(" ",indent(".")) . "};")
-    endif
+" indent function
+function BSD_STYLE(add)
+    call append(".",repeat(" ",indent(".")) . "}" . (a:add?";":"") )
     call append(".",repeat(" ",indent(".") + &shiftwidth))
     call cursor(line(".")+1,col(".")+&shiftwidth)
     startinsert!
+    " if there is no "return" , vimscript will run out of the next
+    " command after "startinsert" before run "startinsert"
+    return
+endfunction
+function NORMAL(pairs)
+    if a:pairs
+        call setline(".",getline(".") . "}")
+    endif
+    call cursor(line("."),col(".") + 1)
+    startinsert
+    return
+endfunction
+
+function PAIRS()
+    let Pos = col(".") - 2
+    let LineString = getline(".")
+    " current line
+    if strridx(LineString,"enum ") != -1
+        call NORMAL(1) | return
+    elseif strridx(LineString,"else") != -1 || strridx(LineString,"do") != -1
+        call BSD_STYLE(0) | return
+    endif
+    while Pos >= 0
+        if LineString[Pos] == ')'
+            call BSD_STYLE(0) | return
+        elseif LineString[Pos] == '='
+            call NORMAL(1) | return
+        elseif LineString[Pos] != ' '
+            call NORMAL(0) | return
+        endif
+        let Pos -= 1
+    endwhile
+    " previous line
+    if line(".") != 1 && ( strridx(getline(line(".")-1),"struct ") != -1
+    \ || strridx(getline(line(".")-1),"union ") != -1 )
+        call BSD_STYLE(1) | return
+    else
+        call BSD_STYLE(0) | return
+    endif
 endfunction
 
 let s:_function_exists=0
