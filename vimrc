@@ -363,6 +363,8 @@ if exists("s:_function_exists")
     delfunction _PYTHON_FUNCTION_
     delfunction VsplitFunction
     delfunction PAIRS
+    delfunction NORMAL
+    delfunction BSD_STYLE
 endif
 
 " diference between echo and echomsg :
