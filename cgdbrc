@@ -1,0 +1,14 @@
+#package need to install :
+#automake flex libreadline-dev libncurses5-dev 
+
+set winsplitorientation="vertical"
+
+map n :next<CR>
+map c :continue<CR>
+map s :step<CR>
+map t :start<CR>
+map q :quit<CR>
+map - :
+map m '
+map r s
+
