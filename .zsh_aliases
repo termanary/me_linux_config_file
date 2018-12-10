@@ -32,8 +32,9 @@ alias info='info --vi-keys'
 alias c.='cd ../;ls'
 alias cs='cd ~/script/;ls'
 # alias ca='cd ~/Acm/Tmp/;ls'
-# alias ch='cd ~/hdoj/tmp/;ls'
-# alias ck='cd ~/poj/tmp/;ls'
+alias ch='cd ~/hdoj/tmp/;ls'
+alias ck='cd ~/poj/tmp/;ls'
+alias cf='cd ~/codeforce/;ls'
 alias cv='cd /media/Program/verilog/first/'
 
 alias df='df -h '
@@ -121,7 +122,7 @@ tm ()
 
 # $TTY : could just used in zsh , not bash
 # vim_zsh() { vim < $TTY; zle redisplay; }
-# next line is better :
+# next line is better from arch wiki :
 vim_zsh() { BUFFER="vim"; zle accept-line; }
 zle -N vim_zsh
 bindkey 'v' vim_zsh
@@ -129,6 +130,10 @@ bindkey 'v' vim_zsh
 htop_zsh() { htop < $TTY; zle redisplay; }
 zle -N htop_zsh 
 bindkey 'h' htop_zsh
+
+autoload -z edit-command-line
+zle -N edit-command-line
+bindkey "^X^E" edit-command-line
 
 # bash bind key :
 # bind -x '"\ev":vim '
