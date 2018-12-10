@@ -1,0 +1,41 @@
+from math import *
+from decimal import Decimal as dm
+
+# from sympy import *
+# from sympy.logic import *
+# import sympy
+# x1,x2,x3=sympy.symbols('x1 x2 x3')
+
+# import sys
+# sys.ps1='PYTHON:>>> '
+
+
+
+
+
+
+# commmand: sudo apt install python-pip python3-pip
+# interpreter: python2 python3 pypy
+
+# about pypy:
+# sudo apt install pypy 
+# get-pip.py : https://github.com/anpengapple/pypy_get_pip
+# pypy get-pip.py
+# cyaron:faster / other:slower
+
+# lib:
+# cyaron
+# math
+# decimal
+# sympy
+# numpy
+# scipy
+# pandas
+# matplotlib
+# ipython
+# isympy
+# pdb
+# pudb
+
+
+
