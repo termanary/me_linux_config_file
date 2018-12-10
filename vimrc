@@ -103,6 +103,8 @@ endif
 
 " set ---------------------------------------------------------------------
 
+set nocompatible
+
 " number
 set number
 set relativenumber
@@ -644,7 +646,7 @@ function _COMPILE_()
     elseif &filetype == 'verilog'
         " sudo apt install / iverilog gtkwave / verilator
         " help : bufwinnr("str") windo
-        " %:t:r:r : main.v main.tb.v
+        " %:t:r:r : main.v main_tb.v/main.tb.v/main.vt
         if exists("g:Compile_Verilog_Only") && g:Compile_Verilog_Only
             !iverilog -o %:h/_%:t:r.mn %:p
         else
