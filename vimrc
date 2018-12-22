@@ -59,21 +59,20 @@ if filereadable("/etc/vim/vimrc.local")
     source /etc/vim/vimrc.local
 endif
 
-if !has('terminal') || !has('python3_compiled') || !has('python_compiled')
+if !has('terminal') || !has('python3_compiled')
     " help if_pyth.txt
     echomsg 'Need to recompile!'
-    if !has('python3_dynamic') || !has('python_dynamic')
+    if !has('python3_dynamic')
         echomsg 'Could not dynamic load!'
     endif
     " or you could choose to install vim-nox or vim-gtk,
     " it support all scripting and features.
-    " python's dll name must be find,if could not,delete cache,run again with no config_dir
-    " dependence : ncurses->libncurses5-dev libpython-dev libpython3-dev
-    " libperl-dev clipboard->libxt-dev
+    " python's dll name must be find,if could not,delete cache,run again
+    " with no config_dir. dependence :
+    " ncurses->libncurses5-dev libpython3-dev clipboard->libxt-dev
     " wget https://github.com/vim/vim/archive/master.zip
     " rm ./vim-master/src/auto/config.cache
     " ./configure -enable-python3interp=dynamic -enable-pythoninterp=dynamic
-    " -enable-perlinterp=dynamic -with-compiledby=termanary
     " use only once if could not be found :
     " -with-python3-config-dir=/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu/
     " -with-python-config-dir=/usr/lib/python2.7/config-x86_64-linux-gnu/
@@ -321,7 +320,7 @@ noremap <Leader>vg :call _OPENFILE_("~/.gdbinit","r") <CR>
 " copy to save -> OJ
 noremap <Leader>vh :!cp %:p ~/hdoj/all/
 noremap <Leader>vk :!cp %:p ~/poj/all/
-noremap <Leader>va :!cp %:p /media/Program/main <CR>
+noremap <Leader>va :!cp %:p /media/program/main <CR>
 
 " script
 noremap <Leader>vs :call _OPENFILE_("~/script/shell.sh","l") <CR>
@@ -374,13 +373,13 @@ endif
 " echomsg : string type , messages
 
 function _PYTHON_FUNCTION_()
-    if !has('python_compiled') || !has('python3_compiled')
-        echomsg "Don't support python3/python!"
+    if !has('python3_compiled')
+        echomsg "Don't support python3!"
         " finish
         return
     endif
-    if !has('python3_dynamic') || !has('python_dynamic')
-        echomsg "Could not dynamic load python3/python!"
+    if !has('python3_dynamic')
+        echomsg "Could not dynamic load python3!"
         return
     endif
 " help if_pyth.txt
@@ -568,6 +567,7 @@ endif
 
 function _COMPILE_()
     " if you want to get all the variable :see options.txt
+    execute '%s/\s\+$//ge'
     if &mod == 1
         " help 'write
         if @% == ''
@@ -781,7 +781,7 @@ function _DEBUG_()
     if &filetype == 'c' || &filetype == 'cpp'
         !emacs --eval "(gdb \"gdb -i=mi %:h/_%:t:r.mn \")"
     elseif &filetype == 'python'
-        !pudb %:p
+        !pudb3 %:p
     elseif &filetype == 'java'
         !jdb -classpath %:h/class %:t:r
     endif
@@ -794,15 +794,22 @@ function _FILETYPE_SET_REGISTER_()
     " if filereadable(expand("%:h") . "/vimrc.tmp")
     "     source %:h/vimrc.tmp
     " endif
+
+    syntax match SPACE "^\s\+$"
+    " ctermbg,ctermfg is different
+    highlight SPACE gui=NONE cterm=bold  ctermbg=green
+
     if @% != "" && strridx(expand("%:p:h"),"/media/Windows") != -1
                 \ && &fileformat == "unix"
         setlocal fileformat=dos
         echomsg "DOS FILE!"
     endif
+
     mapclear <buffer>
     " vmapclear <buffer>
     " smapclear <buffer>
     " imapclear <buffer>
+
     if     &filetype == 'c' || &filetype == 'cpp'
         inoremap <buffer> { {<ESC>:call PAIRS()<CR>
         if &filetype == 'c'
