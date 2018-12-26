@@ -223,6 +223,8 @@ highlight cursorcolumn cterm=NONE ctermbg=blue
 " help vert windo bufdo
 cab h vertical leftabove help
 cab t vertical rightbelow terminal ++rows=48 ++cols=70
+cab oct octave-cli \| sed 's/ans =//' \| sed 's/^\s\+//g' \| sed 's/\s\+/ /g'
+            \ \| sed '/Columns/d' \| sed '/^\s*$/d'
 cab mat vertical rightbelow terminal ++rows=48 ++cols=70 matlab
             \ -nodesktop -nosplash
 
@@ -567,13 +569,14 @@ endif
 
 function _COMPILE_()
     " if you want to get all the variable :see options.txt
-    execute '%s/\s\+$//ge'
+    execute '%s/^\s\+$//ge'
     if &mod == 1
         " help 'write
         if @% == ''
             echomsg "File name is needed!"
             return
         else
+            " :update
             write
         endif
     endif
@@ -788,16 +791,16 @@ function _DEBUG_()
 endfunction
 
 function _FILETYPE_SET_REGISTER_()
-    " this function is about filetype and for options , syntax
-    " highlighting , <buffer> map and b:variables .
-    "
+    " this function is about certain filetype and for local options ,
+    " syntax highlighting , <buffer> map and b:variables .
+
     " if filereadable(expand("%:h") . "/vimrc.tmp")
     "     source %:h/vimrc.tmp
     " endif
 
-    syntax match SPACE "^\s\+$"
+    " syntax match SPACE "^\s\+$"
     " ctermbg,ctermfg is different
-    highlight SPACE gui=NONE cterm=bold  ctermbg=green
+    " highlight SPACE gui=NONE cterm=bold  ctermbg=green
 
     if @% != "" && strridx(expand("%:p:h"),"/media/Windows") != -1
                 \ && &fileformat == "unix"
@@ -843,7 +846,8 @@ function _FILETYPE_SET_REGISTER_()
         " you need to know API in vim and regular expression
         let b:verilog_indent_modules = 1
         inoremap <buffer> ' '
-        noremap <buffer> <leader>s :%s/\<\>//gc<left><left><left><left><left><left>
+        noremap <buffer> <leader>s :%s/\<\>/&_tb/gc
+\<left><left><left><left><left><left><left><left><left><left>
     elseif &filetype == 'asm'
         syntax match AsmAddress "^\s\+\<[0-9a-fA-F]*\>:"me=e-1
         syntax match AsmNumber "\<[0-9a-fA-f]\{2}\> "
@@ -910,6 +914,8 @@ augroup _MY_OWN_DEFINE_
     " updatetime->CursorHoldI
     autocmd CursorHoldI * stopinsert
     autocmd BufReadPost * if line("'\"") <= line("$") | exe "normal! g`\"" | endif
+    autocmd BufReadPost *.c,*.cpp,*.py,*m,*sh,*.vim,*.v
+                \ if ! &readonly | execute '%s/^\s\+$//ge' | endif
     autocmd BufEnter * call _FILETYPE_SET_REGISTER_()
     " autocmd BufWritePost * if $USER == 'me' | mkview | endif
     " autocmd BufReadPost * if @% != '' && $USER == 'me' | loadview | endif
