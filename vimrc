@@ -803,7 +803,7 @@ function _FILETYPE_SET_REGISTER_()
     " highlight SPACE gui=NONE cterm=bold  ctermbg=green
 
     if @% != "" && strridx(expand("%:p:h"),"/media/Windows") != -1
-                \ && &fileformat == "unix"
+                \ && &fileformat == "unix" && &filetype == "verilog"
         setlocal fileformat=dos
         echomsg "DOS FILE!"
     endif
