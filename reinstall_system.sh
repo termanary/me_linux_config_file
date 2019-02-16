@@ -96,6 +96,14 @@ sudo chsh -s /usr/bin/zsh me
 #     sudo chmod -R g+w /media/program
 # fi
 
-sudo chown -R root:root /media/MATLAB/ /media/Altera_Quartus_2/
-sudo chown -R root:MATLAB /media/Torrent/
+# sudo chown -R root:root /media/MATLAB/ /media/Altera_Quartus_2/
+# sudo chown -R root:MATLAB /media/Torrent/
+
+# # octave compile
+# sudo apt install gfortran libblas-dev liblapack-dev libpcre3-dev libreadline-dev
+# cd ~/download/octave/octave-source/octave-4.4.1/
+# ./configure
+# make
+# sudo make install
+
 
