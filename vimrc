@@ -328,7 +328,7 @@ noremap <Leader>va :!cp %:p /media/program/main <CR>
 noremap <Leader>vs :call _OPENFILE_("~/script/shell.sh","l") <CR>
 noremap <Leader>vp :call _OPENFILE_("~/script/python3.py","l") <CR>
 noremap <Leader>vy :call _OPENFILE_("~/.pythonstartup","l") <CR>
-noremap <Leader>vb :call _OPENFILE_("~/.zsh_aliases","l") <CR>
+noremap <Leader>vb :call SHELL_ALIASES() <CR>
 
 " vimrc
 noremap <Leader>ve :call _OPENFILE_("~/.vim/vimrc","l") <CR>
@@ -358,12 +358,13 @@ endif
 " the "function! x" not
 
 if exists("s:_function_exists")
+    delfunction _PYTHON_FUNCTION_
     "delfunction _COMPILE_
     delfunction _TEST_INPUT_TO_RUN_
     delfunction _DEBUG_
     delfunction _FILETYPE_SET_REGISTER_
+    delfunction SHELL_ALIASES
     delfunction _OPENFILE_
-    delfunction _PYTHON_FUNCTION_
     delfunction VsplitFunction
     delfunction PAIRS
     delfunction NORMAL
@@ -486,6 +487,14 @@ let g:FileFormat = [
             \ "*.hs",
             \ "*.asm",
             \ ]
+
+function SHELL_ALIASES()
+    if $USER == "me"
+        call _OPENFILE_("~/.zsh_aliases","l")
+    elseif $USER == "syx"
+        call _OPENFILE_("~/.bash_aliases","l")
+    endif
+endfunction
 
 " help function
 " help function-list
