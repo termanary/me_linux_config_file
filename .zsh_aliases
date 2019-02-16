@@ -156,3 +156,7 @@ bindkey "^X^E" edit-command-line
 # bind -x '"\em":/home/me/.vim/findfile.py'
 # bind -s '"\ea":"\C-asudo\C-e"'
 
+# if [ -f ~/.zsh_aliases ]; then
+#     . ~/.zsh_aliases
+# fi
+
