@@ -6,19 +6,18 @@
 #
 # <file system> <mount point>   <type>  <options>       <dump>  <pass>
 # / was on /dev/sda7 during installation
-UUID=140130a0-b481-43c8-8b40-8f678c483bb1 /               ext4    errors=remount-ro 0       1
+UUID=ca9c0b7c-d5f5-4faf-a580-83e08bfe1cac /               ext4    errors=remount-ro 0       1
 # /boot/efi was on /dev/sda1 during installation
 UUID=06F4-FC74  /boot/efi       vfat    umask=0077      0       1
-# /home was on /dev/sda13 during installation
-UUID=49bd6260-cd18-4f4c-ae0c-20bf120978cf /home           ext4    defaults        0       2
+# /home was on /dev/sda8 during installation
+UUID=7a4d03b7-0000-40b8-a857-cbc96a353365 /home           ext4    defaults        0       2
 # swap was on /dev/sda9 during installation
-UUID=87385e1d-ed68-4244-b7cb-70dbe038cf45 none            swap    sw              0       0
+UUID=b20525c3-d95f-433f-b4a5-968d62a51b19 none            swap    sw              0       0
 
 # HELP : http://www.voidcn.com/article/p-kyhwcghk-bmo.html
 # *mask only could use for ntfs ,not ext4
 # Microsoft Windows OS : /dev/sda3
-# UUID="B0B2F7CBB2F79456"  /media/OS/ ntfs auto,ro,noexec,nouser,nosuid,uid=root,gid=root,umask=222,dmask=222,fmask=333 0 2
-UUID="B0B2F7CBB2F79456"  /media/OS/ ntfs auto,rw,noexec,nouser,nosuid,uid=root,gid=root,umask=000,dmask=000,fmask=000 0 2  
+UUID="B0B2F7CBB2F79456"  /media/OS/ ntfs auto,ro,noexec,nouser,nosuid,uid=root,gid=root,umask=222,dmask=222,fmask=333 0 2
 # MATLAB : /dev/sda4
 UUID="6a65ba8f-4444-4424-b12e-accbafae8794" /media/MATLAB/ ext4 auto,ro,exec,nouser,nosuid 0 2
 #Altera Quartus 2 : /dev/sda12
@@ -27,5 +26,4 @@ UUID="c5707d2f-f865-40da-b715-6b3abbc2c7d3" /media/Altera_Quartus_2/ ext4 auto,r
 UUID="2d5901cf-0ce0-4a45-a317-78b15f873d07" /media/Torrent/ ext4 auto,rw,noexec,nouser,nosuid 0 2
 #Windows : /dev/sda5
 UUID="A29C408C9C405CC3"  /media/Windows/ ntfs auto,rw,noexec,nouser,nosuid,uid=root,gid=MATLAB,umask=007,dmask=007,fmask=117 0 2
-
 
