@@ -88,11 +88,14 @@ sudo chsh -s /usr/bin/zsh me
 # sudo cp sources.list /etc/apt/sources.list
 # # init.el .octaverc .pythonstartup .screenrc vimrc .zsh_aliases .gdbinit cgdbrc
 
-if [ ! -e /media/program ] ; then
-    sudo mkdir /media/program
-    cd /media/program
-    sudo touch main
-    sudo chown -R root:MATLAB /media/program
-    sudo chmod -R g+w /media/program
-fi
+# if [ ! -e /media/program ] ; then
+#     sudo mkdir /media/program
+#     cd /media/program
+#     sudo touch main
+#     sudo chown -R root:MATLAB /media/program
+#     sudo chmod -R g+w /media/program
+# fi
+
+sudo chown -R root:root /media/MATLAB/ /media/Altera_Quartus_2/
+sudo chown -R root:MATLAB /media/Torrent/
 
