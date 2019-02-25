@@ -10,6 +10,12 @@ error_occur()
 
 sudo apt install pppoeconf 
 #sudo pppoeconf
+# sudo service networking restart
+# ??? :
+# sudo echo "ipv6 ," >> /etc/ppp/options
+
+wget https://github.com/termanary/me_linux_config_file/archive/master.zip 
+unzip master.zip 
 
 sudo apt install mate-desktop-environment lightdm
 sudo systemctl set-default multi-user.target 
@@ -36,6 +42,8 @@ sudo python3 -m pip install pudb
 error_occur
 
 sudo apt install fcitx-table-wbpy gnome-disk-utility 
+# the sound of firefox :
+sudo apt install pulseaudio 
 
 sudo adduser me
 sudo adduser guest
