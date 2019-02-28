@@ -20,6 +20,9 @@ unzip master.zip
 sudo apt install mate-desktop-environment lightdm
 sudo systemctl set-default multi-user.target 
 
+# ???
+# sudo apt install openjdk-8-jdk
+
 sudo apt install \
 zsh gcc g++ gdb \
 iverilog gtkwave \
@@ -52,6 +55,8 @@ sudo addgroup syx MATLAB
 sudo chsh -s /usr/bin/zsh me
 
 # ----------------------------------------------------------------------
+
+# sudo dpkg -i /media/Altera_Quartus_2/libpng12-0_1.2.50-1ubuntu2.14.04.3_amd64.deb
 
 # sudo cp -r /media/syx/*/me/ /home/me
 # sudo chown -R me:me /home/me/me/
