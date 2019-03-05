@@ -199,6 +199,9 @@ set cpoptions-=c
 " : bin,octal,hex,alpha
 set nrformats=bin,octal,hex
 
+" set spell
+" set list
+
 " see highlight for exmaple
 " the order of next 3 line could not be change
 " colorscheme for ubuntu-18.04:zellner
@@ -358,14 +361,16 @@ endif
 " the "function! x" not
 
 if exists("s:_function_exists")
+    delfunction _OPENFILE_
     delfunction _PYTHON_FUNCTION_
+    delfunction SHELL_ALIASES
+    delfunction VsplitFunction
+
     "delfunction _COMPILE_
     delfunction _TEST_INPUT_TO_RUN_
     delfunction _DEBUG_
     delfunction _FILETYPE_SET_REGISTER_
-    delfunction SHELL_ALIASES
-    delfunction _OPENFILE_
-    delfunction VsplitFunction
+
     delfunction PAIRS
     delfunction NORMAL
     delfunction BSD_STYLE
@@ -791,7 +796,44 @@ endfunction
 
 function _DEBUG_()
     if &filetype == 'c' || &filetype == 'cpp'
-        !emacs --eval "(gdb \"gdb -i=mi %:h/_%:t:r.mn \")"
+        "
+        " emacs :
+        " !emacs --eval "(gdb \"gdb -i=mi %:h/_%:t:r.mn \")"
+        "
+        " help terminal-debug : <- vim plugin ->
+        "
+        " :Run [args]
+        " :Arguments {args}
+        "
+        " :Break
+        " :Clear
+        "
+        " :Step      = gdb "step"
+        " :Over      = gdb "next"
+        " :Finish    = gdb "finish"
+        " :Continue  = gdb "continue"
+        " :Stop
+        "
+        " call TermDebugSendCommand('where')
+        packadd termdebug
+        Termdebug %:h/_%:t:r.mn
+        Gdb
+        wincmd J
+        Source
+        wincmd H
+        Program
+        10 wincmd +
+        Source
+
+        noremap <buffer> b :Break <CR>
+        noremap <buffer> d :Clear <CR>
+        noremap <buffer> r :Run <input.tst <CR>
+        noremap <buffer> n :Over <CR>
+        noremap <buffer> s :Step <CR>
+        noremap <buffer> c :Continue <CR>
+        noremap <buffer> q :call TermDebugSendCommand('quit') <CR>
+\:mapclear <buffer> <CR>
+
     elseif &filetype == 'python'
         !pudb3 %:p
     elseif &filetype == 'java'
@@ -829,6 +871,8 @@ function _FILETYPE_SET_REGISTER_()
             syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
             highlight cFunctions gui=NONE cterm=bold  ctermfg=yellow
         endif
+    elseif &filetype == 'java'
+        inoremap <buffer> { {<ESC>:call PAIRS()<CR>
     elseif &filetype == ''
         if expand("%:t:r") == 'input' || expand("%:t") == 'input.tst'
             setlocal iskeyword+=.,-
@@ -885,29 +929,49 @@ function NORMAL(pairs)
 endfunction
 
 function PAIRS()
-    let Pos = col(".") - 2
-    let LineString = getline(".")
-    " current line
-    if strridx(LineString,"enum ") != -1
-        call NORMAL(1) | return
-    elseif strridx(LineString,"else") != -1 || strridx(LineString,"do") != -1
-        call BSD_STYLE(0) | return
-    endif
-    while Pos >= 0
-        if LineString[Pos] == ')'
-            call BSD_STYLE(0) | return
-        elseif LineString[Pos] == '='
+    if &filetype == 'c' || &filetype == 'cpp'
+        let Pos = col(".") - 2
+        let LineString = getline(".")
+        " current line
+        if strridx(LineString,"enum ") != -1
             call NORMAL(1) | return
-        elseif LineString[Pos] != ' '
-            call NORMAL(0) | return
+        elseif strridx(LineString,"else") != -1
+                    \ || strridx(LineString,"do") != -1
+            call BSD_STYLE(0) | return
         endif
-        let Pos -= 1
-    endwhile
-    " previous line
-    if line(".") != 1 && ( strridx(getline(line(".")-1),"struct ") != -1
-    \ || strridx(getline(line(".")-1),"union ") != -1 )
-        call BSD_STYLE(1) | return
-    else
+        while Pos >= 0
+            if LineString[Pos] == ')'
+                call BSD_STYLE(0) | return
+            elseif LineString[Pos] == '='
+                call NORMAL(1) | return
+            elseif LineString[Pos] != ' '
+                call NORMAL(0) | return
+            endif
+            let Pos -= 1
+        endwhile
+        " previous line
+        if line(".") != 1 && ( strridx(getline(line(".")-1),"struct ") != -1
+                    \ || strridx(getline(line(".")-1),"union ") != -1 )
+            call BSD_STYLE(1) | return
+        else
+            call BSD_STYLE(0) | return
+        endif
+    elseif &filetype == 'java'
+        let Pos = col(".") - 2
+        let LineString = getline(".")
+        if strridx(LineString,"else") != -1
+            call BSD_STYLE(0) | return
+        endif
+        while Pos >= 0
+            if LineString[Pos] == ')'
+                call BSD_STYLE(0) | return
+            elseif LineString[Pos] == '='
+                call NORMAL(1) | return
+            elseif LineString[Pos] != ' '
+                call NORMAL(0) | return
+            endif
+            let Pos -= 1
+        endwhile
         call BSD_STYLE(0) | return
     endif
 endfunction
