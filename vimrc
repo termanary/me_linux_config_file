@@ -374,6 +374,8 @@ if exists("s:_function_exists")
     delfunction PAIRS
     delfunction NORMAL
     delfunction BSD_STYLE
+
+    delfunction  GlobalVariableReverse
 endif
 
 " diference between echo and echomsg :
@@ -412,6 +414,7 @@ FileFormat = [
 ".sh",
 ".vim",
 ".v",
+".pl",
 ".hs",
 ".asm",
 ]
@@ -468,30 +471,23 @@ else :
 ENDPYTHON3
 endfunction
 
+" Global variables : -------------------------------------------------------
+
 " if a global variable do not define as this ,
 " it will not be aoto-complete in cmd-line
-let g:FileName = [
-            \ "main.c",
-            \ "main.cpp",
-            \ "Main.java",
-            \ "main.v",
-            \ "main.hs",
-            \ "main.asm",
-            \ ]
-
 " help List
-let g:FileFormat = [
-            \ "*.c",
-            \ "*.cpp",
-            \ "*.java",
-            \ "*.py",
-            \ "*.m",
-            \ "*.sh",
-            \ "*.vim",
-            \ "*.v",
-            \ "*.hs",
-            \ "*.asm",
-            \ ]
+let g:JavaNewVersion = 1
+let g:gtkwave_ban = 0
+noremap <F8> :call GlobalVariableReverse() <CR>
+function GlobalVariableReverse()
+    if &filetype == 'java'
+        let g:JavaNewVersion = !g:JavaNewVersion
+    elseif &filetype == 'verilog'
+        let g:gtkwave_ban = !g:gtkwave_ban
+    endif
+endfunction
+
+" ----------------------------------------------------------------------
 
 function SHELL_ALIASES()
     if $USER == "me"
@@ -659,7 +655,8 @@ function _COMPILE_()
         source %:p
     elseif &filetype == 'java'
         " gnu-gcc:gcj/gij :was removed after gcc-7,was available before gcc-6
-        !javac -g -d %:h/class/ %:p
+        " !javac -g -d %:h/class/ %:p
+        execute "!" . (g:JavaNewVersion?"javac-11":"javac") . " -g -d %:h %:p"
     elseif &filetype == 'verilog'
         " sudo apt install / iverilog gtkwave / verilator
         " help : bufwinnr("str") windo
@@ -689,6 +686,8 @@ function _COMPILE_()
                             \ _new_filename . ".v %:p"
             endif
         endif
+    elseif &filetype == 'perl'
+        execute "!" . (executable(expand("%:p"))?"":"perl -W ") . "%:p"
     elseif &filetype == 'haskell'
         !ghc %:p -o %:h/_%:t:r.mn
     elseif &filetype == 'asm'
@@ -698,6 +697,10 @@ function _COMPILE_()
         " AT&T : sudo apt install as
         !nasm -f elf %:p -o %:h/_%:t:r.o
         !gcc -m32 %:h/_%:t:r.o -o %:h/_%:t:r.mn
+    else
+        if executable(expand("%:p"))
+            ! %:p
+        endif
     endif
 endfunction
 
@@ -710,8 +713,6 @@ endfunction
 " varialbles ,you must add "g:" before a variables,
 " the global-variable would not cover the function-local
 " varialbles
-
-noremap <F8> :let g:gtkwave_ban = !g:gtkwave_ban <CR>
 
 function _TEST_INPUT_TO_RUN_()
     " findfile(),finddir()
@@ -739,17 +740,20 @@ function _TEST_INPUT_TO_RUN_()
             execute "! %:h/_%:t:r.mn < %:h/" . g:_the_input_file_
                         " \ . " 2>&1 \| tee /tmp/tmpoutput.%:t:r "
         elseif findfile(g:_the_input_file_,expand("%:h")) == ""
-            ! %:h/_%:t:r.mn 2>&1
+            " ! %:h/_%:t:r.mn 2>&1
+            ! %:h/_%:t:r.mn
         else
             " echoerr
             echomsg 'ERROR!'
         endif
     elseif &filetype == 'java'
         if findfile(g:_the_input_file_,expand("%:h")) != ""
-            execute "!java -classpath %:h/class/ %:t:r < %:h/"
-                        \ . g:_the_input_file_
+            execute "!" . (g:JavaNewVersion?"java-11":"java") .
+                    \ " -classpath %:h %:t:r < %:h/" . g:_the_input_file_
         elseif findfile(g:_the_input_file_,expand("%:h")) == ""
-            !java -classpath %:h/class/ %:t:r 2>&1
+            execute "!" . (g:JavaNewVersion?"java-11":"java") .
+                        \ " -classpath %:h %:t:r "
+                        " \ " -classpath %:h %:t:r 2>&1"
         else
             echomsg 'ERROR!'
         endif
@@ -772,9 +776,6 @@ function _TEST_INPUT_TO_RUN_()
         " end
         "
         let _tb_index=strridx(expand("%:t:r"),"_tb")
-        if !exists("g:gtkwave_ban")
-            let g:gtkwave_ban = 0
-        endif
         if _tb_index == -1
             "verilog source file
             execute "!%:h/_%:t:r.mn" . (exists("g:less_use") && g:less_use ?
@@ -837,7 +838,9 @@ function _DEBUG_()
     elseif &filetype == 'python'
         !pudb3 %:p
     elseif &filetype == 'java'
-        !jdb -classpath %:h/class %:t:r
+        !jdb -classpath %:h %:t:r
+    elseif &filetype == 'perl'
+        !perl -d %:p
     endif
 endfunction
 
@@ -921,10 +924,17 @@ function BSD_STYLE(add)
 endfunction
 function NORMAL(pairs)
     if a:pairs
-        call setline(".",getline(".") . "}")
+        call setline(".",getline(".")[0:col(".")-1] . "}"
+                    \ . getline(".")[col("."):])
+        " call setline(".",getline(".") . "}")
     endif
     call cursor(line("."),col(".") + 1)
-    startinsert
+    if col(".") + 1 == col("$")
+        startinsert!
+    else
+        call cursor(line("."),col(".") + 1)
+        startinsert
+    endif
     return
 endfunction
 
@@ -1007,6 +1017,7 @@ endif
 " help 40.2
 " -nargs = x : just supply a number of x arguments
 " help <f-args> <args>
+command -complete=file -nargs=* LS !ls --color=auto
 command -complete=file -nargs=* Vlsplit :call VsplitFunction("l",<f-args>)
 command -complete=file -nargs=* Vrsplit :call VsplitFunction("r",<f-args>)
 function VsplitFunction(direction, ... )
