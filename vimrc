@@ -199,6 +199,9 @@ set cpoptions-=c
 " : bin,octal,hex,alpha
 set nrformats=bin,octal,hex
 
+" set mousehide
+" set mousemodel
+
 " set spell
 " set list
 
@@ -656,7 +659,8 @@ function _COMPILE_()
     elseif &filetype == 'java'
         " gnu-gcc:gcj/gij :was removed after gcc-7,was available before gcc-6
         " !javac -g -d %:h/class/ %:p
-        execute "!" . (g:JavaNewVersion?"javac-11":"javac") . " -g -d %:h %:p"
+        execute "!" . (g:JavaNewVersion?"javac-11":"javac") . " -classpath %:h
+                    \ -g -d %:h %:p"
     elseif &filetype == 'verilog'
         " sudo apt install / iverilog gtkwave / verilator
         " help : bufwinnr("str") windo
@@ -780,17 +784,11 @@ function _TEST_INPUT_TO_RUN_()
             "verilog source file
             execute "!%:h/_%:t:r.mn" . (exists("g:less_use") && g:less_use ?
                         \" | tee /tmp/out":"")
-            if g:gtkwave_ban == 0 && ( $TERM == "xterm" || $TERM == 'screen' )
-                !gtkwave %:h/%:t:r.vcd
-            endif
         else
             "verilog testbench file
             let _new_filename=strcharpart(expand("%:t:r"),0,_tb_index)
             execute "! %:h/_" . _new_filename . ".mn" .(exists("g:less_use")
                         \ && g:less_use ? " | tee /tmp/out":"")
-            if g:gtkwave_ban==0 && ( $TERM == "xterm" || $TERM == 'screen' )
-                execute "!gtkwave %:h/" . _new_filename . ".vcd"
-            endif
         endif
     endif
 endfunction
@@ -839,6 +837,20 @@ function _DEBUG_()
         !pudb3 %:p
     elseif &filetype == 'java'
         !jdb -classpath %:h %:t:r
+    elseif &filetype =='verilog'
+        let _tb_index=strridx(expand("%:t:r"),"_tb")
+        if _tb_index == -1
+            "verilog source file
+            if g:gtkwave_ban == 0 && ( $TERM == "xterm" || $TERM == 'screen' )
+                !gtkwave %:h/%:t:r.vcd
+            endif
+        else
+            "verilog testbench file
+            let _new_filename=strcharpart(expand("%:t:r"),0,_tb_index)
+            if g:gtkwave_ban==0 && ( $TERM == "xterm" || $TERM == 'screen' )
+                execute "!gtkwave %:h/" . _new_filename . ".vcd"
+            endif
+        endif
     elseif &filetype == 'perl'
         !perl -d %:p
     endif
@@ -902,7 +914,7 @@ function _FILETYPE_SET_REGISTER_()
         " you need to know API in vim and regular expression
         let b:verilog_indent_modules = 1
         inoremap <buffer> ' '
-        noremap <buffer> <leader>s :%s/\<\>/&_tb/gc
+        noremap <buffer> <leader>s :%s/[^.]\<\>/&_tb/gc
 \<left><left><left><left><left><left><left><left><left><left>
     elseif &filetype == 'asm'
         syntax match AsmAddress "^\s\+\<[0-9a-fA-F]*\>:"me=e-1
@@ -928,7 +940,6 @@ function NORMAL(pairs)
                     \ . getline(".")[col("."):])
         " call setline(".",getline(".") . "}")
     endif
-    call cursor(line("."),col(".") + 1)
     if col(".") + 1 == col("$")
         startinsert!
     else
@@ -960,8 +971,8 @@ function PAIRS()
             let Pos -= 1
         endwhile
         " previous line
-        if line(".") != 1 && ( strridx(getline(line(".")-1),"struct ") != -1
-                    \ || strridx(getline(line(".")-1),"union ") != -1 )
+        if line(".") != 1 && ( strridx(getline(line(".")-1)[0:5],"struct")
+                    \ != -1 || strridx(getline(line(".")-1)[0:4],"union")!=-1)
             call BSD_STYLE(1) | return
         else
             call BSD_STYLE(0) | return
