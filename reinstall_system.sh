@@ -17,6 +17,8 @@ sudo apt install pppoeconf
 wget https://github.com/termanary/me_linux_config_file/archive/master.zip 
 unzip master.zip 
 
+# language
+sudo dpkg-reconfigure locales  
 sudo apt install mate-desktop-environment lightdm
 sudo systemctl set-default multi-user.target 
 
@@ -43,10 +45,14 @@ sudo python3 -m pip install ipython
 error_occur
 sudo python3 -m pip install pudb
 error_occur
+sudo python -m pip install sympy 
+error_occur
 
 sudo apt install fcitx-table-wbpy gnome-disk-utility 
 # the sound of firefox :
 sudo apt install pulseaudio 
+# plot for octave
+sudo apt install gnuplot-x11 
 
 sudo adduser me
 sudo adduser guest
@@ -113,10 +119,15 @@ sudo chsh -s /usr/bin/zsh me
 # sudo chown -R root:MATLAB /media/Torrent/
 
 # # octave compile
-# sudo apt install gfortran libblas-dev liblapack-dev libpcre3-dev libreadline-dev
+# sudo apt install gfortran libblas-dev liblapack-dev libpcre3-dev libreadline-dev gnuplot-x11 
 # cd ~/download/octave/octave-source/octave-4.4.1/
 # ./configure
 # make
 # sudo make install
 
 
+sudo apt install network-manager
+sudo apt install openssh-server 
+sudo /etc/init.d/ssh start 
+apt search gcc-mips 
+sudo apt install gcc-mips-linux-gnu 
