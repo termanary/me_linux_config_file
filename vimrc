@@ -660,7 +660,7 @@ function _COMPILE_()
         " gnu-gcc:gcj/gij :was removed after gcc-7,was available before gcc-6
         " !javac -g -d %:h/class/ %:p
         execute "!" . (g:JavaNewVersion?"javac-11":"javac") . " -classpath %:h
-                    \ -g -d %:h %:p"
+                    \ -g -d %:h/class %:p"
     elseif &filetype == 'verilog'
         " sudo apt install / iverilog gtkwave / verilator
         " help : bufwinnr("str") windo
@@ -753,10 +753,10 @@ function _TEST_INPUT_TO_RUN_()
     elseif &filetype == 'java'
         if findfile(g:_the_input_file_,expand("%:h")) != ""
             execute "!" . (g:JavaNewVersion?"java-11":"java") .
-                    \ " -classpath %:h %:t:r < %:h/" . g:_the_input_file_
+                    \ " -classpath %:h/class %:t:r < %:h/" . g:_the_input_file_
         elseif findfile(g:_the_input_file_,expand("%:h")) == ""
             execute "!" . (g:JavaNewVersion?"java-11":"java") .
-                        \ " -classpath %:h %:t:r "
+                        \ " -classpath %:h/class %:t:r "
                         " \ " -classpath %:h %:t:r 2>&1"
         else
             echomsg 'ERROR!'
