@@ -59,45 +59,40 @@ if filereadable("/etc/vim/vimrc.local")
     source /etc/vim/vimrc.local
 endif
 
-if !has('terminal') || !has('python3_compiled')
-    " help if_pyth.txt
-    echomsg 'Need to recompile!'
-    if !has('python3_dynamic')
-        echomsg 'Could not dynamic load!'
-    endif
-    " or you could choose to install vim-nox or vim-gtk,
-    " it support all scripting and features.
-    " python's dll name must be find,if could not,delete cache,run again
-    " with no config_dir. dependence :
-    " ncurses->libncurses5-dev libpython3-dev clipboard->libxt-dev
-    " wget https://github.com/vim/vim/archive/master.zip
-    " rm ./vim-master/src/auto/config.cache
-    " ./configure -enable-python3interp=dynamic -enable-pythoninterp=dynamic
-    " use only once if could not be found :
-    " -with-python3-config-dir=/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu/
-    " -with-python-config-dir=/usr/lib/python2.7/config-x86_64-linux-gnu/
-    " -x-includes=/usr/include/X11
-    " -x-libraries=/usr/include/X11
-endif
+" How to compile vim with terminal and python3 feature :
+" you could choose to install vim-nox or vim-gtk,
+" it support all scripting and features.
+" python's dll name must be find,if could not,delete cache,run again
+" with no config_dir. dependence :
+" ncurses->libncurses5-dev libpython3-dev clipboard->libxt-dev
+" wget https://github.com/vim/vim/archive/master.zip
+" rm ./vim-master/src/auto/config.cache
+" ./configure -enable-python3interp=dynamic -enable-pythoninterp=dynamic
+" use only once if could not be found :
+" -with-python3-config-dir=/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu/
+" -with-python-config-dir=/usr/lib/python2.7/config-x86_64-linux-gnu/
+" -x-includes=/usr/include/X11
+" -x-libraries=/usr/include/X11
 
 " source file----------------------------------------------------------
-
-" for the temanary command define by the users
-" if you want to know all the function already
-" difined by vim ,see usr_41.txt
-" the next code could run successfully
 
 " ~ could not be recognize
 " $HOME must out of ""
 " if filereadable($HOME . "/Etc" . "/defaults.vim")
 if filereadable("/usr/share/vim/vim80/defaults.vim")
-    " source $HOME/Etc/defaults.vim
     source /usr/share/vim/vim80/defaults.vim
+elseif v:version == 801
+    source /usr/local/share/vim/vim81/defaults.vim
+else
+    echomsg "fail read defaults.vim"
 endif
 
 if filereadable("/usr/share/vim/vim80/ftplugin.vim")
-    " source $HOME/Etc/ftplugin.vim
     source /usr/share/vim/vim80/ftplugin.vim
+elseif v:version == 801
+    source /usr/local/share/vim/vim81/ftplugin.vim
+else
+    echomsg "fail read ftplugin.vim"
 endif
 
 " set ---------------------------------------------------------------------
@@ -203,7 +198,6 @@ set nrformats=bin,octal,hex
 " set mousemodel
 
 " set spell
-" set list
 
 " see highlight for exmaple
 " the order of next 3 line could not be change
@@ -229,8 +223,8 @@ highlight cursorcolumn cterm=NONE ctermbg=blue
 " help vert windo bufdo
 cab h vertical leftabove help
 cab t vertical rightbelow terminal ++rows=48 ++cols=70
-cab oct octave-cli \| sed 's/ans =//' \| sed 's/^\s\+//g' \| sed 's/\s\+/ /g'
-            \ \| sed '/Columns/d' \| sed '/^\s*$/d'
+" cab oct octave-cli \| sed 's/ans =//' \| sed 's/^\s\+//g' \| sed 's/\s\+/ /g'
+"             \ \| sed '/Columns/d' \| sed '/^\s*$/d'
 cab mat vertical rightbelow terminal ++rows=48 ++cols=70 matlab
             \ -nodesktop -nosplash
 
@@ -253,8 +247,6 @@ inoremap { {}<left>
 " inoremap <C-b> <left>
 inoremap <C-f> <right>
 inoremap <C-e> <end>
-" inoremap <C-d> <delete>
-" inoremap <C-g> <C-d>
 inoremap <delete> <Nop>
 
 " noremap--------------------------------------------------------------
@@ -297,9 +289,7 @@ noremap <Leader>w <C-w>
 noremap <Leader>h <C-w>h
 noremap <Leader>l <C-w>l
 noremap <Leader>q <C-w>q
-" noremap <Leader>r <C-r>
 
-noremap m/ /\v
 noremap <Leader>/ :nohlsearch <CR>
 noremap <Leader>u g~aw
 noremap <Leader>e :setlocal cursorline! cursorcolumn!<CR>:sleep 400m
@@ -339,7 +329,6 @@ noremap <Leader>vb :call SHELL_ALIASES() <CR>
 " vimrc
 noremap <Leader>ve :call _OPENFILE_("~/.vim/vimrc","l") <CR>
 noremap <Leader>vt :call _OPENFILE_("~/script/vimscript.vim","l") <CR>
-noremap <Leader>vu :call _OPENFILE_("%:h/vimrc.tmp","l") <CR>
 
 " octave
 noremap <Leader>vo :call _OPENFILE_("~/script/octave.m ","l") <CR>
@@ -351,8 +340,8 @@ noremap <Leader>vc :call _OPENFILE_("~/.octaverc","l") <CR>
 if !has('terminal')
     echomsg "Don't support terminal!"
 else
-    tnoremap <C-W>n <C-W>N
-    tnoremap <C-W>N <C-W>n
+    " tnoremap <C-W>n <C-W>N
+    " tnoremap <C-W>N <C-W>n
     tnoremap <ESC> <C-w>p
 endif
 
@@ -406,24 +395,26 @@ FileName = [
 "main.c",
 "main.cpp",
 "Main.java",
+"main.py",
 ]
 FileFormat = [
 ".c",
 ".cpp",
 ".java",
-".h",
 ".py",
 ".m",
+".h",
 ".sh",
 ".vim",
 ".v",
 ".pl",
 ".hs",
-".asm",
+".s",
 ]
 FileAdd = [
 ".c",
 ".cpp",
+".s",
 ]
 
 CurDirList = os.listdir(".")
@@ -481,9 +472,12 @@ endfunction
 " help List
 let g:JavaNewVersion = 1
 let g:gtkwave_ban = 0
+let g:MipsCompile = 0
 noremap <F8> :call GlobalVariableReverse() <CR>
 function GlobalVariableReverse()
-    if &filetype == 'java'
+    if &filetype == 'c' || &filetype == 'cpp'
+        let g:MipsCompile = !g:MipsCompile
+    elseif &filetype == 'java'
         let g:JavaNewVersion = !g:JavaNewVersion
     elseif &filetype == 'verilog'
         let g:gtkwave_ban = !g:gtkwave_ban
@@ -500,60 +494,13 @@ function SHELL_ALIASES()
     endif
 endfunction
 
-" help function
-" help function-list
+" help function / function-list
 function _OPENFILE_(filename,lr)
     " vim -
     " :vsplit : for f in [ 'files','files' ] | exe 'vsplit ' f | endfor
-    " help :for
-    " help :bar
+    " help :for / :bar
     if a:filename == ""
         call _PYTHON_FUNCTION_()
-
-        " " $PWD , . = %:h
-        " for fn in g:FileName
-        "     " help cmdline file-searching
-        "     " &path &cdpath
-        "     " finddir() findfile() glob() globpath() split()
-        "     " find
-        "     if findfile(fn,$PWD) != ""
-        "         if &mod || @% != ""
-        "             execute "vsplit " . fn
-        "         else
-        "             execute "edit " .fn
-        "         endif
-        "         let FindFileSucess = 0
-        "         break
-        "     endif
-        " endfor
-
-        " if !exists("FindFileSucess")
-        "     let FileNumber = 0
-        "     for ff in g:FileFormat
-        "         let GetFiles = glob(ff)
-        "         if GetFiles != ""
-        "             let GetFiles = split(GetFiles,"\n")
-        "             for gf in GetFiles
-        "                 if !isdirectory(gf)
-        "                     let FileNumber += 1
-        "                     if FileNumber == 1
-        "                         if &mod || @% != ""
-        "                             execute "vsplit " . gf
-        "                             let FileNumber += 1
-        "                         else
-        "                             execute "edit " . gf
-        "                         endif
-        "                     elseif FileNumber <= 4
-        "                         execute "vsplit " . gf
-        "                     else
-        "                         execute "argadd " . gf
-        "                     endif
-        "                 endif
-        "             endfor
-        "         endif
-        "     endfor
-        " endif
-
     else
         " help argadd
         if @% == ''
@@ -613,9 +560,19 @@ function _COMPILE_()
         " sudo ln -s /usr/bin/i686-w64-mingw32-gcc gccwin32
         " sudo ln -s /usr/bin/x86_64-w64-mingw32-g++ g++win64
         " ---------------------------------------------------
-        let _gcc_compile_options=" -Wfloat-equal -Wshadow -Wstrict-prototypes "
-        execute "!gcc -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
-                    \ _gcc_compile_options . " -o %:h/_%:t:r.mn %:p -lm "
+        " Linux could compile a program of other architecture like MIPS :
+        " 32 bit : gcc-mips-linux-gnu gcc-mipsel-linux-gnu
+        " 64 bit : gcc-mips64-linux-gnuabi64 gcc-mips64el-linux-gnuabi64
+        " g++* , too
+        if g:MipsCompile
+            let MipsGcc="mips-linux-gnu-gcc "
+            let MipsCompileOptions="-S "
+            execute "!" . MipsGcc . MipsCompileOptions . "-o %:h/%:t:r.s %:p"
+        else
+            let GccCompileOptions=" -Wfloat-equal -Wshadow -Wstrict-prototypes "
+            execute "!gcc -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
+                        \ GccCompileOptions . " -o %:h/_%:t:r.mn %:p -lm "
+        endif
     elseif &filetype == 'cpp'
         " octave-C++ :
         " sudo apt install liboctave-dev
@@ -699,8 +656,10 @@ function _COMPILE_()
         " sudo apt install gcc-multilib g++-multilib
         " intel : sudo apt install nasm
         " AT&T : sudo apt install as
-        !nasm -f elf %:p -o %:h/_%:t:r.o
-        !gcc -m32 %:h/_%:t:r.o -o %:h/_%:t:r.mn
+        if !g:MipsCompile
+            !nasm -f elf %:p -o %:h/_%:t:r.o
+            !gcc -m32 %:h/_%:t:r.o -o %:h/_%:t:r.mn
+        endif
     else
         if executable(expand("%:p"))
             ! %:p
@@ -860,10 +819,6 @@ function _FILETYPE_SET_REGISTER_()
     " this function is about certain filetype and for local options ,
     " syntax highlighting , <buffer> map and b:variables .
 
-    " if filereadable(expand("%:h") . "/vimrc.tmp")
-    "     source %:h/vimrc.tmp
-    " endif
-
     " syntax match SPACE "^\s\+$"
     " ctermbg,ctermfg is different
     " highlight SPACE gui=NONE cterm=bold  ctermbg=green
@@ -924,7 +879,7 @@ function _FILETYPE_SET_REGISTER_()
     endif
 endfunction
 
-" indent function
+" '{' indent function
 function BSD_STYLE(add)
     call append(".",repeat(" ",indent(".")) . "}" . (a:add?";":"") )
     call append(".",repeat(" ",indent(".") + &shiftwidth))
@@ -938,7 +893,6 @@ function NORMAL(pairs)
     if a:pairs
         call setline(".",getline(".")[0:col(".")-1] . "}"
                     \ . getline(".")[col("."):])
-        " call setline(".",getline(".") . "}")
     endif
     if col(".") + 1 == col("$")
         startinsert!
@@ -1018,9 +972,12 @@ augroup end
 
 " command--------------------------------------------------------------
 
+" help usr_41.txt
 if exists("s:_command_exists")
     delcommand Vlsplit
     delcommand Vrsplit
+
+    delfunction VsplitFunction
 endif
 
 " help function-argument
@@ -1053,26 +1010,6 @@ function VsplitFunction(direction, ... )
         endfor
     endif
 endfunction
-
-" For Java Complete :
-" command! -nargs=1 -complete=customlist,JavaComplete Java !java <args>
-"
-" " getcompletion()
-" " function! FileCompletion(ArgLead, CmdLine, CursorPos)
-" "     return getcompletion(a:ArgLead, 'file')
-" " endfunction
-"
-" function! JavaComplete(ArgLead,CmdLine,CursorPos)
-"     if match(&wildignore,"*.class") != -1
-"         set wildignore -=*.class
-"         let re = split(glob("*.class"),"\n")
-"         set wildignore +=*.class
-"         return re
-"     else
-"         let re = split(glob("*.class"),"\n")
-"         return split(glob("*.class"),"\n")
-"     endif
-" endfunction
 
 let s:_command_exists=0
 
