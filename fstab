@@ -18,14 +18,17 @@ UUID=b20525c3-d95f-433f-b4a5-968d62a51b19 none            swap    sw            
 # *mask only could use for ntfs ,not ext4
 # Microsoft Windows OS : /dev/sda3
 UUID="B0B2F7CBB2F79456"  /media/OS/ ntfs auto,ro,noexec,nouser,nosuid,uid=root,gid=root,umask=222,dmask=222,fmask=333 0 2
-# MATLAB : /dev/sda4
-UUID="6a65ba8f-4444-4424-b12e-accbafae8794" /media/MATLAB/ ext4 auto,ro,exec,nouser,nosuid 0 2
-#Altera Quartus 2 : /dev/sda12
-UUID="3bf4ea8b-428a-441c-b8f7-735e327b5605" /media/Altera_Quartus_2/ ext4 auto,ro,exec,nouser,nosuid 0 2
-#Xilinx Vivado : /dev/sda13
-UUID="4f171927-ab4e-4377-abf4-fd40aa89df1b" /media/Xilinx_Vivado_18.03/ ext4 auto,ro,exec,nouser,nosuid 0 2
-#Torrent : /dev/sda10 
-UUID="2d5901cf-0ce0-4a45-a317-78b15f873d07" /media/Torrent/ ext4 auto,rw,exec,nouser,nosuid 0 2
 #Windows : /dev/sda5
 UUID="A29C408C9C405CC3"  /media/Windows/ ntfs auto,rw,noexec,nouser,nosuid,uid=root,gid=MATLAB,umask=007,dmask=007,fmask=117 0 2
+#Torrent : /dev/sda10 
+UUID="2d5901cf-0ce0-4a45-a317-78b15f873d07" /media/Torrent/ ext4 auto,rw,exec,nouser,nosuid 0 2
+
+# MATLAB : /dev/sda4
+UUID="6a65ba8f-4444-4424-b12e-accbafae8794" /opt/Matlab_R2018a/ ext4 auto,ro,exec,nouser,nosuid 0 2
+#Altera Quartus 2 : /dev/sda12
+UUID="3bf4ea8b-428a-441c-b8f7-735e327b5605" /opt/Altera_Quartus_18.01/ ext4 auto,ro,exec,nouser,nosuid 0 2
+#Xilinx Vivado : /dev/sda13
+UUID="4f171927-ab4e-4377-abf4-fd40aa89df1b" /opt/Xilinx_Vivado_18.03/ ext4 auto,ro,exec,nouser,nosuid 0 2
+# Civ5 : /dev/sda14
+UUID="ddee1edf-2ef5-4bad-afca-1976e8a3a93d" /opt/Civ5/ ext4 auto,ro,exec,nouser,nosuid 0 2
 
