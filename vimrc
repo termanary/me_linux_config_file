@@ -62,6 +62,7 @@ endif
 " How to compile vim with terminal and python3 feature :
 " you could choose to install vim-nox or vim-gtk,
 " it support all scripting and features.
+" clear cache : rm $/src/auto/config.cache
 " python's dll name must be find,if could not,delete cache,run again
 " with no config_dir. dependence :
 " ncurses->libncurses5-dev libpython3-dev clipboard->libxt-dev
@@ -119,7 +120,7 @@ set autoindent
 set smartindent
 " see $VIMRUNTIME/scripts.vim $VIMRUNTIME/filetype.vim
 filetype indent plugin on
-set foldmethod=manual
+" set foldmethod=manual
 " help cinoptions-value
 set cinoptions=(1s
 " help ft-python-indent
@@ -140,34 +141,46 @@ set timeoutlen=3000
 set ttimeoutlen=0
 
 " statusline
+set shortmess+=filnrxI
+set shortmess-=mwasWAqFS
 set showcmd
 set ruler
 " set rulerformat
+set showtabline=1
 set laststatus=1
 " set statusline+=%{strftime(\"%T\")}
 
 " wild menu
 " help wildcard
 set wildmenu
-set wildmode=full
+" set wildmode=full
+" makefiles need ?
 set wildignore+=*.o,*.hi,*.class
 " set suffixes&
+
+" encode
+set encoding=utf-8
+" set fileencoding
+" set termencoding
+" cp936 is GBK
+set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,default,latin1
+" set fileformats=unix,dos
 
 " tab-page
 set tabpagemax=4
 
 " modeline
-set modeline
+" set modeline
 set modelines=3
 
 " split
-set nosplitbelow
-set nosplitright
-set noconfirm
+" set nosplitbelow
+" set nosplitright
+" set noconfirm
 
 " vimrc in curent dir
-set noexrc
-set nosecure
+" set noexrc
+" set nosecure
 
 " python
 " set pyxversion&
@@ -189,7 +202,7 @@ set undolevels+=1000
 
 " set termwinkey=
 
-set cpoptions-=c
+set cpoptions-=cHInx;
 " set cpoptions+=q
 " : bin,octal,hex,alpha
 set nrformats=bin,octal,hex
@@ -225,8 +238,8 @@ cab h vertical leftabove help
 cab t vertical rightbelow terminal ++rows=48 ++cols=70
 " cab oct octave-cli \| sed 's/ans =//' \| sed 's/^\s\+//g' \| sed 's/\s\+/ /g'
 "             \ \| sed '/Columns/d' \| sed '/^\s*$/d'
-cab mat vertical rightbelow terminal ++rows=48 ++cols=70 matlab
-            \ -nodesktop -nosplash
+" cab mat vertical rightbelow terminal ++rows=48 ++cols=70 matlab
+"             \ -nodesktop -nosplash
 
 " cnoremap-------------------------------------------------------------
 
@@ -290,6 +303,7 @@ noremap <Leader>h <C-w>h
 noremap <Leader>l <C-w>l
 noremap <Leader>q <C-w>q
 
+noremap <leader>i :setlocal cursorline! <CR>
 noremap <Leader>/ :nohlsearch <CR>
 noremap <Leader>u g~aw
 noremap <Leader>e :setlocal cursorline! cursorcolumn!<CR>:sleep 400m
@@ -316,24 +330,26 @@ noremap <Leader>vi :call _OPENFILE_("input.tst","r") <CR>
 noremap <Leader>vg :call _OPENFILE_("~/.gdbinit","r") <CR>
 
 " copy to save -> OJ
-noremap <Leader>vh :!cp %:p ~/hdoj/all/
-noremap <Leader>vk :!cp %:p ~/poj/all/
-noremap <Leader>va :!cp %:p /media/program/main <CR>
+" noremap <Leader>vh :!cp %:p ~/hdoj/all/
+" noremap <Leader>vk :!cp %:p ~/poj/all/
+" noremap <Leader>va :!cp %:p /home/syx/.main.c <CR>
 
 " script
 noremap <Leader>vs :call _OPENFILE_("~/script/shell.sh","l") <CR>
 noremap <Leader>vp :call _OPENFILE_("~/script/python3.py","l") <CR>
-noremap <Leader>vy :call _OPENFILE_("~/.pythonstartup","l") <CR>
+" noremap <Leader>vy :call _OPENFILE_("~/.pythonstartup","l") <CR>
 noremap <Leader>vb :call SHELL_ALIASES() <CR>
+" noremap <Leader>vr :call _OPENFILE_("~/.psqlrc","l") <CR>:set filetype=sql <CR>
+" noremap <Leader>vq :call _OPENFILE_("~/script/pgSQL.sql","l") <CR>
 
 " vimrc
 noremap <Leader>ve :call _OPENFILE_("~/.vim/vimrc","l") <CR>
 noremap <Leader>vt :call _OPENFILE_("~/script/vimscript.vim","l") <CR>
 
 " octave
-noremap <Leader>vo :call _OPENFILE_("~/script/octave.m ","l") <CR>
-noremap <Leader>vn :call _OPENFILE_("~/script/input.tst","l") <CR>
-noremap <Leader>vc :call _OPENFILE_("~/.octaverc","l") <CR>
+" noremap <Leader>vo :call _OPENFILE_("~/script/octave.m ","l") <CR>
+" noremap <Leader>vn :call _OPENFILE_("~/script/input.tst","l") <CR>
+" noremap <Leader>vc :call _OPENFILE_("~/.octaverc","l") <CR>
 
 " tnoremap----------------------------------------------------------
 
@@ -351,24 +367,6 @@ endif
 " when the vim-file is sourced ,"function x" will become
 " an error and the function will not be substitute ,but
 " the "function! x" not
-
-if exists("s:_function_exists")
-    delfunction _OPENFILE_
-    delfunction _PYTHON_FUNCTION_
-    delfunction SHELL_ALIASES
-    delfunction VsplitFunction
-
-    "delfunction _COMPILE_
-    delfunction _TEST_INPUT_TO_RUN_
-    delfunction _DEBUG_
-    delfunction _FILETYPE_SET_REGISTER_
-
-    delfunction PAIRS
-    delfunction NORMAL
-    delfunction BSD_STYLE
-
-    delfunction  GlobalVariableReverse
-endif
 
 " diference between echo and echomsg :
 " echo : all types , no messages
@@ -396,6 +394,7 @@ FileName = [
 "main.cpp",
 "Main.java",
 "main.py",
+"mycpu_top.v",
 ]
 FileFormat = [
 ".c",
@@ -410,6 +409,8 @@ FileFormat = [
 ".pl",
 ".hs",
 ".s",
+".sql",
+".dot",
 ]
 FileAdd = [
 ".c",
@@ -470,7 +471,7 @@ endfunction
 " if a global variable do not define as this ,
 " it will not be aoto-complete in cmd-line
 " help List
-let g:JavaNewVersion = 1
+let g:JavaNewVersion = 0
 let g:gtkwave_ban = 0
 let g:MipsCompile = 0
 noremap <F8> :call GlobalVariableReverse() <CR>
@@ -527,6 +528,25 @@ if !exists("g:_the_input_file_")
     let g:_the_input_file_="input.tst"
 endif
 
+" How to create a Makefile automatically
+function _AUTO_COMPILE_()
+    " compile main.c -> _main.mn
+    !cd $PWD
+    !autoscan
+    !cp configure.scan configure.ac
+    !sed -i '/AC_INIT/ a AM_INIT_AUTOMAKE' configure.ac
+    !sed -i '/AC_OUTPUT/ i AC_CONFIG_FILES([Makefile])' configure.ac
+    !aclocal
+    !autoheader
+    !autoconf
+    !touch Makefile.am
+    !echo "bin_PROGRAMS=_main.mn" > Makefile.am
+    !echo "_main_mn_SOURCES=main.c" >> Makefile.am
+    !touch NEWS README AUTHORS ChangeLog
+    !automake -a
+    !./configure
+endfunction
+
 function _COMPILE_()
     " if you want to get all the variable :see options.txt
     execute '%s/^\s\+$//ge'
@@ -569,18 +589,20 @@ function _COMPILE_()
             let MipsCompileOptions="-S "
             execute "!" . MipsGcc . MipsCompileOptions . "-o %:h/%:t:r.s %:p"
         else
-            let GccCompileOptions=" -Wfloat-equal -Wshadow -Wstrict-prototypes "
-            execute "!gcc -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
-                        \ GccCompileOptions . " -o %:h/_%:t:r.mn %:p -lm "
+            let GccCompileOptions="-Wfloat-equal -Wshadow -Wstrict-prototypes"
+            execute "!gcc -Wall -Wextra -lpthread -Wfatal-errors -g3 -pipe
+                        \ -Dtermanary=0 " . GccCompileOptions .
+                        \ " -o %:h/_%:t:r.mn %:p -lm "
         endif
     elseif &filetype == 'cpp'
         " octave-C++ :
         " sudo apt install liboctave-dev
         " mkoctfile helloworld.cpp
         " octave-cli --eval 'helloworld(*)'
-        let _gpp_compile_options=" -Wfloat-equal -Wshadow "
-        execute "!g++ -Wall -Wextra -Wfatal-errors -g3 -pipe -Dtermanary=0 " .
-                    \ _gpp_compile_options . " -o %:h/_%:t:r.mn %:p "
+        let _gpp_compile_options="-Wfloat-equal -Wshadow"
+        execute "!g++ -Wall -Wextra -lpthread -Wfatal-errors -g3 -pipe
+                    \ -Dtermanary=0 " . _gpp_compile_options .
+                    \ " -o %:h/_%:t:r.mn %:p "
     elseif &filetype == 'python'
         if expand("%:h") == "/home/me/script" || expand("%:h") ==
                     \ "/tmp"
@@ -623,7 +645,7 @@ function _COMPILE_()
         " help : bufwinnr("str") windo
         " %:t:r:r : main.v main_tb.v/main.tb.v/main.vt
         if exists("g:Compile_Verilog_Only") && g:Compile_Verilog_Only
-            !iverilog -o %:h/_%:t:r.mn %:p
+            !iverilog -o %:h/_%:t:r.vvp %:p
         else
             let _tb_index=strridx(expand("%:t:r"),"_tb")
             if _tb_index == -1
@@ -633,7 +655,7 @@ function _COMPILE_()
                     \ getbufinfo(bufnr(expand("%:t:r")."_tb"))[0].changed == 0
                     \ ? "" : _other_source_file_nr . " windo write | wincmd p"
                 " -Wall
-                execute "!iverilog -o %:h/_%:t:r.mn %:p" .
+                execute "!iverilog -o %:h/_%:t:r.vvp %:p" .
                     \ (findfile(expand("%:t:r")."_tb.v",expand("%:h")) == ""
                     \ ? "" : " %:h/%:t:r_tb.v")
             else
@@ -643,10 +665,14 @@ function _COMPILE_()
                 execute _other_source_file_nr == -1 ||
                     \ getbufinfo(bufnr(_new_filename . ".v"))[0].changed == 0 ?
                     \ "" : _other_source_file_nr . " windo write | wincmd p"
-                execute "!iverilog -o %:h/_" . _new_filename . ".mn %:h/" .
+                execute "!iverilog -o %:h/_" . _new_filename . ".vvp %:h/" .
                             \ _new_filename . ".v %:p"
             endif
         endif
+    elseif &filetype == 'dot'
+        !dot -Tpng %:p -o %:h/%:t:r.png
+    elseif &filetype == 'make'
+        make
     elseif &filetype == 'perl'
         execute "!" . (executable(expand("%:p"))?"":"perl -W ") . "%:p"
     elseif &filetype == 'haskell'
@@ -656,10 +682,13 @@ function _COMPILE_()
         " sudo apt install gcc-multilib g++-multilib
         " intel : sudo apt install nasm
         " AT&T : sudo apt install as
-        if !g:MipsCompile
-            !nasm -f elf %:p -o %:h/_%:t:r.o
-            !gcc -m32 %:h/_%:t:r.o -o %:h/_%:t:r.mn
-        endif
+        !nasm %:p -o %:h/%:t:r.bin
+        !dd if=%:t:r.bin of=fd.img bs=512 count=1 conv=notrunc
+        !bochs
+        " if !g:MipsCompile
+        "     !nasm -f elf %:p -o %:h/_%:t:r.o
+        "     !gcc -m32 %:h/_%:t:r.o -o %:h/_%:t:r.mn
+        " endif
     else
         if executable(expand("%:p"))
             ! %:p
@@ -741,14 +770,16 @@ function _TEST_INPUT_TO_RUN_()
         let _tb_index=strridx(expand("%:t:r"),"_tb")
         if _tb_index == -1
             "verilog source file
-            execute "!%:h/_%:t:r.mn" . (exists("g:less_use") && g:less_use ?
+            execute "!vvp -n %:h/_%:t:r.vvp" . (exists("g:less_use") && g:less_use ?
                         \" | tee /tmp/out":"")
         else
             "verilog testbench file
             let _new_filename=strcharpart(expand("%:t:r"),0,_tb_index)
-            execute "! %:h/_" . _new_filename . ".mn" .(exists("g:less_use")
+            execute "!vvp -n %:h/_" . _new_filename . ".vvp" .(exists("g:less_use")
                         \ && g:less_use ? " | tee /tmp/out":"")
         endif
+    elseif &filetype == 'dot'
+        !fim %:h/%:t:r.png
     endif
 endfunction
 
@@ -775,14 +806,10 @@ function _DEBUG_()
         " call TermDebugSendCommand('where')
         packadd termdebug
         Termdebug %:h/_%:t:r.mn
-        Gdb
-        wincmd J
+        " Gdb Program Source
         Source
+        " 10 wincmd +
         wincmd H
-        Program
-        10 wincmd +
-        Source
-
         noremap <buffer> b :Break <CR>
         noremap <buffer> d :Clear <CR>
         noremap <buffer> r :Run <input.tst <CR>
@@ -791,7 +818,6 @@ function _DEBUG_()
         noremap <buffer> c :Continue <CR>
         noremap <buffer> q :call TermDebugSendCommand('quit') <CR>
 \:mapclear <buffer> <CR>
-
     elseif &filetype == 'python'
         !pudb3 %:p
     elseif &filetype == 'java'
@@ -818,22 +844,21 @@ endfunction
 function _FILETYPE_SET_REGISTER_()
     " this function is about certain filetype and for local options ,
     " syntax highlighting , <buffer> map and b:variables .
-
     " syntax match SPACE "^\s\+$"
     " ctermbg,ctermfg is different
     " highlight SPACE gui=NONE cterm=bold  ctermbg=green
-
     if @% != "" && strridx(expand("%:p:h"),"/media/Windows") != -1
                 \ && &fileformat == "unix" && &filetype == "verilog"
         setlocal fileformat=dos
         echomsg "DOS FILE!"
     endif
-
-    mapclear <buffer>
+    if &filetype != 'c' && &filetype != 'cpp'
+        " for Termdebug package
+        mapclear <buffer>
+    endif
     " vmapclear <buffer>
     " smapclear <buffer>
     " imapclear <buffer>
-
     if     &filetype == 'c' || &filetype == 'cpp'
         inoremap <buffer> { {<ESC>:call PAIRS()<CR>
         if &filetype == 'c'
@@ -864,6 +889,10 @@ function _FILETYPE_SET_REGISTER_()
         " help cterm-colors
         highlight VIM_MY_OWN_DEFINE_SPACE_EOL ctermbg=red
         match VIM_MY_OWN_DEFINE_SPACE_EOL /\s\+$/
+    elseif &filetype == 'make'
+        set noexpandtab
+        setlocal list
+        setlocal listchars=tab:>-
     elseif &filetype == 'verilog'
         " see indent/verilog.vim : for write a indent file,
         " you need to know API in vim and regular expression
@@ -951,7 +980,6 @@ function PAIRS()
     endif
 endfunction
 
-let s:_function_exists=0
 " autocmd--------------------------------------------------------------
 
 augroup _MY_OWN_DEFINE_
@@ -1055,26 +1083,4 @@ let g:NERDCompactSexyComs = 0
 " set statusline +=%2*/%L%*               "total lines
 " set statusline +=%1*%4c\ %*             "column number
 " set statusline +=%2*0x%04B\ %*          "character under cursor
-
-" Concat the active statusline
-" ------------------------------------------=--------------------=------------
-"               Gibberish                   | What da heck?      | Example
-" ------------------------------------------+--------------------+------------
-" set statusline=                            "| Clear status line  |
-" set statusline+=\ %7*%{&paste?'=':''}%*    "| Paste symbol       | =
-" set statusline+=%4*%{&ro?'':'#'}%*         "| Modifiable symbol  | #
-" set statusline+=%6*%{TlMode()}             "| Readonly symbol    | 
-" set statusline+=%*%n                       "| Buffer number      | 3
-" set statusline+=%6*%{TlModified()}%0*      "| Write symbol       | +
-" set statusline+=\ %1*%{TlSuperName()}%*    "| Relative supername | cor/app.js
-" set statusline+=\ %<                       "| Truncate here      |
-" set statusline+=%(\ %{TlBranchName()}\ %) "| Git branch name    |  master
-" set statusline+=%4*%(%{TlWhitespace()}\ %) "| Space and indent   | trail34
-" set statusline+=%(%{TlSyntax()}\ %)%*      "| syntax error/warn  | E:1W:1
-" set statusline+=%=                         "| Align to right     |
-" set statusline+=%{TlFormat()}\ %4*%*      "| File format        | unix 
-" set statusline+=%(\ %{&fenc}\ %)           "| File encoding      | utf-8
-" set statusline+=%4*%*%(\ %{&ft}\ %)       "| File type          |  python
-" set statusline+=%3*%2*\ %l/%2c%4p%%\ %*   "| Line and column    | 69:77/ 90%
-" ------------------------------------------'--------------------'---------
 
