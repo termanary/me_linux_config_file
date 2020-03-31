@@ -937,6 +937,8 @@ function _FILETYPE_SET_REGISTER_()
         syntax match AsmNumber "\<[0-9a-fA-f]\{2}\> "
         highlight AsmAddress gui=NONE cterm=bold ctermfg=darkyellow
         highlight AsmNumber gui=NONE cterm=bold ctermfg=darkyellow
+    elseif &filetype == 'html'
+        " inoremap <buffer> < <><left>
     endif
 endfunction
 
@@ -1067,7 +1069,8 @@ augroup _MY_OWN_DEFINE_
     " updatetime->CursorHoldI
     autocmd CursorHoldI * stopinsert
     " 'normal' consider keymap but 'normal!' not
-    autocmd BufReadPost * if line("'\"") <= line("$") | exe "normal! g`\"" | endif
+    autocmd BufReadPost * if line("'\"") <= line("$") 
+                \| execute "normal! g`\"" | endif
     autocmd BufReadPost *.c,*.cpp,*.py,*m,*sh,*.vim,*.v
                 \ if ! &readonly | execute '%s/^\s\+$//ge' | endif
     autocmd BufEnter * call _FILETYPE_SET_REGISTER_()
@@ -1091,7 +1094,7 @@ endif
 " help 40.2
 " -nargs = x : just supply a number of x arguments
 " help <f-args> <args>
-command -complete=file -nargs=* LS !ls --color=auto
+" command -complete=file -nargs=* LS !ls --color=auto
 command -complete=file -nargs=* Vlsplit :call _VsplitFunction_("l",<f-args>)
 command -complete=file -nargs=* Vrsplit :call _VsplitFunction_("r",<f-args>)
 function _VsplitFunction_(direction, ... )
