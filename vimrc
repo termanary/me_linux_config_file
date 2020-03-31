@@ -59,6 +59,7 @@ if filereadable("/etc/vim/vimrc.local")
     source /etc/vim/vimrc.local
 endif
 
+" COMPILE VIM:
 " How to compile vim with terminal and python3 feature :
 " you could choose to install vim-nox or vim-gtk,
 " it support all scripting and features.
@@ -75,7 +76,7 @@ endif
 " -x-includes=/usr/include/X11
 " -x-libraries=/usr/include/X11
 
-" source file----------------------------------------------------------
+" SOURCE FILE:--------------------------------------------------------
 
 " ~ could not be recognize
 " $HOME must out of ""
@@ -96,16 +97,16 @@ else
     echomsg "fail read ftplugin.vim"
 endif
 
-" set ---------------------------------------------------------------------
+" SETTING: -----------------------------------------------------------
 
 set nocompatible
 
-" number
+" NUMBER:
 set number
 set relativenumber
 set numberwidth=3
 
-" tab
+" TAB:
 set tabstop=4
 set expandtab
 set softtabstop=4
@@ -115,7 +116,7 @@ set nojoinspaces
 " set list
 " set listchars=tab:>-
 
-" indent
+" INDENT:
 set autoindent
 set smartindent
 " see $VIMRUNTIME/scripts.vim $VIMRUNTIME/filetype.vim
@@ -128,29 +129,32 @@ let g:pyindent_open_paren = '&sw'
 let g:pyindent_continue = '&sw * 2'
 " let g:pyindent_nested_paren = '&sw * 2'
 
-" search
+" SEARCH:
 set ignorecase
 set incsearch
 set smartcase
 set hlsearch
 
-" map waiting
+" MAP WAITING:
 set notimeout
 set ttimeout
 set timeoutlen=3000
 set ttimeoutlen=0
 
-" statusline
+" STATUSLINE:
 set shortmess+=filnrxI
 set shortmess-=mwasWAqFS
+set showmode
 set showcmd
 set ruler
 " set rulerformat
 set showtabline=1
 set laststatus=1
-" set statusline+=%{strftime(\"%T\")}
+" set tabline=
+set tabline=%!_TAB_LINE_()
+" set statusline=
 
-" wild menu
+" WILD MENU:
 " help wildcard
 set wildmenu
 " set wildmode=full
@@ -158,7 +162,7 @@ set wildmenu
 set wildignore+=*.o,*.hi,*.class
 " set suffixes&
 
-" encode
+" ENCODE:
 set encoding=utf-8
 " set fileencoding
 " set termencoding
@@ -166,14 +170,14 @@ set encoding=utf-8
 set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,default,latin1
 " set fileformats=unix,dos
 
-" tab-page
-set tabpagemax=4
+" TAB PAGE:
+" set tabpagemax=4
 
-" modeline
+" MODELINE:
 " set modeline
 set modelines=3
 
-" split
+" SPLIT:
 " set nosplitbelow
 " set nosplitright
 " set noconfirm
@@ -182,13 +186,14 @@ set modelines=3
 " set noexrc
 " set nosecure
 
-" python
+" PYTHON:
 " set pyxversion&
 " set pythondll&
 " set pythonhome&
 " set pythonthreedll&
 " set pythonthreehome&
 
+" OTHER:
 " set runtimepath&
 set history=200
 set scrolloff=5
@@ -212,6 +217,7 @@ set nrformats=bin,octal,hex
 
 " set spell
 
+" HIGHLIGHT:
 " see highlight for exmaple
 " the order of next 3 line could not be change
 " colorscheme for ubuntu-18.04:zellner
@@ -220,8 +226,8 @@ if $USER == 'me'
 elseif $USER == 'syx'
     colorscheme MyColo
 endif
-highlight cursorline cterm=NONE ctermbg=blue
-highlight cursorcolumn cterm=NONE ctermbg=blue
+highlight CursorLine cterm=NONE ctermbg=blue
+highlight CursorColumn cterm=NONE ctermbg=blue
 
 " set autochdir
 " set shellcmdflag=-ic
@@ -231,7 +237,7 @@ highlight cursorcolumn cterm=NONE ctermbg=blue
 " set cursorline
 " set lines=33 columns=95
 
-" cab-------------------------------------------------------------------
+" CAB:----------------------------------------------------------------
 
 " help vert windo bufdo
 cab h vertical leftabove help
@@ -241,7 +247,7 @@ cab t vertical rightbelow terminal ++rows=48 ++cols=70
 " cab mat vertical rightbelow terminal ++rows=48 ++cols=70 matlab
 "             \ -nodesktop -nosplash
 
-" cnoremap-------------------------------------------------------------
+" CNOREMAP:-----------------------------------------------------------
 
 cnoremap <C-f> <Right>
 cnoremap <C-b> <Left>
@@ -249,7 +255,7 @@ cnoremap <C-a> <Home>
 cnoremap <C-e> <End>
 cnoremap <C-d> <Del>
 
-" inoremap-------------------------------------------------------------
+" INOREMAP:-----------------------------------------------------------
 
 inoremap ' ''<left>
 inoremap " ""<left>
@@ -262,7 +268,7 @@ inoremap <C-f> <right>
 inoremap <C-e> <end>
 inoremap <delete> <Nop>
 
-" noremap--------------------------------------------------------------
+" NOREMAP:------------------------------------------------------------
 
 noremap <F9> :call _COMPILE_() <CR>
 noremap <F10> :call _TEST_INPUT_TO_RUN_() <CR>
@@ -276,6 +282,7 @@ noremap <expr> , getcharsearch().forward ? ',' : ';'
 noremap <expr> n v:searchforward ? 'n' : 'N'
 noremap <expr> N v:searchforward ? 'N' : 'n'
 
+" help index
 noremap 0 ^
 noremap ^ 0
 noremap [ {
@@ -291,17 +298,27 @@ noremap <Del> <Nop>
 noremap <insert> <Nop>
 
 " help key-codes
+" if leader couldnt find a new key ,consider 't'
 let mapleader = "\<Space>"
 noremap <Leader>4 $
 noremap <Leader>o O
 noremap <Leader>p P
 noremap <Leader>g G
 noremap <Leader>f F
-noremap <Leader>t T
+" noremap <Leader>t T
+
 noremap <Leader>w <C-w>
 noremap <Leader>h <C-w>h
 noremap <Leader>l <C-w>l
 noremap <Leader>q <C-w>q
+
+" help tabpage
+" noremap <Leader>tn :tabnew <CR>
+noremap gt :execute tabpagenr('$')==1?"tabnew":"tabnext"<CR>
+" noremap gt :execute len(gettabinfo())==1?"tabnew":"tabnext"<CR>
+" 'tabmove +N' != 'tabmove N'
+" noremap <Leader>tn :tabmove +1 <CR>
+" noremap <Leader>tn :tabmove -1 <CR>
 
 noremap <leader>i :setlocal cursorline! <CR>
 noremap <Leader>/ :nohlsearch <CR>
@@ -309,22 +326,22 @@ noremap <Leader>u g~aw
 noremap <Leader>e :setlocal cursorline! cursorcolumn!<CR>:sleep 400m
             \<CR>:setlocal cursorline! cursorcolumn!<CR>
 
-" buffer
+" BUFFER:
 " buffer-list argument-list
 noremap <Leader>bn :bn <CR>
 noremap <Leader>bp :bN <CR>
 
-" quickfix
+" QUICKFIX:
 " noremap <Leader>qo :copen <CR>
 " noremap <Leader>qc :cclose <CR>
 
-" file edit----------------------------------------------------------
+" FILE EDIT:----------------------------------------------------------
 
 " How to use one line for 'if' in cmdline : au , map : |
 " autocmd CursorHold * if 1==1 | echomsg '0' | endif
 " noremap <leader>a :if 1 == 1 \| echom '0' \| endif <CR>
 
-" OJ
+" OJ:
 noremap <Leader>vm :call _OPENFILE_("","l") <CR>
 noremap <Leader>vi :call _OPENFILE_("input.tst","r") <CR>
 noremap <Leader>vg :call _OPENFILE_("~/.gdbinit","r") <CR>
@@ -334,24 +351,25 @@ noremap <Leader>vg :call _OPENFILE_("~/.gdbinit","r") <CR>
 " noremap <Leader>vk :!cp %:p ~/poj/all/
 " noremap <Leader>va :!cp %:p /home/syx/.main.c <CR>
 
-" script
+" SCRIPT:
 noremap <Leader>vs :call _OPENFILE_("~/script/shell.sh","l") <CR>
 noremap <Leader>vp :call _OPENFILE_("~/script/python3.py","l") <CR>
+noremap <Leader>vd :call _OPENFILE_("~/script/Tmp/dot/graph.dot","l") <CR>
 " noremap <Leader>vy :call _OPENFILE_("~/.pythonstartup","l") <CR>
-noremap <Leader>vb :call SHELL_ALIASES() <CR>
+noremap <Leader>vb :call _SHELL_ALIASES_() <CR>
 " noremap <Leader>vr :call _OPENFILE_("~/.psqlrc","l") <CR>:set filetype=sql <CR>
 " noremap <Leader>vq :call _OPENFILE_("~/script/pgSQL.sql","l") <CR>
 
-" vimrc
+" VIMRC:
 noremap <Leader>ve :call _OPENFILE_("~/.vim/vimrc","l") <CR>
 noremap <Leader>vt :call _OPENFILE_("~/script/vimscript.vim","l") <CR>
 
-" octave
+" OCTAVE:
 " noremap <Leader>vo :call _OPENFILE_("~/script/octave.m ","l") <CR>
 " noremap <Leader>vn :call _OPENFILE_("~/script/input.tst","l") <CR>
 " noremap <Leader>vc :call _OPENFILE_("~/.octaverc","l") <CR>
 
-" tnoremap----------------------------------------------------------
+" TNOREMAP:-----------------------------------------------------------
 
 if !has('terminal')
     echomsg "Don't support terminal!"
@@ -361,7 +379,7 @@ else
     tnoremap <ESC> <C-w>p
 endif
 
-" function----------------------------------------------------------
+" FUNCTION:-----------------------------------------------------------
 
 " the difference between "function x" and "function! x"
 " when the vim-file is sourced ,"function x" will become
@@ -385,7 +403,6 @@ function _PYTHON_FUNCTION_()
 " help if_pyth.txt
 " py3eval()
 python3 << ENDPYTHON3
-
 import os
 import vim
 
@@ -462,24 +479,20 @@ else :
         pass
     else :
         print("File Not Found!")
-
 ENDPYTHON3
 endfunction
 
-" Global variables : -------------------------------------------------------
+" GLOBAL VARIABLES: --------------------------------------------------
 
 " if a global variable do not define as this ,
 " it will not be aoto-complete in cmd-line
 " help List
-let g:JavaNewVersion = 0
 let g:gtkwave_ban = 0
 let g:MipsCompile = 0
-noremap <F8> :call GlobalVariableReverse() <CR>
-function GlobalVariableReverse()
+noremap <F8> :call _GlobalVariableReverse_() <CR>
+function _GlobalVariableReverse_()
     if &filetype == 'c' || &filetype == 'cpp'
         let g:MipsCompile = !g:MipsCompile
-    elseif &filetype == 'java'
-        let g:JavaNewVersion = !g:JavaNewVersion
     elseif &filetype == 'verilog'
         let g:gtkwave_ban = !g:gtkwave_ban
     endif
@@ -487,7 +500,7 @@ endfunction
 
 " ----------------------------------------------------------------------
 
-function SHELL_ALIASES()
+function _SHELL_ALIASES_()
     if $USER == "me"
         call _OPENFILE_("~/.zsh_aliases","l")
     elseif $USER == "syx"
@@ -528,6 +541,7 @@ if !exists("g:_the_input_file_")
     let g:_the_input_file_="input.tst"
 endif
 
+" MAKEFILE:
 " How to create a Makefile automatically
 function _AUTO_COMPILE_()
     " compile main.c -> _main.mn
@@ -637,9 +651,7 @@ function _COMPILE_()
         source %:p
     elseif &filetype == 'java'
         " gnu-gcc:gcj/gij :was removed after gcc-7,was available before gcc-6
-        " !javac -g -d %:h/class/ %:p
-        execute "!" . (g:JavaNewVersion?"javac-11":"javac") . " -classpath %:h
-                    \ -g -d %:h/class %:p"
+        execute "!javac -d %:h/.class -g %:p"
     elseif &filetype == 'verilog'
         " sudo apt install / iverilog gtkwave / verilator
         " help : bufwinnr("str") windo
@@ -669,10 +681,30 @@ function _COMPILE_()
                             \ _new_filename . ".v %:p"
             endif
         endif
-    elseif &filetype == 'dot'
-        !dot -Tpng %:p -o %:h/%:t:r.png
     elseif &filetype == 'make'
         make
+    elseif &filetype == 'dot'
+        !dot -Tpng %:p -o %:h/%:t:r.png
+    elseif &filetype == 'html'
+        " ASYNCHRONOUS RUNNING:
+        " help channel
+        " help job-options
+        " let data = job_start("cmd",{
+        "             \"out_cb":"FUN_OUT_CB",
+        "             \"err_cb":"FUN_ERR_CB",
+        "             \"close_cb":"FUN_CLOSE_CB",
+        "             \"exit_cb":"FUN_EXIT_CB"
+        "             \})
+        " function! FUN_OUT_CB(channel,msg)
+        " endfunction
+        " function! FUN_ERR_CB(channel,msg)
+        " endfunction
+        " function! FUN_CLOSE_CB(channel)
+        " endfunction
+        " function! FUN_EXIT_CB(channel,msg)
+        " endfunction
+        call job_start("firefox --new-tab " . expand("%:p"))
+        " !firefox %:p
     elseif &filetype == 'perl'
         execute "!" . (executable(expand("%:p"))?"":"perl -W ") . "%:p"
     elseif &filetype == 'haskell'
@@ -740,11 +772,9 @@ function _TEST_INPUT_TO_RUN_()
         endif
     elseif &filetype == 'java'
         if findfile(g:_the_input_file_,expand("%:h")) != ""
-            execute "!" . (g:JavaNewVersion?"java-11":"java") .
-                    \ " -classpath %:h/class %:t:r < %:h/" . g:_the_input_file_
+            execute "!java -classpath %:h/.class %:t:r < %:h/" . g:_the_input_file_
         elseif findfile(g:_the_input_file_,expand("%:h")) == ""
-            execute "!" . (g:JavaNewVersion?"java-11":"java") .
-                        \ " -classpath %:h/class %:t:r "
+            execute "!java -classpath %:h/.class %:t:r "
                         " \ " -classpath %:h %:t:r 2>&1"
         else
             echomsg 'ERROR!'
@@ -844,8 +874,10 @@ endfunction
 function _FILETYPE_SET_REGISTER_()
     " this function is about certain filetype and for local options ,
     " syntax highlighting , <buffer> map and b:variables .
+    " match only used in current window
     " syntax match SPACE "^\s\+$"
     " ctermbg,ctermfg is different
+    " RGB value #000000 only could be used to gui, not cterm
     " highlight SPACE gui=NONE cterm=bold  ctermbg=green
     if @% != "" && strridx(expand("%:p:h"),"/media/Windows") != -1
                 \ && &fileformat == "unix" && &filetype == "verilog"
@@ -875,20 +907,20 @@ function _FILETYPE_SET_REGISTER_()
     elseif &filetype == 'python' || &filetype == 'sh' || &filetype == 'gdb'
                 \ || &filetype == 'zsh' || &filetype == 'conf'
         highlight PYTHON_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
-        match PYTHON_MY_OWN_DEFINE_NOTE /^# #.*$/
+        syntax match PYTHON_MY_OWN_DEFINE_NOTE /^# #.*$/
     elseif &filetype == 'matlab'
         " highlight MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL ctermbg=red
         " match MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL /;\+$/
         highlight MATLAB_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
-        match MATLAB_MY_OWN_DEFINE_NOTE /^% %.*$/
+        syntax match MATLAB_MY_OWN_DEFINE_NOTE /^% %.*$/
         let @m=expand("%:t:r")
-        noremap <buffer> <Leader>m :w <CR><C-w>l<C-W>"m<CR><C-w>p
-        noremap <buffer> <Leader>; :s/$/;/<CR>:nohlsearch<CR>g;
-        noremap <buffer> <Leader>, :s/;$//<CR>:nohlsearch<CR>g;
+        " noremap <buffer> <Leader>m :w <CR><C-w>l<C-W>"m<CR><C-w>p
+        " noremap <buffer> <Leader>; :s/$/;/<CR>:nohlsearch<CR>g;
+        " noremap <buffer> <Leader>, :s/;$//<CR>:nohlsearch<CR>g;
     elseif &filetype == 'vim'
         " help cterm-colors
         highlight VIM_MY_OWN_DEFINE_SPACE_EOL ctermbg=red
-        match VIM_MY_OWN_DEFINE_SPACE_EOL /\s\+$/
+        syntax match VIM_MY_OWN_DEFINE_SPACE_EOL /\s\+$/
     elseif &filetype == 'make'
         set noexpandtab
         setlocal list
@@ -898,17 +930,17 @@ function _FILETYPE_SET_REGISTER_()
         " you need to know API in vim and regular expression
         let b:verilog_indent_modules = 1
         inoremap <buffer> ' '
-        noremap <buffer> <leader>s :%s/[^.]\<\>/&_tb/gc
-\<left><left><left><left><left><left><left><left><left><left>
+        " noremap <buffer> <leader>s :%s/[^.]\<\>/&_tb/gc
+" \<left><left><left><left><left><left><left><left><left><left>
     elseif &filetype == 'asm'
         syntax match AsmAddress "^\s\+\<[0-9a-fA-F]*\>:"me=e-1
         syntax match AsmNumber "\<[0-9a-fA-f]\{2}\> "
-        highlight AsmAddress gui=NONE cterm=bold  ctermfg=darkyellow
-        highlight AsmNumber gui=NONE cterm=bold  ctermfg=darkyellow
+        highlight AsmAddress gui=NONE cterm=bold ctermfg=darkyellow
+        highlight AsmNumber gui=NONE cterm=bold ctermfg=darkyellow
     endif
 endfunction
 
-" '{' indent function
+" INDENT FUNCTION:'{' 
 function BSD_STYLE(add)
     call append(".",repeat(" ",indent(".")) . "}" . (a:add?";":"") )
     call append(".",repeat(" ",indent(".") + &shiftwidth))
@@ -980,7 +1012,52 @@ function PAIRS()
     endif
 endfunction
 
-" autocmd--------------------------------------------------------------
+" TIMER:
+" To display time in tabline realtime :
+" let timer=timer_start(1000,"_TIMER_CB_",{"repeat":-1})
+call timer_start(1000,"_TIMER_CB_",{"repeat":-1})
+function _TIMER_CB_(timer)
+    redrawtabline
+endfunction
+" highlight tab<tab>
+" only gui could use RGB value #000000
+highlight TabLine cterm=bold ctermfg=darkcyan ctermbg=black
+highlight TabLineSel cterm=bold ctermfg=black ctermbg=darkyellow
+highlight TabLineFill cterm=bold ctermfg=yellow ctermbg=grey
+function _TAB_LINE_()
+    let tabLineStr=""
+    " NOTE: range(x) = [0,...,x-1] ; range(a,b) = [a,...,b]
+    " winnr(),tabpagewinnr() is similar to tabpagenr()
+    for i in range(1,tabpagenr("$"))
+        let tabLineStr .= i==tabpagenr()? "%#TabLineSel#" : "%#TabLine#"
+        "
+        let buflist = tabpagebuflist(i)
+        let winnr = tabpagewinnr(i)
+        let fullname = bufname(buflist[winnr-1])
+        let index = strridx(fullname,'/')
+        let name = fullname[index+1:len(fullname)] . ' '
+        let name = len(name)==1? "[No Name]" : name
+        let fnalen = 40
+        "
+        " you could get any information you want about buffer by "getbufinfo()"
+        let moded = 0
+        for j in buflist
+            let bufinfo = getbufinfo(j)[0]
+            if bufinfo["changed"]
+                let moded = 1
+                break
+            endif
+        endfor
+        let name = (moded?"[+] ":"    ") . name
+        "
+        let name .= len(name)>=fnalen? '' : repeat(' ',fnalen-len(name))
+        let tabLineStr .= name
+    endfor
+    let tabLineStr .= "%#TabLineFill#%=%{strftime(\"%T\")}"
+    return tabLineStr
+endfunction
+
+" AUTOCMD:------------------------------------------------------------
 
 augroup _MY_OWN_DEFINE_
     " autocmd!  -->clear the autocmd had been defined before
@@ -989,6 +1066,7 @@ augroup _MY_OWN_DEFINE_
     " autocmd OptionSet insertmode  call _MY_OWN_KEY_MAP_INSERTMODE_()
     " updatetime->CursorHoldI
     autocmd CursorHoldI * stopinsert
+    " 'normal' consider keymap but 'normal!' not
     autocmd BufReadPost * if line("'\"") <= line("$") | exe "normal! g`\"" | endif
     autocmd BufReadPost *.c,*.cpp,*.py,*m,*sh,*.vim,*.v
                 \ if ! &readonly | execute '%s/^\s\+$//ge' | endif
@@ -998,14 +1076,14 @@ augroup _MY_OWN_DEFINE_
     " autocmd CursorHold * redraw
 augroup end
 
-" command--------------------------------------------------------------
+" COMMAND:------------------------------------------------------------
 
 " help usr_41.txt
 if exists("s:_command_exists")
     delcommand Vlsplit
     delcommand Vrsplit
 
-    delfunction VsplitFunction
+    delfunction _VsplitFunction_
 endif
 
 " help function-argument
@@ -1014,9 +1092,9 @@ endif
 " -nargs = x : just supply a number of x arguments
 " help <f-args> <args>
 command -complete=file -nargs=* LS !ls --color=auto
-command -complete=file -nargs=* Vlsplit :call VsplitFunction("l",<f-args>)
-command -complete=file -nargs=* Vrsplit :call VsplitFunction("r",<f-args>)
-function VsplitFunction(direction, ... )
+command -complete=file -nargs=* Vlsplit :call _VsplitFunction_("l",<f-args>)
+command -complete=file -nargs=* Vrsplit :call _VsplitFunction_("r",<f-args>)
+function _VsplitFunction_(direction, ... )
     if a:direction != "l" && a:direction != "r"
         echomsg "Direction have no effect!"
         return
@@ -1041,10 +1119,24 @@ endfunction
 
 let s:_command_exists=0
 
-" Plugin---------------------------------------------------------------
+" PLUGIN:-------------------------------------------------------------
+
+" Principle of Comment : help call
+" :[range]call function() could accept [range] as same as map [range]:
+" it will call func every line, but 
+" function funName() range will only affect one line
+" function _COMMENT_() [range]
+"     call setline(".","// " . getline("."))
+" endfunction
+" noremap <Leader>d :call _COMMENT_() <CR>
 
 " Plugin : NERDCommment
 noremap <Leader>d :call NERDComment("n","Toggle") <CR>
+" it could use a beautiful(or sexy) comment style in C like:
+" /* 
+"  * text
+"  */
+" noremap <buffer> <Leader>d :call NERDComment("n","Sexy") <CR>
 let g:NERDDefaultAlign = 'left'
 let g:NERDSpaceDelims = 1
 let g:NERDAltDelims_c = 1
@@ -1058,9 +1150,9 @@ let g:NERDCompactSexyComs = 0
 " Affected Char : \' \" ( [ {
 " Needed Function :(<insert>) (<BS>) (<SPACE>) (<indent>)
 
-" Comment--------------------------------------------------------------
+" COMMENT:------------------------------------------------------------
 
-" color:
+" COLOR:
 " Black White
 " DarkRed Red
 " DarkYellow Yellow
@@ -1069,18 +1161,4 @@ let g:NERDCompactSexyComs = 0
 " DarkCyan Cyan
 " DarkMagenta Magenta
 " DarkGrey Grey
-
-" Status line
-" https://groups.google.com/forum/#!topic/vim_use/wPnsi-40FhE
-" set laststatus=2
-" set statusline=
-" set statusline +=%1*\ %n\ %*            "buffer number
-" set statusline +=%5*%{&ff}%*            "file format
-" set statusline +=%3*%y%*                "file type
-" set statusline +=%4*\ %<%F%*            "full path
-" set statusline +=%2*%m%*                "modified flag
-" set statusline +=%1*%=%5l%*             "current line
-" set statusline +=%2*/%L%*               "total lines
-" set statusline +=%1*%4c\ %*             "column number
-" set statusline +=%2*0x%04B\ %*          "character under cursor
 
