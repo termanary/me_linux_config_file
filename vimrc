@@ -365,7 +365,7 @@ noremap <Leader>ve :call _OPENFILE_("~/.vim/vimrc","l") <CR>
 noremap <Leader>vt :call _OPENFILE_("~/script/vimscript.vim","l") <CR>
 
 " OCTAVE:
-" noremap <Leader>vo :call _OPENFILE_("~/script/octave.m ","l") <CR>
+noremap <Leader>vo :call _OPENFILE_("~/script/octave.m ","l") <CR>
 " noremap <Leader>vn :call _OPENFILE_("~/script/input.tst","l") <CR>
 " noremap <Leader>vc :call _OPENFILE_("~/.octaverc","l") <CR>
 
@@ -766,9 +766,7 @@ function _TEST_INPUT_TO_RUN_()
         elseif findfile(g:_the_input_file_,expand("%:h")) == ""
             " ! %:h/_%:t:r.mn 2>&1
             ! %:h/_%:t:r.mn
-        else
             " echoerr
-            echomsg 'ERROR!'
         endif
     elseif &filetype == 'java'
         if findfile(g:_the_input_file_,expand("%:h")) != ""
@@ -776,8 +774,6 @@ function _TEST_INPUT_TO_RUN_()
         elseif findfile(g:_the_input_file_,expand("%:h")) == ""
             execute "!java -classpath %:h/.class %:t:r "
                         " \ " -classpath %:h %:t:r 2>&1"
-        else
-            echomsg 'ERROR!'
         endif
     elseif &filetype == 'verilog'
         " if $TERM == 'linux' || $TERM == 'screen.linux'
@@ -847,7 +843,7 @@ function _DEBUG_()
         noremap <buffer> s :Step <CR>
         noremap <buffer> c :Continue <CR>
         noremap <buffer> q :call TermDebugSendCommand('quit') <CR>
-\:mapclear <buffer> <CR>
+                    \:mapclear <buffer> <CR>
     elseif &filetype == 'python'
         !pudb3 %:p
     elseif &filetype == 'java'
@@ -868,6 +864,14 @@ function _DEBUG_()
         endif
     elseif &filetype == 'perl'
         !perl -d %:p
+    endif
+endfunction
+
+" You could use 'K' to get help about octave by <cword> and 'keywordprg' :
+function _DOC_HELP_()
+    if &filetype == 'matlab'
+        " How <cword> use in :! or expand, it likes %:p
+        execute "!octave-cli --eval \"help <cword>\" "
     endif
 endfunction
 
@@ -906,9 +910,14 @@ function _FILETYPE_SET_REGISTER_()
         endif
     elseif &filetype == 'python' || &filetype == 'sh' || &filetype == 'gdb'
                 \ || &filetype == 'zsh' || &filetype == 'conf'
+        if &filetype == 'python'
+            " K: help
+            setlocal keywordprg=pydoc3
+        endif
         highlight PYTHON_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
         syntax match PYTHON_MY_OWN_DEFINE_NOTE /^# #.*$/
     elseif &filetype == 'matlab'
+        " setlocal keywordprg=:call _DOC_HELP_()
         " highlight MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL ctermbg=red
         " match MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL /;\+$/
         highlight MATLAB_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
@@ -921,6 +930,8 @@ function _FILETYPE_SET_REGISTER_()
         " help cterm-colors
         highlight VIM_MY_OWN_DEFINE_SPACE_EOL ctermbg=red
         syntax match VIM_MY_OWN_DEFINE_SPACE_EOL /\s\+$/
+        " if with ':' in the beginning, it will be accept as an Ex-cmd
+        setlocal keywordprg=:vertical\ leftabove\ help
     elseif &filetype == 'make'
         set noexpandtab
         setlocal list
