@@ -1036,21 +1036,23 @@ endfunction
 " only gui could use RGB value #000000
 highlight TabLine cterm=bold ctermfg=darkcyan ctermbg=black
 highlight TabLineSel cterm=bold ctermfg=black ctermbg=darkyellow
-highlight TabLineFill cterm=bold ctermfg=yellow ctermbg=grey
+highlight TabLineFill cterm=bold ctermfg=yellow ctermbg=black
+highlight TabLineMod cterm=bold ctermfg=magenta ctermbg=black
 function _TAB_LINE_()
     let tabLineStr=""
     " NOTE: range(x) = [0,...,x-1] ; range(a,b) = [a,...,b]
     " winnr(),tabpagewinnr() is similar to tabpagenr()
     for i in range(1,tabpagenr("$"))
-        let tabLineStr .= i==tabpagenr()? "%#TabLineSel#" : "%#TabLine#"
         "
         let buflist = tabpagebuflist(i)
         let winnr = tabpagewinnr(i)
         let fullname = bufname(buflist[winnr-1])
         let index = strridx(fullname,'/')
         let name = fullname[index+1:len(fullname)] . ' '
-        let name = len(name)==1? "[No Name]" : name
+        let name = len(name)==1? "[No Name] " : name
         let fnalen = 40
+        let name .= len(name)>=fnalen? '' : repeat(' ',fnalen-len(name))
+        let name = (i==tabpagenr()? "%#TabLineSel#" : "%#TabLine#") . name
         "
         " you could get any information you want about buffer by "getbufinfo()"
         let moded = 0
@@ -1061,9 +1063,7 @@ function _TAB_LINE_()
                 break
             endif
         endfor
-        let name = (moded?"[+] ":"    ") . name
-        "
-        let name .= len(name)>=fnalen? '' : repeat(' ',fnalen-len(name))
+        let name = "%#TabLineMod#" . (moded?"[+] ":"    ") . name
         let tabLineStr .= name
     endfor
     let tabLineStr .= "%#TabLineFill#%=%{strftime(\"%T\")}"
