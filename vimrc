@@ -312,19 +312,22 @@ noremap <Leader>h <C-w>h
 noremap <Leader>l <C-w>l
 noremap <Leader>q <C-w>q
 
-" help tabpage
-" noremap <Leader>tn :tabnew <CR>
-noremap gt :execute tabpagenr('$')==1?"tabnew":"tabnext"<CR>
-" noremap gt :execute len(gettabinfo())==1?"tabnew":"tabnext"<CR>
-" 'tabmove +N' != 'tabmove N'
-" noremap <Leader>tn :tabmove +1 <CR>
-" noremap <Leader>tn :tabmove -1 <CR>
-
 noremap <leader>i :setlocal cursorline! <CR>
 noremap <Leader>/ :nohlsearch <CR>
 noremap <Leader>u g~aw
 noremap <Leader>e :setlocal cursorline! cursorcolumn!<CR>:sleep 400m
             \<CR>:setlocal cursorline! cursorcolumn!<CR>
+
+" TAB: help tabpage
+" N: need <C-u> to clear
+" consider to use 'tabnew' or 'tab vsplit'
+" help v:count, EXAMPLE: noremap gx :<C-u>echo v:count<CR>
+" 'tabmove +N' != 'tabmove N' and 'tabnext +N' != 'tabnext N'
+" 'tabnext' != 'tabnext +1'->will cause Error
+noremap gx :<C-u>call _TAB_NEXT_() <CR>
+" noremap <Leader>tX :tabmove +1 <CR>
+" noremap <Leader>tx :tabmove -1 <CR>
+" noremap <Leader>tv :tab vsplit <CR>
 
 " BUFFER:
 " buffer-list argument-list
@@ -828,22 +831,38 @@ function _DEBUG_()
         " :Finish    = gdb "finish"
         " :Continue  = gdb "continue"
         " :Stop
+        " :Evaluate
         "
         " call TermDebugSendCommand('where')
+        "
+        tab vsplit
         packadd termdebug
         Termdebug %:h/_%:t:r.mn
         " Gdb Program Source
         Source
-        " 10 wincmd +
         wincmd H
-        noremap <buffer> b :Break <CR>
-        noremap <buffer> d :Clear <CR>
-        noremap <buffer> r :Run <input.tst <CR>
-        noremap <buffer> n :Over <CR>
-        noremap <buffer> s :Step <CR>
-        noremap <buffer> c :Continue <CR>
-        noremap <buffer> q :call TermDebugSendCommand('quit') <CR>
+        Program
+        " 'wincmd 15 -' is illegal:
+        15 wincmd -
+        tnoremap <buffer> <ESC> <C-w>:Source<CR>
+        Gdb
+        " call win_execute()
+        tnoremap <buffer> <ESC> <C-w>:Source<CR>
+        Source
+        "
+        " 'K'
+        noremap <buffer> <Leader>cb :Break <CR>
+        noremap <buffer> <Leader>cd :Clear <CR>
+        noremap <buffer> <Leader>cr :Run <CR>
+        " noremap <buffer> <Leader>cn :Over <CR>
+        noremap <buffer> <Leader>cc :Continue <CR>
+        noremap <buffer> <Leader>cs :Step <CR>
+        noremap <buffer> <Leader>cn :call TermDebugSendCommand('next') <CR>
+        noremap <buffer> <Leader>cq :call TermDebugSendCommand('quit') <CR>
                     \:mapclear <buffer> <CR>
+        " noremap <buffer> <Leader>cg :call TermDebugSendCommand(
+        "             \'startup_deubg') <CR>
+        noremap <buffer> <Leader>cp :call TermDebugSendCommand('display') <CR>
     elseif &filetype == 'python'
         !pudb3 %:p
     elseif &filetype == 'java'
@@ -953,7 +972,7 @@ function _FILETYPE_SET_REGISTER_()
     endif
 endfunction
 
-" INDENT FUNCTION:'{' 
+" INDENT FUNCTION:'{'
 function BSD_STYLE(add)
     call append(".",repeat(" ",indent(".")) . "}" . (a:add?";":"") )
     call append(".",repeat(" ",indent(".") + &shiftwidth))
@@ -1037,11 +1056,12 @@ endfunction
 highlight TabLine cterm=bold ctermfg=darkcyan ctermbg=black
 highlight TabLineSel cterm=bold ctermfg=black ctermbg=darkyellow
 highlight TabLineFill cterm=bold ctermfg=yellow ctermbg=black
-highlight TabLineMod cterm=bold ctermfg=magenta ctermbg=black
+highlight TabLineInfo cterm=bold ctermfg=magenta ctermbg=black
 function _TAB_LINE_()
     let tabLineStr=""
     " NOTE: range(x) = [0,...,x-1] ; range(a,b) = [a,...,b]
-    " winnr(),tabpagewinnr() is similar to tabpagenr()
+    " winnr(),tabpagewinnr() is similar to tabpagenr(),
+    " use arg "$" to get num:
     for i in range(1,tabpagenr("$"))
         "
         let buflist = tabpagebuflist(i)
@@ -1050,11 +1070,12 @@ function _TAB_LINE_()
         let index = strridx(fullname,'/')
         let name = fullname[index+1:len(fullname)] . ' '
         let name = len(name)==1? "[No Name] " : name
-        let fnalen = 40
+        let fnalen = 20
         let name .= len(name)>=fnalen? '' : repeat(' ',fnalen-len(name))
         let name = (i==tabpagenr()? "%#TabLineSel#" : "%#TabLine#") . name
         "
         " you could get any information you want about buffer by "getbufinfo()"
+        let name = i . ' ' . name
         let moded = 0
         for j in buflist
             let bufinfo = getbufinfo(j)[0]
@@ -1063,11 +1084,25 @@ function _TAB_LINE_()
                 break
             endif
         endfor
-        let name = "%#TabLineMod#" . (moded?"[+] ":"    ") . name
+        let name = "%#TabLineInfo#" . (moded?"[+] ":"    ") . name
         let tabLineStr .= name
     endfor
     let tabLineStr .= "%#TabLineFill#%=%{strftime(\"%T\")}"
     return tabLineStr
+endfunction
+
+function _TAB_NEXT_()
+    if(tabpagenr('$')==1)
+        tabnew
+    else
+        if(v:count==0)
+            tabnext
+        else
+            let jump = (tabpagenr()+v:count)%tabpagenr('$')
+            let jump = jump==0?tabpagenr('$'):jump
+            execute jump . "tabnext"
+        endif
+    endif
 endfunction
 
 " AUTOCMD:------------------------------------------------------------
@@ -1080,7 +1115,7 @@ augroup _MY_OWN_DEFINE_
     " updatetime->CursorHoldI
     autocmd CursorHoldI * stopinsert
     " 'normal' consider keymap but 'normal!' not
-    autocmd BufReadPost * if line("'\"") <= line("$") 
+    autocmd BufReadPost * if line("'\"") <= line("$")
                 \| execute "normal! g`\"" | endif
     autocmd BufReadPost *.c,*.cpp,*.py,*m,*sh,*.vim,*.v
                 \ if ! &readonly | execute '%s/^\s\+$//ge' | endif
@@ -1137,7 +1172,7 @@ let s:_command_exists=0
 
 " Principle of Comment : help call
 " :[range]call function() could accept [range] as same as map [range]:
-" it will call func every line, but 
+" it will call func every line, but
 " function funName() range will only affect one line
 " function _COMMENT_() [range]
 "     call setline(".","// " . getline("."))
@@ -1147,7 +1182,7 @@ let s:_command_exists=0
 " Plugin : NERDCommment
 noremap <Leader>d :call NERDComment("n","Toggle") <CR>
 " it could use a beautiful(or sexy) comment style in C like:
-" /* 
+" /*
 "  * text
 "  */
 " noremap <buffer> <Leader>d :call NERDComment("n","Sexy") <CR>
