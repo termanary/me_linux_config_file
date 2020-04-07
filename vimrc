@@ -270,9 +270,10 @@ inoremap <delete> <Nop>
 
 " NOREMAP:------------------------------------------------------------
 
-noremap <F9> :call _COMPILE_() <CR>
-noremap <F10> :call _TEST_INPUT_TO_RUN_() <CR>
-noremap <F11> :call _DEBUG_() <CR>
+" all function call map must add <C-u> to avoid errors by number
+noremap <F9> :<C-u>call _COMPILE_() <CR>
+noremap <F10> :<C-u>call _TEST_INPUT_TO_RUN_() <CR>
+noremap <F11> :<C-u>call _DEBUG_() <CR>
 
 " help getcharsearch()  <expr> map-argument
 " map could have argument
@@ -312,10 +313,10 @@ noremap <Leader>h <C-w>h
 noremap <Leader>l <C-w>l
 noremap <Leader>q <C-w>q
 
-noremap <leader>i :setlocal cursorline! <CR>
-noremap <Leader>/ :nohlsearch <CR>
+noremap <leader>i :<C-u>setlocal cursorline! <CR>
+noremap <Leader>/ :<C-u>nohlsearch <CR>
 noremap <Leader>u g~aw
-noremap <Leader>e :setlocal cursorline! cursorcolumn!<CR>:sleep 400m
+noremap <Leader>e :<C-u>setlocal cursorline! cursorcolumn!<CR>:sleep 400m
             \<CR>:setlocal cursorline! cursorcolumn!<CR>
 
 " TAB: help tabpage
@@ -325,18 +326,18 @@ noremap <Leader>e :setlocal cursorline! cursorcolumn!<CR>:sleep 400m
 " 'tabmove +N' != 'tabmove N' and 'tabnext +N' != 'tabnext N'
 " 'tabnext' != 'tabnext +1'->will cause Error
 noremap gx :<C-u>call _TAB_NEXT_() <CR>
-" noremap <Leader>tX :tabmove +1 <CR>
-" noremap <Leader>tx :tabmove -1 <CR>
-" noremap <Leader>tv :tab vsplit <CR>
+" noremap <Leader>tX :<C-u>tabmove +1 <CR>
+" noremap <Leader>tx :<C-u>tabmove -1 <CR>
+" noremap <Leader>tv :<C-u>tab vsplit <CR>
 
 " BUFFER:
 " buffer-list argument-list
-noremap <Leader>bn :bn <CR>
-noremap <Leader>bp :bN <CR>
+" noremap <Leader>bn :bn <CR>
+" noremap <Leader>bp :bN <CR>
 
 " QUICKFIX:
-" noremap <Leader>qo :copen <CR>
-" noremap <Leader>qc :cclose <CR>
+" noremap <Leader>qo :<C-u>copen <CR>
+" noremap <Leader>qc :<C-u>cclose <CR>
 
 " FILE EDIT:----------------------------------------------------------
 
@@ -345,32 +346,32 @@ noremap <Leader>bp :bN <CR>
 " noremap <leader>a :if 1 == 1 \| echom '0' \| endif <CR>
 
 " OJ:
-noremap <Leader>vm :call _OPENFILE_("","l") <CR>
-noremap <Leader>vi :call _OPENFILE_("input.tst","r") <CR>
-noremap <Leader>vg :call _OPENFILE_("~/.gdbinit","r") <CR>
+noremap <Leader>vm :<C-u>call _OPENFILE_("","l") <CR>
+noremap <Leader>vi :<C-u>call _OPENFILE_("input.tst","r") <CR>
+noremap <Leader>vg :<C-u>call _OPENFILE_("~/.gdbinit","r") <CR>
 
 " copy to save -> OJ
-" noremap <Leader>vh :!cp %:p ~/hdoj/all/
-" noremap <Leader>vk :!cp %:p ~/poj/all/
-" noremap <Leader>va :!cp %:p /home/syx/.main.c <CR>
+" noremap <Leader>vh :<C-u>!cp %:p ~/hdoj/all/
+" noremap <Leader>vk :<C-u>!cp %:p ~/poj/all/
+" noremap <Leader>va :<C-u>!cp %:p /home/syx/.main.c <CR>
 
 " SCRIPT:
-noremap <Leader>vs :call _OPENFILE_("~/script/shell.sh","l") <CR>
-noremap <Leader>vp :call _OPENFILE_("~/script/python3.py","l") <CR>
-noremap <Leader>vd :call _OPENFILE_("~/script/Tmp/dot/graph.dot","l") <CR>
-" noremap <Leader>vy :call _OPENFILE_("~/.pythonstartup","l") <CR>
-noremap <Leader>vb :call _SHELL_ALIASES_() <CR>
-" noremap <Leader>vr :call _OPENFILE_("~/.psqlrc","l") <CR>:set filetype=sql <CR>
-" noremap <Leader>vq :call _OPENFILE_("~/script/pgSQL.sql","l") <CR>
+noremap <Leader>vs :<C-u>call _OPENFILE_("~/script/shell.sh","l") <CR>
+noremap <Leader>vp :<C-u>call _OPENFILE_("~/script/python3.py","l") <CR>
+noremap <Leader>vd :<C-u>call _OPENFILE_("~/script/Tmp/dot/graph.dot","l") <CR>
+" noremap <Leader>vy :<C-u>call _OPENFILE_("~/.pythonstartup","l") <CR>
+noremap <Leader>vb :<C-u>call _SHELL_ALIASES_() <CR>
+" noremap <Leader>vr :<C-u>call _OPENFILE_("~/.psqlrc","l") <CR>:set filetype=sql <CR>
+" noremap <Leader>vq :<C-u>call _OPENFILE_("~/script/pgSQL.sql","l") <CR>
 
 " VIMRC:
-noremap <Leader>ve :call _OPENFILE_("~/.vim/vimrc","l") <CR>
-noremap <Leader>vt :call _OPENFILE_("~/script/vimscript.vim","l") <CR>
+noremap <Leader>ve :<C-u>call _OPENFILE_("~/.vim/vimrc","l") <CR>
+noremap <Leader>vt :<C-u>call _OPENFILE_("~/script/vimscript.vim","l") <CR>
 
 " OCTAVE:
-noremap <Leader>vo :call _OPENFILE_("~/script/octave.m ","l") <CR>
-" noremap <Leader>vn :call _OPENFILE_("~/script/input.tst","l") <CR>
-" noremap <Leader>vc :call _OPENFILE_("~/.octaverc","l") <CR>
+noremap <Leader>vo :<C-u>call _OPENFILE_("~/script/octave.m ","l") <CR>
+noremap <Leader>vn :<C-u>call _OPENFILE_("~/script/input.tst","l") <CR>
+" noremap <Leader>vc :<C-u>call _OPENFILE_("~/.octaverc","l") <CR>
 
 " TNOREMAP:-----------------------------------------------------------
 
@@ -431,6 +432,8 @@ FileFormat = [
 ".s",
 ".sql",
 ".dot",
+".html",
+".css",
 ]
 FileAdd = [
 ".c",
@@ -441,6 +444,11 @@ FileAdd = [
 CurDirList = os.listdir(".")
 CurDirList.sort()
 CurDirList.reverse()
+# remove the hidden file:
+for i in range(len(CurDirList)) :
+    if CurDirList[i][0] == '.' :
+        CurDirList = CurDirList[0:i]
+        break
 for fn in FileName :
     # OJ,task,project
     if fn in CurDirList and os.path.isfile(fn) :
@@ -492,7 +500,7 @@ endfunction
 " help List
 let g:gtkwave_ban = 0
 let g:MipsCompile = 0
-noremap <F8> :call _GlobalVariableReverse_() <CR>
+noremap <F8> :<C-u>call _GlobalVariableReverse_() <CR>
 function _GlobalVariableReverse_()
     if &filetype == 'c' || &filetype == 'cpp'
         let g:MipsCompile = !g:MipsCompile
@@ -844,25 +852,25 @@ function _DEBUG_()
         Program
         " 'wincmd 15 -' is illegal:
         15 wincmd -
-        tnoremap <buffer> <ESC> <C-w>:Source<CR>
+        tnoremap <buffer> <ESC> <C-w>:<C-u>Source<CR>
         Gdb
         " call win_execute()
-        tnoremap <buffer> <ESC> <C-w>:Source<CR>
+        tnoremap <buffer> <ESC> <C-w>:<C-u>Source<CR>
         Source
         "
         " 'K'
-        noremap <buffer> <Leader>cb :Break <CR>
-        noremap <buffer> <Leader>cd :Clear <CR>
-        noremap <buffer> <Leader>cr :Run <CR>
-        " noremap <buffer> <Leader>cn :Over <CR>
-        noremap <buffer> <Leader>cc :Continue <CR>
-        noremap <buffer> <Leader>cs :Step <CR>
-        noremap <buffer> <Leader>cn :call TermDebugSendCommand('next') <CR>
-        noremap <buffer> <Leader>cq :call TermDebugSendCommand('quit') <CR>
+        noremap <buffer> <Leader>cb :<C-u>Break <CR>
+        noremap <buffer> <Leader>cd :<C-u>Clear <CR>
+        noremap <buffer> <Leader>cr :<C-u>Run <CR>
+        " noremap <buffer> <Leader>cn :<C-u>Over <CR>
+        noremap <buffer> <Leader>cc :<C-u>Continue <CR>
+        noremap <buffer> <Leader>cs :<C-u>Step <CR>
+        noremap <buffer> <Leader>cn :<C-u>call TermDebugSendCommand('next') <CR>
+        noremap <buffer> <Leader>cq :<C-u>call TermDebugSendCommand('quit') <CR>
                     \:mapclear <buffer> <CR>
-        " noremap <buffer> <Leader>cg :call TermDebugSendCommand(
+        " noremap <buffer> <Leader>cg :<C-u>call TermDebugSendCommand(
         "             \'startup_deubg') <CR>
-        noremap <buffer> <Leader>cp :call TermDebugSendCommand('display') <CR>
+        noremap <buffer> <Leader>cp :<C-u>call TermDebugSendCommand('display') <CR>
     elseif &filetype == 'python'
         !pudb3 %:p
     elseif &filetype == 'java'
@@ -915,14 +923,14 @@ function _FILETYPE_SET_REGISTER_()
     " smapclear <buffer>
     " imapclear <buffer>
     if     &filetype == 'c' || &filetype == 'cpp'
-        inoremap <buffer> { {<ESC>:call PAIRS()<CR>
+        inoremap <buffer> { {<ESC>:<C-u>call PAIRS()<CR>
         if &filetype == 'c'
             syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2
             syntax match cFunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
             highlight cFunctions gui=NONE cterm=bold  ctermfg=yellow
         endif
     elseif &filetype == 'java'
-        inoremap <buffer> { {<ESC>:call PAIRS()<CR>
+        inoremap <buffer> { {<ESC>:<C-u>call PAIRS()<CR>
     elseif &filetype == ''
         if expand("%:t:r") == 'input' || expand("%:t") == 'input.tst'
             setlocal iskeyword+=.,-
@@ -936,13 +944,15 @@ function _FILETYPE_SET_REGISTER_()
         highlight PYTHON_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
         syntax match PYTHON_MY_OWN_DEFINE_NOTE /^# #.*$/
     elseif &filetype == 'matlab'
-        " setlocal keywordprg=:call _DOC_HELP_()
+        " setlocal keywordprg=:<C-u>call _DOC_HELP_()
         " highlight MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL ctermbg=red
         " match MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL /;\+$/
         highlight MATLAB_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
         syntax match MATLAB_MY_OWN_DEFINE_NOTE /^% %.*$/
-        let @m=expand("%:t:r")
-        " noremap <buffer> <Leader>m :w <CR><C-w>l<C-W>"m<CR><C-w>p
+        " search @[a-zA-Z] too check
+        " help registers:
+        " let @m=expand("%:t:r")
+        " noremap <buffer> <Leader>m :<C-u>w <CR><C-w>l<C-W>"m<CR><C-w>p
         " noremap <buffer> <Leader>; :s/$/;/<CR>:nohlsearch<CR>g;
         " noremap <buffer> <Leader>, :s/;$//<CR>:nohlsearch<CR>g;
     elseif &filetype == 'vim'
@@ -952,7 +962,7 @@ function _FILETYPE_SET_REGISTER_()
         " if with ':' in the beginning, it will be accept as an Ex-cmd
         setlocal keywordprg=:vertical\ leftabove\ help
     elseif &filetype == 'make'
-        set noexpandtab
+        setlocal noexpandtab
         setlocal list
         setlocal listchars=tab:>-
     elseif &filetype == 'verilog'
@@ -960,7 +970,7 @@ function _FILETYPE_SET_REGISTER_()
         " you need to know API in vim and regular expression
         let b:verilog_indent_modules = 1
         inoremap <buffer> ' '
-        " noremap <buffer> <leader>s :%s/[^.]\<\>/&_tb/gc
+        " noremap <buffer> <leader>s :<C-u>%s/[^.]\<\>/&_tb/gc
 " \<left><left><left><left><left><left><left><left><left><left>
     elseif &filetype == 'asm'
         syntax match AsmAddress "^\s\+\<[0-9a-fA-F]*\>:"me=e-1
@@ -1141,8 +1151,8 @@ endif
 " -nargs = x : just supply a number of x arguments
 " help <f-args> <args>
 " command -complete=file -nargs=* LS !ls --color=auto
-command -complete=file -nargs=* Vlsplit :call _VsplitFunction_("l",<f-args>)
-command -complete=file -nargs=* Vrsplit :call _VsplitFunction_("r",<f-args>)
+command -complete=file -nargs=* Vlsplit :<C-u>call _VsplitFunction_("l",<f-args>)
+command -complete=file -nargs=* Vrsplit :<C-u>call _VsplitFunction_("r",<f-args>)
 function _VsplitFunction_(direction, ... )
     if a:direction != "l" && a:direction != "r"
         echomsg "Direction have no effect!"
@@ -1177,19 +1187,22 @@ let s:_command_exists=0
 " function _COMMENT_() [range]
 "     call setline(".","// " . getline("."))
 " endfunction
-" noremap <Leader>d :call _COMMENT_() <CR>
+" noremap <Leader>d :<C-u>call _COMMENT_() <CR>
 
 " Plugin : NERDCommment
-noremap <Leader>d :call NERDComment("n","Toggle") <CR>
+noremap <Leader>d :<C-u>call NERDComment("n","Toggle") <CR>
 " it could use a beautiful(or sexy) comment style in C like:
 " /*
 "  * text
 "  */
-" noremap <buffer> <Leader>d :call NERDComment("n","Sexy") <CR>
+" noremap <buffer> <Leader>d :<C-u>call NERDComment("n","Sexy") <CR>
 let g:NERDDefaultAlign = 'left'
 let g:NERDSpaceDelims = 1
 let g:NERDAltDelims_c = 1
-let g:NERDAltDelims_python = 0
+" function: extend()
+" or change like next line:
+" let g:NERDCustomDelimiters = {'python': { 'left': '# ', 'leftAlt': '#' }}
+let g:NERDAltDelims_python = 1
 let g:NERDCommentEmptyLines = 1
 let g:NERDCreateDefaultMappings = 0
 let g:NERDTrimTrailingWhitespace = 1
