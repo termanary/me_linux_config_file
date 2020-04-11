@@ -109,8 +109,8 @@ set numberwidth=3
 " TAB:
 set tabstop=4
 set expandtab
-set softtabstop=4
 set smarttab
+set softtabstop=4
 set shiftwidth=4
 set nojoinspaces
 " set list
@@ -142,8 +142,9 @@ set timeoutlen=3000
 set ttimeoutlen=0
 
 " STATUSLINE:
-set shortmess+=filnrxI
-set shortmess-=mwasWAqFS
+" when shortmess include 'I', there will be not intro-msg
+set shortmess+=filnrx
+set shortmess-=mwasWAqFSI
 set showmode
 set showcmd
 set ruler
@@ -153,28 +154,32 @@ set laststatus=1
 " set tabline=
 set tabline=%!_TAB_LINE_()
 " set statusline=
+" set fillchars&
 
 " WILD MENU:
 " help wildcard
 set wildmenu
-" set wildmode=full
+set wildmode=full
+" set wildchar&
 " makefiles need ?
 set wildignore+=*.o,*.hi,*.class
-" set suffixes&
+" set suffixes+=.o,.class
 
 " ENCODE:
 set encoding=utf-8
-" set fileencoding
 " set termencoding
 " cp936 is GBK
+" set fileencoding
 set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,default,latin1
-" set fileformats=unix,dos
+" set fileformat
+set fileformats=unix,dos
 
 " TAB PAGE:
-" set tabpagemax=4
+" only for vim -p, not for :tabnew
+set tabpagemax=4
 
 " MODELINE:
-" set modeline
+set modeline
 set modelines=3
 
 " SPLIT:
@@ -269,6 +274,8 @@ inoremap <C-e> <end>
 inoremap <delete> <Nop>
 
 " NOREMAP:------------------------------------------------------------
+" nnoremap
+" help map-modes
 
 " all function call map must add <C-u> to avoid errors by number
 noremap <F9> :<C-u>call _COMPILE_() <CR>
@@ -292,6 +299,7 @@ noremap m `
 noremap ' m
 noremap ` '
 noremap - :
+" mode()
 noremap \ :!
 
 noremap <Space> <Nop>
@@ -306,7 +314,7 @@ noremap <Leader>o O
 noremap <Leader>p P
 noremap <Leader>g G
 noremap <Leader>f F
-" noremap <Leader>t T
+noremap <Leader>t T
 
 noremap <Leader>w <C-w>
 noremap <Leader>h <C-w>h
@@ -1103,11 +1111,14 @@ endfunction
 
 function _TAB_NEXT_()
     if(tabpagenr('$')==1)
+        " tab vsplist
         tabnew
     else
         if(v:count==0)
+            " tabprevious
             tabnext
         else
+            " gt
             let jump = (tabpagenr()+v:count)%tabpagenr('$')
             let jump = jump==0?tabpagenr('$'):jump
             execute jump . "tabnext"
@@ -1123,6 +1134,7 @@ augroup _MY_OWN_DEFINE_
     autocmd!
     " autocmd OptionSet insertmode  call _MY_OWN_KEY_MAP_INSERTMODE_()
     " updatetime->CursorHoldI
+    " help insert.txt change.txt
     autocmd CursorHoldI * stopinsert
     " 'normal' consider keymap but 'normal!' not
     autocmd BufReadPost * if line("'\"") <= line("$")
@@ -1190,7 +1202,8 @@ let s:_command_exists=0
 " noremap <Leader>d :<C-u>call _COMMENT_() <CR>
 
 " Plugin : NERDCommment
-noremap <Leader>d :<C-u>call NERDComment("n","Toggle") <CR>
+" could not use <C-u> for number is needed
+noremap <Leader>d :call NERDComment("n","Toggle") <CR>
 " it could use a beautiful(or sexy) comment style in C like:
 " /*
 "  * text
