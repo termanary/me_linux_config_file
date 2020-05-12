@@ -1,4 +1,3 @@
-" All system-wide defaults are set in $VIMRUNTIME/debian.vim and sourced by
 " the call to :runtime you can find below.  If you wish to change any of those
 " settings, you should do it in this file (/etc/vim/vimrc), since debian.vim
 " will be overwritten everytime an upgrade of the vim packages is performed.
@@ -155,6 +154,7 @@ set laststatus=1
 set tabline=%!_TAB_LINE_()
 " set statusline=
 " set fillchars&
+" set lazyredraw
 
 " WILD MENU:
 " help wildcard
@@ -167,12 +167,12 @@ set wildignore+=*.o,*.hi,*.class
 
 " ENCODE:
 set encoding=utf-8
-" set termencoding
 " cp936 is GBK
-" set fileencoding
 set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,default,latin1
-" set fileformat
+" set fileencoding
 set fileformats=unix,dos
+" set fileformat
+" set termencoding
 
 " TAB PAGE:
 " only for vim -p, not for :tabnew
@@ -333,19 +333,23 @@ noremap <Leader>e :<C-u>setlocal cursorline! cursorcolumn!<CR>:sleep 400m
 " help v:count, EXAMPLE: noremap gx :<C-u>echo v:count<CR>
 " 'tabmove +N' != 'tabmove N' and 'tabnext +N' != 'tabnext N'
 " 'tabnext' != 'tabnext +1'->will cause Error
-noremap gx :<C-u>call _TAB_NEXT_() <CR>
+noremap <Leader>wt :tab vsplit <CR>
+noremap gt :<C-u>call _TAB_NEXT_() <CR>
 " noremap <Leader>tX :<C-u>tabmove +1 <CR>
 " noremap <Leader>tx :<C-u>tabmove -1 <CR>
 " noremap <Leader>tv :<C-u>tab vsplit <CR>
 
 " BUFFER:
 " buffer-list argument-list
-" noremap <Leader>bn :bn <CR>
-" noremap <Leader>bp :bN <CR>
+noremap <Leader>bn :bn <CR>
+noremap <Leader>bp :bN <CR>
 
 " QUICKFIX:
-" noremap <Leader>qo :<C-u>copen <CR>
-" noremap <Leader>qc :<C-u>cclose <CR>
+" noremap <Leader>xo :<C-u>copen <CR>
+" noremap <Leader>xc :<C-u>cclose <CR>
+" noremap <Leader>xn :<C-u> (v:count?1:v:count) cnext <CR>
+noremap <Leader>xn :<C-u> cnext <CR>
+noremap <Leader>xp :<C-u> cprevious <CR>
 
 " FILE EDIT:----------------------------------------------------------
 
@@ -423,25 +427,27 @@ FileName = [
 "main.cpp",
 "Main.java",
 "main.py",
-"mycpu_top.v",
+# "mycpu_top.v",
 ]
 FileFormat = [
 ".c",
 ".cpp",
-".java",
-".py",
-".m",
 ".h",
-".sh",
-".vim",
+".java",
 ".v",
-".pl",
-".hs",
 ".s",
 ".sql",
-".dot",
+".py",
+".sh",
+".vim",
+".m",
 ".html",
 ".css",
+".js",
+".jsp",
+".dot",
+".pl",
+".hs",
 ]
 FileAdd = [
 ".c",
@@ -578,6 +584,8 @@ function _AUTO_COMPILE_()
     !touch NEWS README AUTHORS ChangeLog
     !automake -a
     !./configure
+    " !make
+    " !./_main.mn
 endfunction
 
 function _COMPILE_()
@@ -617,7 +625,9 @@ function _COMPILE_()
         " 32 bit : gcc-mips-linux-gnu gcc-mipsel-linux-gnu
         " 64 bit : gcc-mips64-linux-gnuabi64 gcc-mips64el-linux-gnuabi64
         " g++* , too
-        if g:MipsCompile
+        if findfile("Makefile",expand("%:h")) != ""
+            make
+        elseif g:MipsCompile
             let MipsGcc="mips-linux-gnu-gcc "
             let MipsCompileOptions="-S "
             execute "!" . MipsGcc . MipsCompileOptions . "-o %:h/%:t:r.s %:p"
@@ -632,10 +642,14 @@ function _COMPILE_()
         " sudo apt install liboctave-dev
         " mkoctfile helloworld.cpp
         " octave-cli --eval 'helloworld(*)'
-        let _gpp_compile_options="-Wfloat-equal -Wshadow"
-        execute "!g++ -Wall -Wextra -lpthread -Wfatal-errors -g3 -pipe
-                    \ -Dtermanary=0 " . _gpp_compile_options .
-                    \ " -o %:h/_%:t:r.mn %:p "
+        if findfile("Makefile",expand("%:h")) != ""
+            make
+        else
+            let _gpp_compile_options="-Wfloat-equal -Wshadow"
+            execute "!g++ -Wall -Wextra -lpthread -Wfatal-errors -g3 -pipe
+                        \ -Dtermanary=0 " . _gpp_compile_options .
+                        \ " -o %:h/_%:t:r.mn %:p "
+        endif
     elseif &filetype == 'python'
         if expand("%:h") == "/home/me/script" || expand("%:h") ==
                     \ "/tmp"
@@ -656,18 +670,18 @@ function _COMPILE_()
                 execute "!" . (executable(expand("%:p"))?"":"python3") . " %:p"
             endif
         endif
-    elseif &filetype == 'matlab'
-        " sudo apt install liboctave-dev
-        " !mkoctfile %:p
-        " !octave-cli --eval '%:t:r (*)'
-        execute "!" . (executable(expand("%:p"))?"":"octave-cli --no-init-file ")
-                    \ . "%:p"
     elseif &filetype == 'sh' || &filetype == 'zsh'
         " help :bar
         " zsh
         execute "!" . (executable(expand("%:p"))?"":"bash ") . "%:p"
     elseif &filetype == 'vim'
         source %:p
+    elseif &filetype == 'matlab'
+        " sudo apt install liboctave-dev
+        " !mkoctfile %:p
+        " !octave-cli --eval '%:t:r (*)'
+        execute "!" . (executable(expand("%:p"))?"":"octave-cli --no-init-file ")
+                    \ . "%:p"
     elseif &filetype == 'java'
         " gnu-gcc:gcj/gij :was removed after gcc-7,was available before gcc-6
         execute "!javac -d %:h/.class -g %:p"
@@ -703,6 +717,8 @@ function _COMPILE_()
     elseif &filetype == 'make'
         make
     elseif &filetype == 'dot'
+        " dot could also product svg-format image
+        " svg: vector graph, plain text, html/js,
         !dot -Tpng %:p -o %:h/%:t:r.png
     elseif &filetype == 'html'
         " ASYNCHRONOUS RUNNING:
@@ -724,6 +740,29 @@ function _COMPILE_()
         " endfunction
         call job_start("firefox --new-tab " . expand("%:p"))
         " !firefox %:p
+    elseif &filetype == 'jsp'
+        " modify tomcat8 configure file first:
+        " touch /etc/tomcat8/Catalina/localhost/test.xml 
+        " add: <Context docBase="/home/syx/web/web/"/>
+        let prefix="http://127.0.0.1:8080/"
+        let filexml="test"."/"
+        let docBase="/home/syx/web/web/"
+        let index=strridx(expand("%:p"),docBase)
+        " file must in docBase
+        if -1!=index
+            let filename=expand("%:p")
+            " stridx(),strridx() str[2:3]
+            let filename=filename[index+strlen(docBase):]
+            call job_start("firefox --new-tab " . prefix . filexml . filename )
+        endif
+    elseif &filetype == 'javascript'
+        " js run in different location is totolly different:different api
+        " js in browser(client),js in server(nodejs) and js in firefox(browser
+        " api)
+        " install web-ext: npm install --global web-ext
+        " !web-ext run
+        " !node/nodejs
+        !nodejs --use_strict %:p
     elseif &filetype == 'perl'
         execute "!" . (executable(expand("%:p"))?"":"perl -W ") . "%:p"
     elseif &filetype == 'haskell'
@@ -769,6 +808,11 @@ function _TEST_INPUT_TO_RUN_()
             write
         endif
     endif
+    if findfile(g:_the_input_file_,expand("%:h")) != ""
+        let existInput=1
+    else
+        let existInput=0
+    endif
     " when you want to give a string variable to another ,
     " you need to use "let"
     " when you want to merge two string variable together ,
@@ -778,19 +822,19 @@ function _TEST_INPUT_TO_RUN_()
     " let _result_=expand("%:p:h") . "/" . g:_the_input_file_
     if &filetype == 'c' || &filetype == 'cpp' || &filetype == 'asm'
                 \ || &filetype == 'haskell'
-        if findfile(g:_the_input_file_,expand("%:h")) != ""
+        if existInput
             " help :!
             execute "! %:h/_%:t:r.mn < %:h/" . g:_the_input_file_
                         " \ . " 2>&1 \| tee /tmp/tmpoutput.%:t:r "
-        elseif findfile(g:_the_input_file_,expand("%:h")) == ""
+        else
             " ! %:h/_%:t:r.mn 2>&1
             ! %:h/_%:t:r.mn
             " echoerr
         endif
     elseif &filetype == 'java'
-        if findfile(g:_the_input_file_,expand("%:h")) != ""
+        if existInput
             execute "!java -classpath %:h/.class %:t:r < %:h/" . g:_the_input_file_
-        elseif findfile(g:_the_input_file_,expand("%:h")) == ""
+        else
             execute "!java -classpath %:h/.class %:t:r "
                         " \ " -classpath %:h %:t:r 2>&1"
         endif
@@ -853,6 +897,7 @@ function _DEBUG_()
         "
         tab vsplit
         packadd termdebug
+        " can't use '~'
         Termdebug %:h/_%:t:r.mn
         " Gdb Program Source
         Source
@@ -879,6 +924,8 @@ function _DEBUG_()
         " noremap <buffer> <Leader>cg :<C-u>call TermDebugSendCommand(
         "             \'startup_deubg') <CR>
         noremap <buffer> <Leader>cp :<C-u>call TermDebugSendCommand('display') <CR>
+        noremap <buffer> <Leader>h :<C-u>Source<CR>
+        noremap <buffer> <Leader>l :<C-u>Gdb<CR>
     elseif &filetype == 'python'
         !pudb3 %:p
     elseif &filetype == 'java'
@@ -897,6 +944,8 @@ function _DEBUG_()
                 execute "!gtkwave %:h/" . _new_filename . ".vcd"
             endif
         endif
+    elseif &filetype == 'javascript'
+        !nodejs debug %:p
     elseif &filetype == 'perl'
         !perl -d %:p
     endif
@@ -918,11 +967,13 @@ function _FILETYPE_SET_REGISTER_()
     " ctermbg,ctermfg is different
     " RGB value #000000 only could be used to gui, not cterm
     " highlight SPACE gui=NONE cterm=bold  ctermbg=green
-    if @% != "" && strridx(expand("%:p:h"),"/media/Windows") != -1
-                \ && &fileformat == "unix" && &filetype == "verilog"
-        setlocal fileformat=dos
-        echomsg "DOS FILE!"
-    endif
+
+    " if @% != "" && strridx(expand("%:p:h"),"/media/Windows") != -1
+    "             \ && &fileformat == "unix" && &filetype == "verilog"
+    "     setlocal fileformat=dos
+    "     echomsg "DOS FILE!"
+    " endif
+
     if &filetype != 'c' && &filetype != 'cpp'
         " for Termdebug package
         mapclear <buffer>
@@ -987,6 +1038,8 @@ function _FILETYPE_SET_REGISTER_()
         highlight AsmNumber gui=NONE cterm=bold ctermfg=darkyellow
     elseif &filetype == 'html'
         " inoremap <buffer> < <><left>
+    elseif &filetype == 'perl'
+        setlocal keywordprg=perldoc
     endif
 endfunction
 
@@ -1111,17 +1164,30 @@ endfunction
 
 function _TAB_NEXT_()
     if(tabpagenr('$')==1)
-        " tab vsplist
-        tabnew
+        " tabnew
+        tab vsplit
     else
         if(v:count==0)
             " tabprevious
             tabnext
         else
             " gt
-            let jump = (tabpagenr()+v:count)%tabpagenr('$')
-            let jump = jump==0?tabpagenr('$'):jump
-            execute jump . "tabnext"
+            " calculate the tabpage number at the end:
+            " let jump = (tabpagenr()+v:count)%tabpagenr('$')
+            " let jump = jump==0?tabpagenr('$'):jump
+            " execute jump . "tabnext"
+            execute v:count . "tabnext"
+        endif
+    endif
+endfunction
+
+function FCITX_ZH2EN()
+    " only for fcitx
+    " change input method automatically
+    if $USER=='syx' && $DISPLAY != ''
+        let fcitx_status = system("fcitx-remote")
+        if fcitx_status[0]=='2'
+            call system("fcitx-remote -c")
         endif
     endif
 endfunction
@@ -1136,6 +1202,7 @@ augroup _MY_OWN_DEFINE_
     " updatetime->CursorHoldI
     " help insert.txt change.txt
     autocmd CursorHoldI * stopinsert
+    autocmd InsertLeave * call FCITX_ZH2EN()
     " 'normal' consider keymap but 'normal!' not
     autocmd BufReadPost * if line("'\"") <= line("$")
                 \| execute "normal! g`\"" | endif
@@ -1208,7 +1275,7 @@ noremap <Leader>d :call NERDComment("n","Toggle") <CR>
 " /*
 "  * text
 "  */
-" noremap <buffer> <Leader>d :<C-u>call NERDComment("n","Sexy") <CR>
+" noremap <Leader>c :call NERDComment("n","Sexy") <CR>
 let g:NERDDefaultAlign = 'left'
 let g:NERDSpaceDelims = 1
 let g:NERDAltDelims_c = 1
