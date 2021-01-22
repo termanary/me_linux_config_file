@@ -3,8 +3,6 @@ autoload -Uz promptinit
 promptinit
 prompt adam1
 
-# git checkout filename
-
 # end ----------------------------------------------------------------------
 
 # mate :
@@ -36,8 +34,6 @@ prompt adam1
 
 # ffmpeg -i -f 
 
-#PS1='\u@\h:\w$ '
-
 export HISTSIZE=100000
 export HISTTIMEFORMAT="%F %T "
 export HISTFILESIZE=1000000
@@ -52,13 +48,13 @@ export PYTHONSTARTUP=~/.pythonstartup
 export PYTHONPATH=.:$PYTHONPATH
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 export PATH="\
-$HOME/.jdk-11.0.2/bin:\
 $PATH:\
-$HOME/.jdk-12.0.2/bin:\
+/opt/jdk-12.0.2/bin:\
 "
 
 #it's necessary 
-alias grep='grep --color=auto -E --binary-files=without-match '
+# if '-r', grep will search dir when read from '|'
+alias grep='grep -n -H --color=auto -E --binary-files=without-match '
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
@@ -67,20 +63,18 @@ alias ls='ls --color=auto '
 alias la='ls -A --color=auto '
 alias lh='ls -lh --color=auto '
 alias info='info --vi-keys'
+alias sl='echo "smile"'
 
-alias c.='cd ../;ls'
+alias c.='cd ../;ls '
 alias cs='cd ~/script/;ls'
-# alias ca='cd ~/Acm/Tmp/;ls'
-alias ch='cd ~/hdoj/tmp/;ls'
-alias ck='cd ~/poj/tmp/;ls'
-alias cf='cd ~/codeforce/;ls'
-alias cv='cd /media/Program/verilog/first/;ls'
+alias cj='cd ~/script/Tmp/java/;ls'
 
 alias df='df -h '
 alias du='du -h '
 alias free='free -h '
 # alias less='less -N -R'
 
+# consider to add '-r '
 alias rm='rm -v '
 alias cp='cp -iv '
 alias mv='mv -iv '
@@ -96,7 +90,7 @@ alias o='octave-cli'
 alias mat='matlab -nosplash -nodesktop '
 alias vi="vim --clean "
 
-alias w3m="w3m -num +6 https://www.google.com/ncr"
+# alias w3m="w3m -num +6 https://www.google.com/ncr"
 alias mplayer="mplayer -lavdopts threads=4 -vo fbdev2 -zoom -x 1365 -y 768 "
 
 alias dos="sed -i 's/\r*$/\r/' "
@@ -105,6 +99,7 @@ alias unix="sed -i 's/\r*$//' "
 alias watch='watch -n 1 -t '
 alias wd='watch -n 1 -t date'
 alias da='date'
+alias make='make -j4'
 
 #copy from stackoverflow
 #g () { emacs --eval "(insert \"autocmd\") " ; }
@@ -124,8 +119,11 @@ v ()
     fi
 }
 
-alias sdm="ssh -p 8022 -t u0_a310@10.26.109.229 \"screen\""
-alias scs="ssh -p 8022 -t u0_a310@10.27.70.52 \"screen\""
+# dormitory:port is needed
+alias sdm="ssh -p 8022 -t u0_a123@10.26.109.229 \"screen\""
+sdmcp(){
+    scp -r -P 8022 $* @10.26.109.229:/storage/emulated/0/AAAAAAAA
+}
 tssh() {
 # sm me@localhost
     a="ssh -t "
@@ -136,8 +134,9 @@ tssh() {
     eval $a$*$b
 }
 
-alias pt="psql -h 119.3.169.234 -p 5432 -U root -d postgres -W "
-alias pm="psql -h 119.3.169.234 -p 5432 -U me -d me -W "
+alias mysql='mysql -ume -pme '
+# alias pt="psql -h 119.3.169.234 -p 5432 -U root -d postgres -W "
+# alias pm="psql -h 119.3.169.234 -p 5432 -U me -d me -W "
 
 # colored GCC warnings and errors
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
@@ -172,28 +171,23 @@ bindkey "^X^E" edit-command-line
 #     . ~/.zsh_aliases
 # fi
 
-# connect to android
-# ssh u0_a306@10.26.109.229 -p 8022
-
-# message about screen-terminal or ssh-terminal
-echo $TERM | grep "screen" > /dev/null
-termType=$?
-echo `tty` | grep "tty" > /dev/null
-ttyType=$?
-
-# we could echo some message when login
-# echo startup time :
-if [ $ttyType -eq 0 ]
-then
-    systemd-analyze | awk '{printf("%s %s %s",$1,$2,$3)}'
-    systemd-analyze | awk -F '=' '{print "\033[32m" $NF "\033[0m" }'
-fi
-
-# ssh login in screen automatically :
-if [ $ttyType -eq 1 -a $termType -eq 1 ] 
-then
-    screen
-fi
+# # message about screen-terminal or ssh-terminal
+# echo $TERM | grep "screen" > /dev/null
+# termType=$?
+# echo `tty` | grep "tty" > /dev/null
+# ttyType=$?
+# # we could echo some message when login
+# # echo startup time :
+# if [ $ttyType -eq 0 ]
+# then
+#     systemd-analyze | awk '{printf("%s %s %s",$1,$2,$3)}'
+#     systemd-analyze | awk -F '=' '{print "\033[32m" $NF "\033[0m" }'
+# fi
+# # ssh login in screen automatically :
+# if [ $ttyType -eq 1 -a $termType -eq 1 ]
+# then
+#     screen
+# fi
 
 # you could do like this :
 # red() { printf "\033[31m"$*"\033[0m\n"; }
@@ -234,13 +228,25 @@ fi
 # ?25l hid position
 # ?25h show position
 
-alias co='cd ~/verilog/COA/pipeline/src/; ls' 
-
-
-prt_scr() { fbgrab `date +%Y-%m-%d-%H-%M-%S`.png < $TTY; zle redisplay; }
-zle -N prt_scr
-bindkey 'r' prt_scr
+# \t
+# if [ "$color_prompt" = yes ]; then
+#     PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+# else
+#     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+# fi
 
 # remove android app :
 # adb shell rm -r /system/app/Email/ /system/app/Calculator/ /system/app/Mipay/ /system/app/MiuiScreenRecorder/
 # adb shell rm -r /system/priv-app/Browser/ /system/priv-app/MiuiVideo/ /system/priv-app/Music/ /system/priv-app/YellowPage/
+
+# # create wifi for mobile
+# nmcli device wifi hotspot ifname wlp2s0 con-name E402NA ssid ssid_E402NA password dgtg07270936
+# nmcli connection modify E402NA connection.autoconnect yes
+
+# iconv -f gbk -t utf8
+
+# termux
+#~/storage/downloads
+#/storage/emulated/0/AAAAAAAA
+#/storage/emulated/0/Android/data/com.tencent.mobileqq/Tencent/QQfile_recv
+
