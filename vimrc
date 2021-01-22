@@ -85,7 +85,7 @@ if filereadable("/usr/share/vim/vim80/defaults.vim")
 elseif v:version == 801
     source /usr/local/share/vim/vim81/defaults.vim
 else
-    echomsg "fail read defaults.vim"
+    echoerr "fail read defaults.vim"
 endif
 
 if filereadable("/usr/share/vim/vim80/ftplugin.vim")
@@ -93,7 +93,7 @@ if filereadable("/usr/share/vim/vim80/ftplugin.vim")
 elseif v:version == 801
     source /usr/local/share/vim/vim81/ftplugin.vim
 else
-    echomsg "fail read ftplugin.vim"
+    echoerr "fail read ftplugin.vim"
 endif
 
 " SETTING: -----------------------------------------------------------
@@ -388,7 +388,7 @@ noremap <Leader>vn :<C-u>call _OPENFILE_("~/script/input.tst","l") <CR>
 " TNOREMAP:-----------------------------------------------------------
 
 if !has('terminal')
-    echomsg "Don't support terminal!"
+    echoerr "Don't support terminal!"
 else
     " tnoremap <C-W>n <C-W>N
     " tnoremap <C-W>N <C-W>n
@@ -408,12 +408,12 @@ endif
 
 function _PYTHON_FUNCTION_()
     if !has('python3_compiled')
-        echomsg "Don't support python3!"
+        echoerr "Don't support python3!"
         " finish
         return
     endif
     if !has('python3_dynamic')
-        echomsg "Could not dynamic load python3!"
+        echoerr "Could not dynamic load python3!"
         return
     endif
 " help if_pyth.txt
@@ -446,6 +446,8 @@ FileFormat = [
 ".js",
 ".jsp",
 ".dot",
+".l",
+".y",
 ".pl",
 ".hs",
 ]
@@ -554,7 +556,7 @@ function _OPENFILE_(filename,lr)
             elseif a:lr=='r'
                 execute 'vertical rightbelow vsplit ' . a:filename
             else
-                echomsg 'ERROR!'
+                echoerr 'ERROR!'
             endif
         endif
     endif
@@ -588,13 +590,25 @@ function _AUTO_COMPILE_()
     " !./_main.mn
 endfunction
 
+" FOR WEB:
+" modify tomcat8 configure file first: info needed to be recorded
+" touch /etc/tomcat8/Catalina/localhost/test.xml
+" add: <Context docBase="/home/syx/web/"/>
+let g:prefix="http://127.0.0.1:8080/"
+let g:filexml="test"."/"
+" you may need to judge dir sometimes
+let g:docBase="/home/syx/web/"
+
 function _COMPILE_()
     " if you want to get all the variable :see options.txt
     execute '%s/^\s\+$//ge'
     if &mod == 1
         " help 'write
-        if @% == ''
-            echomsg "File name is needed!"
+        if &readonly == 1
+            echoerr "Readonly file!"
+            return
+        elseif @% == ''
+            echoerr "File name is needed!"
             return
         else
             " :update
@@ -684,8 +698,23 @@ function _COMPILE_()
                     \ . "%:p"
     elseif &filetype == 'java'
         " gnu-gcc:gcj/gij :was removed after gcc-7,was available before gcc-6
-        execute "!javac -d %:h/.class -g %:p"
+        if findfile(expand("%:h") . "/" . ".class") != ""
+            echoerr "ERROR: \".class\" is not a directory!"
+        else
+            call mkdir(expand("%:h") . "/" . ".class","p")
+            " just one file:
+            !javac -d %:h/.class -classpath %:h/.class:%:h:. -g %:p
+            " a project:
+            " !javac -d . -classpath %:h/.class:%:h:. -g %:p
+        endif
+    elseif &filetype == 'sql'
+        " !psql < %:p
+        " !psql -c
+
+        " !mysql -ume -pme < %:p
+        !mysql -ume -pme -e "source %:p"
     elseif &filetype == 'verilog'
+        " How about use automake?
         " sudo apt install / iverilog gtkwave / verilator
         " help : bufwinnr("str") windo
         " %:t:r:r : main.v main_tb.v/main.tb.v/main.vt
@@ -720,7 +749,23 @@ function _COMPILE_()
         " dot could also product svg-format image
         " svg: vector graph, plain text, html/js,
         !dot -Tpng %:p -o %:h/%:t:r.png
-    elseif &filetype == 'html'
+    elseif &filetype == 'lex'
+        " flex
+        if findfile("Makefile",expand("%:h")) != ""
+            make
+        else
+            " filename-modifiers: %:p:h:h %:t:r:r %:s?x?x?
+            " -d --yywrap
+            !flex --yylineno --header-file=%:h/%:t:r_lex.h -o %:h/%:t:r_lex.c %:p
+        endif
+    elseif &filetype == 'yacc'
+        " bison
+        if findfile("Makefile",expand("%:h")) != ""
+            make
+        else
+            !bison --defines=%:h/%:t:r_yacc.h -o %:h/%:t:r_yacc.c %:p
+        endif
+    elseif &filetype == 'html' || &filetype == 'xhtml'
         " ASYNCHRONOUS RUNNING:
         " help channel
         " help job-options
@@ -738,22 +783,26 @@ function _COMPILE_()
         " endfunction
         " function! FUN_EXIT_CB(channel,msg)
         " endfunction
-        call job_start("firefox --new-tab " . expand("%:p"))
-        " !firefox %:p
-    elseif &filetype == 'jsp'
-        " modify tomcat8 configure file first:
-        " touch /etc/tomcat8/Catalina/localhost/test.xml 
-        " add: <Context docBase="/home/syx/web/web/"/>
-        let prefix="http://127.0.0.1:8080/"
-        let filexml="test"."/"
-        let docBase="/home/syx/web/web/"
-        let index=strridx(expand("%:p"),docBase)
-        " file must in docBase
+        let index=strridx(expand("%:p"),g:docBase)
+        let filename=expand("%:p")
+        " file must in g:docBase
         if -1!=index
-            let filename=expand("%:p")
+            let filename=filename[index+strlen(g:docBase):]
+            call job_start("firefox --full-screen --new-tab " . g:prefix . g:filexml . filename )
+        else
+            " !firefox %:p
+            call job_start("firefox --full-screen --new-tab " . filename)
+        endif
+    elseif &filetype == 'jsp'
+        let index=strridx(expand("%:p"),g:docBase)
+        let filename=expand("%:p")
+        " file must in g:docBase
+        if -1!=index
             " stridx(),strridx() str[2:3]
-            let filename=filename[index+strlen(docBase):]
-            call job_start("firefox --new-tab " . prefix . filexml . filename )
+            let filename=filename[index+strlen(g:docBase):]
+            call job_start("firefox --full-screen --new-tab " . g:prefix . g:filexml . filename )
+        else
+            echoerr "Could not run!"
         endif
     elseif &filetype == 'javascript'
         " js run in different location is totolly different:different api
@@ -773,7 +822,7 @@ function _COMPILE_()
         " intel : sudo apt install nasm
         " AT&T : sudo apt install as
         !nasm %:p -o %:h/%:t:r.bin
-        !dd if=%:t:r.bin of=fd.img bs=512 count=1 conv=notrunc
+        !dd if=%:h/%:t:r.bin of=fd.img bs=512 count=1 conv=notrunc
         !bochs
         " if !g:MipsCompile
         "     !nasm -f elf %:p -o %:h/_%:t:r.o
@@ -801,8 +850,11 @@ function _TEST_INPUT_TO_RUN_()
     " register '%' and '#'
     " copen
     if &mod == 1
-        if @% == ''
-            echomsg "File name is needed!"
+        if &readonly == 1
+            echoerr "Readonly file!"
+            return
+        elseif @% == ''
+            echoerr "File name is needed!"
             return
         else
             write
@@ -832,10 +884,12 @@ function _TEST_INPUT_TO_RUN_()
             " echoerr
         endif
     elseif &filetype == 'java'
+        " if you need other *.jar,you need to add '-cp /path/a.jar:*'
         if existInput
-            execute "!java -classpath %:h/.class %:t:r < %:h/" . g:_the_input_file_
+            " for java-mysql
+            execute "!java -classpath %:h/.class:%:h:/usr/share/java/mysql.jar:. %:t:r < %:h/" . g:_the_input_file_
         else
-            execute "!java -classpath %:h/.class %:t:r "
+            !java -classpath %:h/.class:%:h:/usr/share/java/mysql.jar:. %:t:r
                         " \ " -classpath %:h %:t:r 2>&1"
         endif
     elseif &filetype == 'verilog'
@@ -929,7 +983,8 @@ function _DEBUG_()
     elseif &filetype == 'python'
         !pudb3 %:p
     elseif &filetype == 'java'
-        !jdb -classpath %:h %:t:r
+        " long time no use
+        " !jdb -classpath %:h %:t:r
     elseif &filetype =='verilog'
         let _tb_index=strridx(expand("%:t:r"),"_tb")
         if _tb_index == -1
@@ -998,16 +1053,18 @@ function _FILETYPE_SET_REGISTER_()
                 \ || &filetype == 'zsh' || &filetype == 'conf'
         if &filetype == 'python'
             " K: help
+            " 'iskeyword influence 'keywordprg
+            " setlocal iskeyword+=.
             setlocal keywordprg=pydoc3
         endif
         highlight PYTHON_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
-        syntax match PYTHON_MY_OWN_DEFINE_NOTE /^# #.*$/
+        syntax match PYTHON_MY_OWN_DEFINE_NOTE /^#\s*#.*$/
     elseif &filetype == 'matlab'
         " setlocal keywordprg=:<C-u>call _DOC_HELP_()
         " highlight MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL ctermbg=red
         " match MATLAB_MY_OWN_DEFINE_SEMICOLON_EOL /;\+$/
         highlight MATLAB_MY_OWN_DEFINE_NOTE ctermbg=blue ctermfg=white
-        syntax match MATLAB_MY_OWN_DEFINE_NOTE /^% %.*$/
+        syntax match MATLAB_MY_OWN_DEFINE_NOTE /^%\s*%.*$/
         " search @[a-zA-Z] too check
         " help registers:
         " let @m=expand("%:t:r")
@@ -1234,14 +1291,14 @@ command -complete=file -nargs=* Vlsplit :<C-u>call _VsplitFunction_("l",<f-args>
 command -complete=file -nargs=* Vrsplit :<C-u>call _VsplitFunction_("r",<f-args>)
 function _VsplitFunction_(direction, ... )
     if a:direction != "l" && a:direction != "r"
-        echomsg "Direction have no effect!"
+        echoerr "Direction have no effect!"
         return
     endif
     if a:0 == 0
         if a:direction == "l"
-            execute "vsplit "
+            vsplit
         elseif a:direction == "r"
-            execute "vertical rightbelow vsplit "
+            vertical rightbelow vsplit
         endif
     else
         " help a:0 a:1 a:000 a:000[0]
@@ -1281,12 +1338,13 @@ let g:NERDSpaceDelims = 1
 let g:NERDAltDelims_c = 1
 " function: extend()
 " or change like next line:
-" let g:NERDCustomDelimiters = {'python': { 'left': '# ', 'leftAlt': '#' }}
 let g:NERDAltDelims_python = 1
 let g:NERDCommentEmptyLines = 1
 let g:NERDCreateDefaultMappings = 0
 let g:NERDTrimTrailingWhitespace = 1
 let g:NERDCompactSexyComs = 0
+" flex bison
+" let g:NERDCustomDelimiters = {'lex': { 'left': ' /**', 'right': '*/' } }
 
 " Plugin : auto-pairs
 " Affected Char : \' \" ( [ {
